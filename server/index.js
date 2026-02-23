@@ -2116,7 +2116,12 @@ const saveTokens = async (userId, username, tokenData) => {
   saveSettings({ userXTokens });
 
   try {
-    const user = await User.findOne({ id: userId.toString() });
+    const user = await User.findOne({
+      $or: [
+        { id: userId.toString() },
+        ...(mongoose.Types.ObjectId.isValid(userId) ? [{ _id: userId }] : [])
+      ]
+    });
     if (user && user.connectedAccounts) {
       const acc = user.connectedAccounts.find(a => a.username === username);
       if (acc) {
@@ -3454,7 +3459,12 @@ app.post('/api/auth/x/callback', async (req, res) => {
     const XUsername = meData.data.username;
     const XIcon = meData.data.profile_image_url;
 
-    const user = await User.findOne({ id: userId.toString() });
+    const user = await User.findOne({
+      $or: [
+        { id: userId.toString() },
+        ...(mongoose.Types.ObjectId.isValid(userId) ? [{ _id: userId }] : [])
+      ]
+    });
     if (user) {
       let limit = 1;
       if (user.plan) {
@@ -3484,7 +3494,7 @@ app.post('/api/auth/x/callback', async (req, res) => {
       await user.save();
     }
 
-    saveTokens(userId, XUsername, {
+    await saveTokens(userId, XUsername, {
       accessToken: data.access_token,
       refreshToken: data.refresh_token,
       expiresAt: Date.now() + (data.expires_in * 1000)
@@ -3499,7 +3509,12 @@ app.post('/api/auth/x/callback', async (req, res) => {
 
 const getValidToken = async (userId, username) => {
   let targetAccount = null;
-  const user = await User.findOne({ id: userId.toString() });
+  const user = await User.findOne({
+    $or: [
+      { id: userId.toString() },
+      ...(mongoose.Types.ObjectId.isValid(userId) ? [{ _id: userId }] : [])
+    ]
+  });
 
   if (user && user.connectedAccounts && user.connectedAccounts.length > 0) {
     targetAccount = username
