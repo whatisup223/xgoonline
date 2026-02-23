@@ -446,7 +446,7 @@ export const Admin: React.FC = () => {
             if (stripeRes.ok) setStripeSettings(await stripeRes.json());
             const paypalRes = await fetch('/api/admin/paypal-settings', { headers });
             if (paypalRes.ok) setPaypalSettings(await paypalRes.json());
-            if (XRes.ok) setxSettings(await XRes.json());
+            if (XRes.ok) setXSettings(await XRes.json());
             if (smtpRes.ok) setSmtpSettings(await smtpRes.json());
             if (emailRes.ok) setEmailTemplates(await emailRes.json());
             if (plansRes.ok) setPlans(await plansRes.json());
@@ -2605,7 +2605,7 @@ export const Admin: React.FC = () => {
                                                             type="text"
                                                             className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-black-50 focus:border-black-500 focus:outline-none transition-all font-mono text-sm"
                                                             value={xSettings.clientId}
-                                                            onChange={(e) => setxSettings({ ...xSettings, clientId: e.target.value })}
+                                                            onChange={(e) => setXSettings({ ...xSettings, clientId: e.target.value })}
                                                             placeholder="e.g. -XyZ123abc..."
                                                         />
                                                     </label>
@@ -2615,7 +2615,7 @@ export const Admin: React.FC = () => {
                                                             type="password"
                                                             className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-black-50 focus:border-black-500 focus:outline-none transition-all font-mono text-sm"
                                                             value={xSettings.clientSecret}
-                                                            onChange={(e) => setxSettings({ ...xSettings, clientSecret: e.target.value })}
+                                                            onChange={(e) => setXSettings({ ...xSettings, clientSecret: e.target.value })}
                                                         />
                                                     </label>
                                                     <label className="block">
@@ -2643,7 +2643,7 @@ export const Admin: React.FC = () => {
                                                             type="text"
                                                             className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-black-50 focus:border-black-500 focus:outline-none transition-all font-mono text-sm"
                                                             value={xSettings.userAgent}
-                                                            onChange={(e) => setxSettings({ ...xSettings, userAgent: e.target.value })}
+                                                            onChange={(e) => setXSettings({ ...xSettings, userAgent: e.target.value })}
                                                         />
                                                     </label>
 
@@ -2660,7 +2660,7 @@ export const Admin: React.FC = () => {
                                                                     type="number"
                                                                     className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-black-50 focus:border-black-500 focus:outline-none transition-all font-mono text-sm"
                                                                     value={xSettings.minDelay || 5}
-                                                                    onChange={(e) => setxSettings({ ...xSettings, minDelay: parseInt(e.target.value) })}
+                                                                    onChange={(e) => setXSettings({ ...xSettings, minDelay: parseInt(e.target.value) })}
                                                                 />
                                                             </label>
                                                             <label className="block">
@@ -2669,7 +2669,7 @@ export const Admin: React.FC = () => {
                                                                     type="number"
                                                                     className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-black-50 focus:border-black-500 focus:outline-none transition-all font-mono text-sm"
                                                                     value={xSettings.maxDelay || 15}
-                                                                    onChange={(e) => setxSettings({ ...xSettings, maxDelay: parseInt(e.target.value) })}
+                                                                    onChange={(e) => setXSettings({ ...xSettings, maxDelay: parseInt(e.target.value) })}
                                                                 />
                                                             </label>
                                                         </div>
@@ -2681,7 +2681,7 @@ export const Admin: React.FC = () => {
                                                             </div>
                                                             <button
                                                                 type="button"
-                                                                onClick={() => setxSettings({ ...xSettings, antiSpam: !xSettings.antiSpam })}
+                                                                onClick={() => setXSettings({ ...xSettings, antiSpam: !xSettings.antiSpam })}
                                                                 className={`w-12 h-6 rounded-full p-1 transition-colors ${xSettings.antiSpam ? 'bg-black' : 'bg-slate-300'}`}
                                                             >
                                                                 <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${xSettings.antiSpam ? 'translate-x-6' : 'translate-x-0'}`} />
@@ -2691,7 +2691,7 @@ export const Admin: React.FC = () => {
                                                 </div>
                                                 <button
                                                     type="button"
-                                                    onClick={handleSavexSettings}
+                                                    onClick={handleSaveXSettings}
                                                     className="w-full py-4 bg-slate-900 text-white rounded-[2rem] font-bold shadow-xl hover:bg-black hover:shadow-slate-200 transition-all active:scale-95 flex items-center justify-center gap-2"
                                                 >
                                                     <Save size={20} />
