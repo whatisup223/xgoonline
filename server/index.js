@@ -3400,7 +3400,7 @@ app.get('/api/auth/x/url', (req, res) => {
   const protocol = host.includes('localhost') ? 'http' : 'https';
   const redirectUri = XSettings.redirectUri && XSettings.redirectUri.trim() !== ''
     ? XSettings.redirectUri
-    : `${protocol}://${host}/auth/x/callback`;
+    : `${protocol}://${host}/auth/X/callback`;
 
   const state = Math.random().toString(36).substring(7);
   const scope = encodeURIComponent('tweet.read tweet.write users.read offline.access');
@@ -3418,7 +3418,7 @@ app.post('/api/auth/x/callback', async (req, res) => {
   const protocol = host.includes('localhost') ? 'http' : 'https';
   const redirectUri = XSettings.redirectUri && XSettings.redirectUri.trim() !== ''
     ? XSettings.redirectUri
-    : `${protocol}://${host}/auth/x/callback`;
+    : `${protocol}://${host}/auth/X/callback`;
 
   try {
     const auth = Buffer.from(`${XSettings.clientId}:${XSettings.clientSecret}`).toString('base64');
