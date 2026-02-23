@@ -6,15 +6,15 @@ export const TermsOfService: React.FC = () => {
     return (
         <div className="min-h-screen font-['Outfit'] bg-white">
             <div className="max-w-4xl mx-auto px-6 py-24">
-                <Link to="/" className="inline-flex items-center gap-2 text-slate-500 hover:text-orange-600 mb-8 transition-colors">
+                <Link to="/" className="inline-flex items-center gap-2 text-slate-500 hover:text-black mb-8 transition-colors">
                     <ArrowLeft size={16} /> Back to Home
                 </Link>
 
                 <div className="flex items-center gap-3 mb-8">
-                    <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center text-orange-600">
+                    <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-black">
                         <FileText size={20} />
                     </div>
-                    <span className="text-sm font-bold text-orange-600 tracking-wider uppercase">Use Guidelines</span>
+                    <span className="text-sm font-bold text-black tracking-wider uppercase">Use Guidelines</span>
                 </div>
 
                 <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">Terms of Service</h1>
@@ -46,12 +46,12 @@ export const TermsOfService: React.FC = () => {
                 <ul className="list-disc pl-6 mt-4 space-y-2">
                     <li><strong>Scheduled Deletion:</strong> Upon request, accounts are scheduled for deletion and permanently removed after a <strong>14-day grace period</strong>.</li>
                     <li><strong>Reactivation:</strong> You may cancel a deletion request at any time during the 14-day grace period by logging into your account.</li>
-                    <li><strong>Suspension:</strong> We reserves the right to suspend or terminate accounts immediately for non-payment, payment disputes (chargebacks), or violation of Reddit's API rules.</li>
+                    <li><strong>Suspension:</strong> We reserves the right to suspend or terminate accounts immediately for non-payment, payment disputes (chargebacks), or violation of X's API rules.</li>
                 </ul>
 
                 <h3 className="text-2xl font-bold text-slate-900 mt-12 mb-4">4. Liability & API Usage</h3>
                 <p>
-                    RedditGo is an automation tool. You are solely responsible for the content generated and for ensuring your use of the tool complies with Reddit's Terms of Service and Anti-Spam policies. RedditGo is not responsible for any account bans or restrictions imposed by Reddit.
+                    XGo is an automation tool. You are solely responsible for the content generated and for ensuring your use of the tool complies with X's Terms of Service and Anti-Spam policies. XGo is not responsible for any account bans or restrictions imposed by X.
                 </p>
             </div>
         </div>

@@ -18,7 +18,7 @@ interface AnnouncementModalProps {
 export const AnnouncementModal: React.FC<AnnouncementModalProps> = ({ announcement, onDismiss }) => {
     const getTypeStyles = () => {
         switch (announcement.type) {
-            case 'update': return { icon: <Zap className="text-orange-500" />, bg: 'bg-orange-50', border: 'border-orange-100', accent: 'bg-orange-600' };
+            case 'update': return { icon: <Zap className="text-black" />, bg: 'bg-slate-50', border: 'border-slate-100', accent: 'bg-black' };
             case 'promotion': return { icon: <Sparkles className="text-purple-500" />, bg: 'bg-purple-50', border: 'border-purple-100', accent: 'bg-purple-600' };
             case 'maintenance': return { icon: <Info className="text-blue-500" />, bg: 'bg-blue-50', border: 'border-blue-100', accent: 'bg-blue-600' };
             case 'welcome': return { icon: <Megaphone className="text-emerald-500" />, bg: 'bg-emerald-50', border: 'border-emerald-100', accent: 'bg-emerald-600' };

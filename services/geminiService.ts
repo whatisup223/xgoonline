@@ -1,4 +1,4 @@
-import { GeneratedReply, RedditPost } from "../types";
+import { GeneratedReply, XTweet } from "../types";
 
 // ─── Brand Profile Helper ────────────────────────────────────────────────────
 export interface BrandProfile {
@@ -52,10 +52,10 @@ BRAND INTELLIGENCE (internalize this — do NOT parrot it back verbatim):
 
 const buildImageBrandContext = (profile: BrandProfile): string => {
   if (!profile || !profile.brandName) {
-    return 'CRITICAL: Use Redditgo brand colors ONLY: Vibrant Orange (#EA580C) for primary elements/highlights, Deep Slate Navy (#1E293B) for backgrounds/contrast, and White for text/details.';
+    return 'CRITICAL: Use XGo brand colors ONLY: Deep Slate Black (#000000) for primary elements, Slate Gray (#64748B) for secondary bits, and White for text/details.';
   }
-  const primary = profile.primaryColor || '#EA580C';
-  const secondary = profile.secondaryColor || '#1E293B';
+  const primary = profile.primaryColor || '#000000';
+  const secondary = profile.secondaryColor || '#64748B';
   return `CRITICAL VISUAL IDENTITY: Strictly use the brand colors for ${profile.brandName}: Primary Color ${primary} (use for main objects and highlights), Secondary Color ${secondary} (use for backgrounds and accents), and White. Ensure the palette is dominated by these specific hex codes to maintain brand consistency.`;
 };
 
@@ -66,11 +66,11 @@ const buildToneStrategy = (tone: string): string => {
 TONE STRATEGY — HELPFUL PEER:
 You are a knowledgeable friend who genuinely wants to help, not sell.
 - Write in first person. Use "I've found that..." or "What worked for me was..."
-- Keep paragraphs to 2-3 lines max. Reddit readers skim.
-- ONE specific, actionable tip that actually helps the OP.
-- Sound like you're typing a message to a smart friend, not writing an essay.
+- Keep it punchy (X is fast-paced). 280 chars target.
+- ONE specific, actionable tip that actually helps the author.
+- Sound like you're typing a DM to a smart friend.
 - Casual punctuation is fine. Imperfect language is authentic.
-- If mentioning a product, frame it as a personal recommendation: "I've been using X for this and it's saved me hours"
+- If mentioning a product, frame it as a personal recommendation.
 `,
     thought_leader: `
 TONE STRATEGY — THOUGHT LEADER:
@@ -106,9 +106,9 @@ Challenge a common assumption, then offer a better perspective.
   return strategies[tone] || strategies['helpful_peer'];
 };
 
-// ─── Generate Reddit Reply ───────────────────────────────────────────────────
-export const generateRedditReply = async (
-  post: RedditPost,
+// ─── Generate X Reply ───────────────────────────────────────────────────
+export const generateXReply = async (
+  tweet: XTweet,
   topic: string,
   tone: string,
   audience: string,
@@ -125,7 +125,7 @@ export const generateRedditReply = async (
     const brandContext = buildBrandContext(effectiveProfile);
     const toneStrategy = buildToneStrategy(tone);
 
-    let effectiveWebsite = effectiveProfile.website || 'https://redditgo.online/';
+    let effectiveWebsite = effectiveProfile.website || 'https://xgo.online/';
 
     // LINK TRACKING INTEGRATION
     if (useTracking && includeLink && userId) {
@@ -136,9 +136,9 @@ export const generateRedditReply = async (
           body: JSON.stringify({
             userId,
             originalUrl: effectiveWebsite,
-            subreddit: post.subreddit,
-            postId: post.id,
-            type: 'comment'
+            topic: tweet.topic,
+            postId: tweet.id,
+            type: 'reply'
           })
         });
         if (trackRes.ok) {
@@ -164,7 +164,7 @@ BRAND INTEGRATION (STRICT REQUIREMENT):
 - DO NOT hallucinate any other brand names, product names, or websites.
 - DO NOT use marketing superlatives (best, amazing, game-changer).
 - Frame it as an 'afterthought' or a 'side note': "By the way, I used [${effectiveProfile.brandName}](${effectiveWebsite}) to handle the X part of this, and it worked well."
-- Redditgo is your internal identity, but your public recommendation is "${effectiveProfile.brandName}".`;
+- XGo is your internal identity, but your public recommendation is "${effectiveProfile.brandName}".`;
     } else if (hasBrand) {
       brandInstructions = `
 BRAND INTEGRATION (STRICT REQUIREMENT):
@@ -188,13 +188,13 @@ LINK INTEGRATION (STRICT REQUIREMENT):
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         userId,
-        type: 'comment',
-        prompt: `You are writing a Reddit comment as a real, thoughtful community member.
+        type: 'reply',
+        prompt: `You are writing an X (Twitter) reply as a real, thoughtful user.
 
 POST BEING REPLIED TO:
-Title: ${post.title}
-Body: ${post.selftext.substring(0, 800)}
-Community: r/${post.subreddit}
+Author: @${tweet.author}
+Body: ${tweet.text.substring(0, 500)}
+Topic: ${tweet.topic}
 
 ${toneStrategy}
 
@@ -205,23 +205,23 @@ LANGUAGE: Write the entire reply in ${language}. Non-negotiable.
 ${brandInstructions}
 
 AUTHENTICITY RULES (Human Machine Protocol):
-1. NO CORPORATE RADIANCE: Avoid "Absolutely!", "Great question!", or excessive enthusiasm. Real Redditors are helpful but casual/dry.
-2. IMPERFECT RHYTHM: Use sentence fragments. Vary length. Real people don't write in 4 identical paragraphs.
-3. VALUE-FIRST: 80% of the content must be pure value/advice. Only the last 20% should bridge to the solution.
-4. SLANG & LINGO: Use (tbh, tldr, etc.) appropriately if it fits the tone.
-5. NO MARKETING TERMS: Never use "leverage", "utilize", "holistic", "game-changer", "synergy", "seamless". These are AI/Marketing dead giveaways.
-6. CTA: Don't use a Call to Action. Use a "Call to Connection" — ask a follow-up question or share a relatable opinion.
-7. LENGTH: Aim for 2-4 high-value paragraphs (roughly 100-200 words). Do not be overly brief; provide enough context to be genuinely helpful.
+1. NO CORPORATE RADIANCE: Avoid "Absolutely!", "Great question!", or excessive enthusiasm. X users are cynical and fast.
+2. IMPERFECT RHYTHM: Use sentence fragments. Keep it short.
+3. VALUE-FIRST: 80% must be value. Only the end should bridge.
+4. SLANG & LINGO: Use relevant X culture lingo (ngl, fr, etc.) if it fits.
+5. NO MARKETING TERMS: Never use "leverage", "utilize", "holistic".
+6. CTA: Don't use a CTA. Keep it conversational.
+7. LENGTH: Target 200-280 characters. Be concise.
 
 Return STRICT JSON (no markdown code blocks, no extra text outside the JSON):
 {
-  "comment": "the actual comment text here",
+  "reply": "the actual reply text here",
   "tone": "${tone}",
   "actionable_points": ["key takeaway 1", "key takeaway 2"],
   "keywords": ["relevant", "keywords"],
-  "reddit_strategy": "brief note on why this approach works for this post"
+  "x_strategy": "brief note on why this approach works"
 }`,
-        context: { postId: post.id, subreddit: post.subreddit }
+        context: { postId: tweet.id, topic: tweet.topic }
       })
     });
 
@@ -239,9 +239,9 @@ Return STRICT JSON (no markdown code blocks, no extra text outside the JSON):
   }
 };
 
-// ─── Generate Reddit Post ────────────────────────────────────────────────────
-export const generateRedditPost = async (
-  subreddit: string,
+// ─── Generate X Tweet ────────────────────────────────────────────────────
+export const generateXTweet = async (
+  topic: string,
   goal: string,
   tone: string,
   productMention?: string,
@@ -267,7 +267,7 @@ export const generateRedditPost = async (
 
     const finalBrandName = effectiveProfile.brandName || '';
     const finalUrl = effectiveProfile.website || '';
-    let effectiveWebsite = finalUrl || 'https://redditgo.online/';
+    let effectiveWebsite = finalUrl || 'https://xgo.online/';
 
     // LINK TRACKING INTEGRATION
     if (useTracking && includeLink && userId) {
@@ -278,8 +278,8 @@ export const generateRedditPost = async (
           body: JSON.stringify({
             userId,
             originalUrl: effectiveWebsite,
-            subreddit,
-            type: 'post'
+            topic,
+            type: 'tweet'
           })
         });
         if (trackRes.ok) {
@@ -316,11 +316,11 @@ BRAND INTEGRATION IN POST BODY (STRICT REQUIREMENT):
     }
 
     const goalGuide: Record<string, string> = {
-      'Engagement': 'Ask a question or share a polarizing opinion that sparks discussion. The goal is replies, not agreement.',
-      'Lead Gen': 'Share a story or insight that demonstrates expertise. The CTA should feel organic, not forced.',
-      'Problem Solving': 'Present a specific problem with a structured solution. Show you have lived experience with this.',
-      'Product Launch': 'Frame this as a personal project or experiment you are sharing with the community, not an ad.',
-      'Storytelling': "Open with a compelling hook that mirrors the Reddit community's shared experience or frustration.",
+      'Engagement': 'Ask a polarizing question or share a "hot take" that gets people quoting it.',
+      'Lead Gen': 'Deliver value first, then a soft bridge to the product.',
+      'Problem Solving': 'Thread-style value delivery (though this generates a single tweet).',
+      'Product Launch': 'Focus on the "Why now" and the immediate benefit.',
+      'Storytelling': "Open with a hook that stops the scroll.",
     };
 
     const response = await fetch('/api/generate', {
@@ -328,8 +328,8 @@ BRAND INTEGRATION IN POST BODY (STRICT REQUIREMENT):
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         userId,
-        type: 'post',
-        prompt: `You are crafting a high-quality Reddit post as an authentic community member in r/${subreddit}.
+        type: 'tweet',
+        prompt: `You are crafting a high-quality X (Twitter) tweet focused on ${topic}.
 
 POST GOAL: ${goal}
 GOAL STRATEGY: ${goalGuide[goal] || goalGuide['Engagement']}
@@ -342,14 +342,14 @@ LANGUAGE: Write the entire post (title AND body) in ${language}. Non-negotiable.
 
 ${brandInstructions}
 
-REDDIT GROWTH CRAFT RULES:
-1. THE HOOK: The first sentence must be a relatable observation or a direct answer. NO "INTRODUCTIONS".
-2. NO MARKETING SPEAK: If it sounds like a blog post or a press release, you've failed. It must sound like someone sharing a win or a struggle.
-3. THE MENTION: Mention "${finalBrandName}" as a side-note or a tool that helped you skip a tedious step.
-4. VISUALIZATION: Describe a specific scene or result (e.g., "I finally had a free weekend" instead of "it improved my efficiency").
-5. NO AI TELLS: Avoid "delve", "leverage", "utilize", "comprehensive", "innovative".
-6. CLOSING: End with a specific question that makes people want to share their own experience.
-7. SUBSTANCE: Aim for 250-450 words of high-quality storytelling and insight. Avoid one-liners.
+X GROWTH CRAFT RULES:
+1. THE SCROLL STOPPER: The first line must be a hook. No filler.
+2. NO MARKETING SPEAK: Avoid sounding like an ad.
+3. THE MENTION: Natural integration only.
+4. HASHTAGS: Use 1-2 relevant hashtags max.
+5. NO AI TELLS: Avoid "delve", "leverage".
+6. CLOSING: A thought-provoking ending.
+7. LENGTH: Strictly 1-2 sentences of value, max 280 characters.
 
 IMAGE PROMPT:
 - Return a highly specific DALL-E prompt for a visual that supports the post message.
@@ -360,10 +360,10 @@ IMAGE PROMPT:
 Return STRICT JSON (no markdown code blocks, no extra text):
 {
   "title": "the post title",
-  "content": "the full post body with Reddit markdown",
-  "imagePrompt": "detailed DALL-E generation prompt"
+  "content": "the full tweet text",
+  "imagePrompt": "detailed visual prompt"
 }`,
-        context: { subreddit }
+        context: { topic }
       })
     });
 

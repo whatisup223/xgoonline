@@ -13,7 +13,7 @@ export const ProtectedRoute: React.FC<{ children: React.ReactNode; adminOnly?: b
     if (token && !user) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-50">
-                <RefreshCw className="animate-spin text-orange-600" size={32} />
+                <RefreshCw className="animate-spin text-black" size={32} />
             </div>
         );
     }

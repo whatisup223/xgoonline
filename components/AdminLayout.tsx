@@ -37,13 +37,13 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ icon: Icon, label, path, acti
         to={path}
         onClick={onClick}
         className={`flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 group ${active
-            ? 'bg-orange-600 text-white shadow-lg shadow-orange-200 font-semibold translate-x-1'
+            ? 'bg-black text-white shadow-lg shadow-slate-200 font-semibold translate-x-1'
             : 'text-slate-500 hover:bg-white hover:text-slate-900 hover:shadow-sm hover:translate-x-1'
             }`}
     >
         <Icon
             size={20}
-            className={`${active ? 'text-white' : 'group-hover:text-orange-600 transition-colors'}`}
+            className={`${active ? 'text-white' : 'group-hover:text-black transition-colors'}`}
         />
         <span className="text-sm">{label}</span>
     </Link>
@@ -105,22 +105,22 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
             {/* ── Mobile top bar ── */}
             <div className="lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 shadow-sm">
                 <Link to="/dashboard" className="flex items-center gap-2 active:scale-95 transition-all group">
-                    <div className="w-8 h-8 bg-orange-600 rounded-xl flex items-center justify-center text-white shadow-md group-hover:rotate-12 transition-transform">
+                    <div className="w-8 h-8 bg-black rounded-xl flex items-center justify-center text-white shadow-md group-hover:rotate-12 transition-transform">
                         <Shield fill="currentColor" size={16} />
                     </div>
-                    <span className="text-lg font-extrabold tracking-tight text-slate-900">RedditGo Admin</span>
+                    <span className="text-lg font-extrabold tracking-tight text-slate-900">XGo Admin</span>
                 </Link>
 
                 <div className="flex items-center gap-3">
                     <div className="relative" ref={profileRef}>
                         <button
                             onClick={(e) => { e.stopPropagation(); setIsProfileOpen(!isProfileOpen); }}
-                            className="w-9 h-9 rounded-xl bg-gradient-to-tr from-orange-600 to-orange-400 p-0.5 shadow-sm text-white flex items-center justify-center font-black text-[10px] uppercase active:scale-95 transition-all"
+                            className="w-9 h-9 rounded-xl bg-gradient-to-tr from-black to-slate-700 p-0.5 shadow-sm text-white flex items-center justify-center font-black text-[10px] uppercase active:scale-95 transition-all"
                         >
                             {user?.avatar ? (
                                 <img src={user.avatar} alt="Profile" className="w-full h-full object-cover rounded-[0.55rem]" />
                             ) : (
-                                <div className="w-full h-full bg-white rounded-[0.55rem] flex items-center justify-center text-orange-600">
+                                <div className="w-full h-full bg-white rounded-[0.55rem] flex items-center justify-center text-black">
                                     {user?.name ? user.name.substring(0, 2).toUpperCase() : 'AD'}
                                 </div>
                             )}
@@ -159,7 +159,7 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
                             e.stopPropagation();
                             setIsOpen(!isOpen);
                         }}
-                        className="p-2.5 bg-slate-100 hover:bg-orange-50 hover:text-orange-600 text-slate-600 rounded-xl transition-all active:scale-95"
+                        className="p-2.5 bg-slate-100 hover:bg-slate-50 hover:text-black text-slate-600 rounded-xl transition-all active:scale-95"
                     >
                         {isOpen ? <X size={22} /> : <Menu size={22} />}
                     </button>
@@ -180,7 +180,7 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
             >
                 <div className="flex items-center justify-between px-6 pt-6 pb-4 shrink-0">
                     <div className="flex items-center gap-3">
-                        <div className="w-11 h-11 bg-orange-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-orange-100 ring-4 ring-orange-50">
+                        <div className="w-11 h-11 bg-black rounded-2xl flex items-center justify-center text-white shadow-xl shadow-slate-100 ring-4 ring-slate-50">
                             <Shield fill="currentColor" size={24} />
                         </div>
                         <h1 className="text-xl font-extrabold tracking-tight text-slate-900">AdminPanel</h1>
@@ -210,7 +210,7 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
                     <Link
                         to="/dashboard"
                         onClick={() => setIsOpen(false)}
-                        className="block bg-gradient-to-br from-orange-600 to-orange-500 p-4 rounded-[2rem] shadow-lg shadow-orange-100 text-white relative overflow-hidden group hover:scale-[1.02] transition-all duration-300"
+                        className="block bg-gradient-to-br from-black to-slate-800 p-4 rounded-[2rem] shadow-lg shadow-slate-100 text-white relative overflow-hidden group hover:scale-[1.02] transition-all duration-300"
                     >
                         <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full blur-2xl -mr-6 -mt-6 group-hover:scale-150 transition-transform duration-500" />
                         <div className="relative z-10">
@@ -220,7 +220,7 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
                                 </div>
                                 <span className="font-bold text-sm">Exit Admin</span>
                             </div>
-                            <p className="text-orange-50 text-[10px] items-center flex gap-1 font-medium">Return to user dashboard <ChevronRight size={10} /></p>
+                            <p className="text-slate-100 text-[10px] items-center flex gap-1 font-medium">Return to user dashboard <ChevronRight size={10} /></p>
                         </div>
                     </Link>
 
@@ -239,7 +239,7 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
             <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
                 <header className="hidden lg:flex shrink-0 h-20 items-center justify-between px-10 bg-white/40 backdrop-blur-xl border-b border-slate-200/60 z-30">
                     <div className="flex items-center gap-3">
-                        <div className="w-2.5 h-2.5 bg-orange-600 rounded-full animate-pulse shadow-sm shadow-orange-200" />
+                        <div className="w-2.5 h-2.5 bg-black rounded-full animate-pulse shadow-sm shadow-slate-200" />
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Administrative Console</span>
                     </div>
 
@@ -248,8 +248,8 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
                             <div className="text-right hidden xl:block">
                                 <p className="text-sm font-black text-slate-900 leading-none mb-1">{user?.name}</p>
                                 <div className="flex items-center justify-end gap-1.5">
-                                    <Sparkles size={10} className="text-orange-600 fill-orange-600" />
-                                    <p className="text-[10px] font-bold text-orange-600 uppercase tracking-widest leading-none">Super Admin</p>
+                                    <Sparkles size={10} className="text-black fill-black" />
+                                    <p className="text-[10px] font-bold text-black uppercase tracking-widest leading-none">Super Admin</p>
                                 </div>
                             </div>
 
@@ -257,11 +257,11 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
                                 onClick={(e) => { e.stopPropagation(); setIsProfileOpen(!isProfileOpen); }}
                                 className="relative group focus:outline-none"
                             >
-                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-orange-600 to-orange-400 p-0.5 shadow-lg shadow-orange-100 group-hover:scale-105 transition-all cursor-pointer flex items-center justify-center text-white">
+                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-black to-slate-700 p-0.5 shadow-lg shadow-slate-100 group-hover:scale-105 transition-all cursor-pointer flex items-center justify-center text-white">
                                     {user?.avatar ? (
                                         <img src={user.avatar} alt="Profile" className="w-full h-full object-cover rounded-[0.85rem]" />
                                     ) : (
-                                        <div className="w-full h-full bg-white rounded-[0.85rem] flex items-center justify-center text-orange-600 font-black text-lg uppercase">
+                                        <div className="w-full h-full bg-white rounded-[0.85rem] flex items-center justify-center text-black font-black text-lg uppercase">
                                             {user?.name ? user.name.substring(0, 2) : 'AD'}
                                         </div>
                                     )}
@@ -271,27 +271,27 @@ export const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children 
 
                             {isProfileOpen && (
                                 <div className="absolute top-full right-0 mt-4 w-72 bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 p-3 z-50 animate-in fade-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
-                                    <div className="p-4 bg-gradient-to-br from-orange-600 to-orange-500 rounded-[1.8rem] mb-2 flex items-center gap-3 text-white">
+                                    <div className="p-4 bg-gradient-to-br from-black to-slate-800 rounded-[1.8rem] mb-2 flex items-center gap-3 text-white">
                                         <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center font-black text-xs">
                                             {user?.name ? user.name.substring(0, 1).toUpperCase() : 'A'}
                                         </div>
                                         <div className="overflow-hidden">
                                             <p className="text-sm font-black truncate">{user?.name}</p>
-                                            <p className="text-[10px] font-bold text-orange-100 truncate tracking-tight">{user?.email}</p>
+                                            <p className="text-[10px] font-bold text-slate-100 truncate tracking-tight">{user?.email}</p>
                                         </div>
                                     </div>
 
                                     <div className="space-y-1">
                                         <Link to="/dashboard" onClick={() => setIsProfileOpen(false)} className="w-full flex items-center justify-between px-5 py-3 hover:bg-slate-50 rounded-2xl text-slate-600 transition-all group">
                                             <div className="flex items-center gap-3 text-sm font-bold text-slate-700">
-                                                <LayoutDashboard size={18} className="group-hover:text-orange-600" />
+                                                <LayoutDashboard size={18} className="group-hover:text-black" />
                                                 <span>User Dashboard</span>
                                             </div>
                                             <ChevronRight size={14} className="text-slate-300" />
                                         </Link>
                                         <Link to="/settings" onClick={() => setIsProfileOpen(false)} className="w-full flex items-center justify-between px-5 py-3 hover:bg-slate-50 rounded-2xl text-slate-600 transition-all group">
                                             <div className="flex items-center gap-3 text-sm font-bold text-slate-700">
-                                                <Settings size={18} className="group-hover:text-orange-600" />
+                                                <Settings size={18} className="group-hover:text-black" />
                                                 <span>Settings</span>
                                             </div>
                                             <ChevronRight size={14} className="text-slate-300" />

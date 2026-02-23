@@ -129,7 +129,7 @@ interface Plan {
     isVisible: boolean;
 }
 
-interface RedditSettings {
+interface XSettings {
     clientId: string;
     clientSecret: string;
     redirectUri: string;
@@ -158,6 +158,7 @@ export const Admin: React.FC = () => {
     const getActiveTab = () => {
         const path = location.pathname;
         if (path.includes('/analytics')) return 'analytics';
+        if (path.includes('/churn')) return 'churn';
         if (path.includes('/users')) return 'users';
         if (path.includes('/communicate')) return 'communicate';
         if (path.includes('/settings')) return 'settings';
@@ -167,7 +168,7 @@ export const Admin: React.FC = () => {
 
     const activeTab = getActiveTab();
     const [analyticsTab, setAnalyticsTab] = useState<'overview' | 'churn'>('overview');
-    const [settingsTab, setSettingsTab] = useState<'ai' | 'payments' | 'reddit' | 'plans' | 'security' | 'smtp' | 'email'>('ai');
+    const [settingsTab, setSettingsTab] = useState<'ai' | 'payments' | 'x' | 'plans' | 'security' | 'smtp' | 'email'>('ai');
 
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
@@ -220,11 +221,11 @@ export const Admin: React.FC = () => {
         isSandbox: true,
         enabled: false
     });
-    const [redditSettings, setRedditSettings] = useState<RedditSettings>({
+    const [xSettings, setXSettings] = useState<XSettings>({
         clientId: '',
         clientSecret: '',
         redirectUri: '',
-        userAgent: 'RedigoApp/1.0',
+        userAgent: 'XGoApp/1.0',
         minDelay: 5,
         maxDelay: 15,
         antiSpam: true
@@ -427,12 +428,12 @@ export const Admin: React.FC = () => {
         const headers = { 'Authorization': `Bearer ${token}` };
         setLoading(true);
         try {
-            const [statsRes, usersRes, aiRes, stripeRes, redditRes, smtpRes, plansRes, logsRes, emailRes] = await Promise.all([
+            const [statsRes, usersRes, aiRes, stripeRes, XRes, smtpRes, plansRes, logsRes, emailRes] = await Promise.all([
                 fetch('/api/admin/stats', { headers }),
                 fetch('/api/admin/users', { headers }),
                 fetch('/api/admin/ai-settings', { headers }),
                 fetch('/api/admin/stripe-settings', { headers }),
-                fetch('/api/admin/reddit-settings', { headers }),
+                fetch('/api/admin/x-settings', { headers }),
                 fetch('/api/admin/smtp-settings', { headers }),
                 fetch('/api/plans', { headers }),
                 fetch('/api/admin/logs', { headers }),
@@ -445,7 +446,7 @@ export const Admin: React.FC = () => {
             if (stripeRes.ok) setStripeSettings(await stripeRes.json());
             const paypalRes = await fetch('/api/admin/paypal-settings', { headers });
             if (paypalRes.ok) setPaypalSettings(await paypalRes.json());
-            if (redditRes.ok) setRedditSettings(await redditRes.json());
+            if (XRes.ok) setxSettings(await XRes.json());
             if (smtpRes.ok) setSmtpSettings(await smtpRes.json());
             if (emailRes.ok) setEmailTemplates(await emailRes.json());
             if (plansRes.ok) setPlans(await plansRes.json());
@@ -717,25 +718,25 @@ export const Admin: React.FC = () => {
         }
     };
 
-    const handleSaveRedditSettings = async () => {
+    const handleSaveXSettings = async () => {
         const token = localStorage.getItem('token');
         try {
-            const res = await fetch('/api/admin/reddit-settings', {
+            const res = await fetch('/api/admin/x-settings', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify(redditSettings)
+                body: JSON.stringify(xSettings)
             });
             if (res.ok) {
-                alert('Reddit settings saved successfully!');
+                alert('X settings saved successfully!');
             } else {
-                alert('Failed to save Reddit settings.');
+                alert('Failed to save X settings.');
             }
         } catch (e) {
             console.error(e);
-            alert('Error saving Reddit settings.');
+            alert('Error saving X settings.');
         }
     };
 
@@ -1019,7 +1020,7 @@ export const Admin: React.FC = () => {
 
                 {loading ? (
                     <div className="flex items-center justify-center h-64">
-                        <RefreshCw className="animate-spin text-orange-600" size={32} />
+                        <RefreshCw className="animate-spin text-black" size={32} />
                     </div>
                 ) : (
                     <>
@@ -1051,7 +1052,7 @@ export const Admin: React.FC = () => {
                                             <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">API Usage</p>
                                             <p className="text-3xl font-extrabold text-slate-900">{stats.apiUsage}%</p>
                                         </div>
-                                        <div className="p-4 bg-orange-50 text-orange-600 rounded-2xl group-hover:scale-110 transition-transform">
+                                        <div className="p-4 bg-slate-50 text-black rounded-2xl group-hover:scale-110 transition-transform">
                                             <Cpu size={24} />
                                         </div>
                                     </div>
@@ -1070,7 +1071,7 @@ export const Admin: React.FC = () => {
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between">
                                         <h2 className="text-xl font-black text-slate-800 tracking-tight">Support Metrics</h2>
-                                        <Link to="/support" className="text-xs font-bold text-orange-600 hover:underline flex items-center gap-1">
+                                        <Link to="/support" className="text-xs font-bold text-black hover:underline flex items-center gap-1">
                                             View All Tickets <ChevronRight size={14} />
                                         </Link>
                                     </div>
@@ -1087,9 +1088,9 @@ export const Admin: React.FC = () => {
                                         <div className="bg-white p-6 rounded-[2rem] border border-slate-200/60 shadow-sm flex items-center justify-between group hover:shadow-lg transition-all">
                                             <div className="min-w-0">
                                                 <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1 truncate">Under Review</p>
-                                                <p className="text-3xl font-extrabold text-orange-600 truncate">{stats.ticketStats?.inProgress || 0}</p>
+                                                <p className="text-3xl font-extrabold text-black truncate">{stats.ticketStats?.inProgress || 0}</p>
                                             </div>
-                                            <div className="p-4 bg-orange-50 text-orange-600 rounded-2xl group-hover:rotate-12 transition-transform shrink-0 ml-4">
+                                            <div className="p-4 bg-slate-50 text-black rounded-2xl group-hover:rotate-12 transition-transform shrink-0 ml-4">
                                                 <AlertCircle size={24} />
                                             </div>
                                         </div>
@@ -1217,10 +1218,10 @@ export const Admin: React.FC = () => {
                                             <div className="bg-slate-50/50 p-4 rounded-3xl border border-slate-100 flex flex-col gap-2">
                                                 <div className="flex items-center justify-between">
                                                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Server Load</span>
-                                                    <span className="text-sm font-black text-orange-600">12%</span>
+                                                    <span className="text-sm font-black text-black">12%</span>
                                                 </div>
                                                 <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                                                    <div className="bg-orange-500 h-full rounded-full w-[12%]"></div>
+                                                    <div className="bg-slate-500 h-full rounded-full w-[12%]"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -1253,7 +1254,7 @@ export const Admin: React.FC = () => {
                                     <div className="space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-300">
                                         {analyticsLoading ? (
                                             <div className="flex flex-col items-center justify-center h-64 gap-4">
-                                                <RefreshCw className="animate-spin text-orange-600" size={48} />
+                                                <RefreshCw className="animate-spin text-black" size={48} />
                                                 <p className="text-slate-400 font-bold">Aggregating system data...</p>
                                             </div>
                                         ) : !analytics ? (
@@ -1303,10 +1304,10 @@ export const Admin: React.FC = () => {
                                                     </div>
                                                     <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200/60 shadow-sm flex flex-col justify-between group hover:shadow-xl transition-all duration-500">
                                                         <div className="flex items-center justify-between mb-4">
-                                                            <div className="p-3 bg-orange-50 text-orange-600 rounded-2xl group-hover:scale-110 transition-transform">
+                                                            <div className="p-3 bg-slate-50 text-black rounded-2xl group-hover:scale-110 transition-transform">
                                                                 <TrendingUp size={24} />
                                                             </div>
-                                                            <span className="text-xs font-black text-orange-600 bg-orange-50 px-2 py-1 rounded-lg">Daily Pulse</span>
+                                                            <span className="text-xs font-black text-black bg-slate-50 px-2 py-1 rounded-lg">Daily Pulse</span>
                                                         </div>
                                                         <div>
                                                             <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Today's Consumption</p>
@@ -1341,7 +1342,7 @@ export const Admin: React.FC = () => {
                                                                     <span className="text-[10px] font-black text-slate-600 uppercase">Revenue</span>
                                                                 </div>
                                                                 <div className="flex items-center gap-2 px-3 py-1 bg-white rounded-xl shadow-sm border border-slate-100">
-                                                                    <div className="w-2.5 h-2.5 bg-orange-500 rounded-full" />
+                                                                    <div className="w-2.5 h-2.5 bg-slate-500 rounded-full" />
                                                                     <span className="text-[10px] font-black text-slate-600 uppercase">Usage</span>
                                                                 </div>
                                                             </div>
@@ -1450,7 +1451,7 @@ export const Admin: React.FC = () => {
                                                                                     <div className="flex flex-col items-end">
                                                                                         <span className="font-black text-slate-900">{u.totalSpent?.toLocaleString()} <span className="text-slate-400 text-[10px]">pts</span></span>
                                                                                         <div className="w-24 h-1 bg-slate-100 rounded-full mt-1.5 overflow-hidden">
-                                                                                            <div className="h-full bg-orange-500" style={{ width: `${(u.totalSpent / (analytics.topConsumers[0]?.totalSpent || 1)) * 100}%` }} />
+                                                                                            <div className="h-full bg-slate-500" style={{ width: `${(u.totalSpent / (analytics.topConsumers[0]?.totalSpent || 1)) * 100}%` }} />
                                                                                         </div>
                                                                                     </div>
                                                                                 </td>
@@ -1467,8 +1468,8 @@ export const Admin: React.FC = () => {
                                                         <div className="p-8 border-b border-slate-50 bg-slate-50/30 flex items-center justify-between">
                                                             <h2 className="text-xl font-black text-slate-900 tracking-tight">System Activity Pulse</h2>
                                                             <span className="flex h-2 w-2 relative">
-                                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-                                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+                                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-black-400 opacity-75"></span>
+                                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-slate-500"></span>
                                                             </span>
                                                         </div>
                                                         <div className="p-4 flex-1 overflow-y-auto custom-scrollbar">
@@ -1476,7 +1477,7 @@ export const Admin: React.FC = () => {
                                                                 {analytics.recentActivity?.map((act: any, i: number) => (
                                                                     <div key={i} className="group p-4 bg-white hover:bg-slate-50 rounded-2xl border border-slate-100/50 transition-all flex items-start gap-4">
                                                                         <div className={`p-3 rounded-xl shrink-0 ${act.type === 'post' ? 'bg-blue-50 text-blue-600' :
-                                                                            act.type === 'comment' ? 'bg-orange-50 text-orange-600' : 'bg-purple-50 text-purple-600'
+                                                                            act.type === 'comment' ? 'bg-slate-50 text-black' : 'bg-purple-50 text-purple-600'
                                                                             }`}>
                                                                             {act.type === 'post' ? <FileText size={18} /> :
                                                                                 act.type === 'comment' ? <MessageSquare size={18} /> : <Image size={18} />}
@@ -1489,7 +1490,7 @@ export const Admin: React.FC = () => {
                                                                                 </span>
                                                                             </div>
                                                                             <p className="text-[11px] font-bold text-slate-500">
-                                                                                Generated a <span className="text-slate-900">{act.type}</span> costing <span className="text-orange-600">-{act.cost} credits</span>
+                                                                                Generated a <span className="text-slate-900">{act.type}</span> costing <span className="text-black">-{act.cost} credits</span>
                                                                             </p>
                                                                         </div>
                                                                         <ChevronRight size={14} className="text-slate-200 group-hover:text-slate-400 self-center" />
@@ -1524,10 +1525,10 @@ export const Admin: React.FC = () => {
                                             </div>
                                             <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200/60 shadow-sm flex flex-col justify-between group hover:shadow-xl transition-all duration-500">
                                                 <div className="flex items-center justify-between mb-4">
-                                                    <div className="p-3 bg-orange-50 text-orange-600 rounded-2xl group-hover:scale-110 transition-transform">
+                                                    <div className="p-3 bg-slate-50 text-black rounded-2xl group-hover:scale-110 transition-transform">
                                                         <AlertCircle size={24} />
                                                     </div>
-                                                    <span className="text-xs font-black text-orange-600 bg-orange-50 px-2 py-1 rounded-lg">Top Reason</span>
+                                                    <span className="text-xs font-black text-black bg-slate-50 px-2 py-1 rounded-lg">Top Reason</span>
                                                 </div>
                                                 <div>
                                                     <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Critical Insight</p>
@@ -1544,10 +1545,10 @@ export const Admin: React.FC = () => {
                                                             <div className="mt-2 w-full">
                                                                 <div className="flex items-end justify-between mb-2">
                                                                     <p className="text-lg font-black text-slate-900 leading-tight truncate mr-3" title={top}>{top}</p>
-                                                                    <span className="text-sm font-bold text-orange-600">{percentage}%</span>
+                                                                    <span className="text-sm font-bold text-black">{percentage}%</span>
                                                                 </div>
                                                                 <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                                                                    <div className="h-full bg-orange-500 rounded-full" style={{ width: `${percentage}%` }}></div>
+                                                                    <div className="h-full bg-slate-500 rounded-full" style={{ width: `${percentage}%` }}></div>
                                                                 </div>
                                                             </div>
                                                         );
@@ -1596,13 +1597,13 @@ export const Admin: React.FC = () => {
                                                                             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest truncate">{fb.userEmail}</p>
                                                                         </div>
                                                                     </div>
-                                                                    <span className="shrink-0 text-[10px] font-black px-3 py-1 bg-white border border-slate-200 text-slate-500 rounded-lg group-hover:border-orange-200 group-hover:text-orange-600 transition-colors">
+                                                                    <span className="shrink-0 text-[10px] font-black px-3 py-1 bg-white border border-slate-200 text-slate-500 rounded-lg group-hover:border-black group-hover:text-black transition-colors">
                                                                         {new Date(fb.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                                                                     </span>
                                                                 </div>
                                                                 <div className="p-5 bg-white rounded-2xl border border-slate-100/60 shadow-sm space-y-2">
                                                                     <div className="flex items-center gap-2">
-                                                                        <div className="w-1.5 h-1.5 bg-orange-500 rounded-full" />
+                                                                        <div className="w-1.5 h-1.5 bg-slate-500 rounded-full" />
                                                                         <p className="text-xs font-black text-slate-900 tracking-tight uppercase">Reason: {fb.reason}</p>
                                                                     </div>
                                                                     {fb.comment && (
@@ -1626,7 +1627,7 @@ export const Admin: React.FC = () => {
                         {activeTab === 'users' && (
                             <div className="bg-white rounded-[2.5rem] border border-slate-200/60 shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
                                 <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-                                    <div className="flex items-center gap-4 bg-slate-50 px-4 py-2 rounded-xl border border-slate-200/50 w-full max-w-md focus-within:ring-2 focus-within:ring-orange-100 transition-all">
+                                    <div className="flex items-center gap-4 bg-slate-50 px-4 py-2 rounded-xl border border-slate-200/50 w-full max-w-md focus-within:ring-2 focus-within:ring-black-100 transition-all">
                                         <Search size={18} className="text-slate-400" />
                                         <input
                                             type="text"
@@ -1642,7 +1643,7 @@ export const Admin: React.FC = () => {
                                             <select
                                                 value={filterStatus}
                                                 onChange={(e) => setFilterStatus(e.target.value)}
-                                                className="appearance-none bg-slate-50 border-none text-slate-600 text-sm font-bold rounded-xl focus:ring-2 focus:ring-orange-100 outline-none pl-3 pr-8 py-2 cursor-pointer hover:bg-slate-100 transition-colors"
+                                                className="appearance-none bg-slate-50 border-none text-slate-600 text-sm font-bold rounded-xl focus:ring-2 focus:ring-black-100 outline-none pl-3 pr-8 py-2 cursor-pointer hover:bg-slate-100 transition-colors"
                                             >
                                                 <option value="all">All Status</option>
                                                 <option value="Active">Active</option>
@@ -1659,7 +1660,7 @@ export const Admin: React.FC = () => {
                                             <select
                                                 value={filterPlan}
                                                 onChange={(e) => setFilterPlan(e.target.value)}
-                                                className="appearance-none bg-slate-50 border-none text-slate-600 text-sm font-bold rounded-xl focus:ring-2 focus:ring-orange-100 outline-none pl-3 pr-8 py-2 cursor-pointer hover:bg-slate-100 transition-colors"
+                                                className="appearance-none bg-slate-50 border-none text-slate-600 text-sm font-bold rounded-xl focus:ring-2 focus:ring-black-100 outline-none pl-3 pr-8 py-2 cursor-pointer hover:bg-slate-100 transition-colors"
                                             >
                                                 <option value="all">All Plans</option>
                                                 {plans.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
@@ -1753,7 +1754,7 @@ export const Admin: React.FC = () => {
                                                                     });
                                                                     setIsEditModalOpen(true);
                                                                 }}
-                                                                className="p-2 bg-white border border-slate-200 rounded-lg hover:text-orange-600 hover:border-orange-200 transition-all shadow-sm"
+                                                                className="p-2 bg-white border border-slate-200 rounded-lg hover:text-black hover:border-black transition-all shadow-sm"
                                                             >
                                                                 <Edit2 size={14} />
                                                             </button>
@@ -1786,7 +1787,7 @@ export const Admin: React.FC = () => {
                                             setAnnForm({ title: '', content: '', type: 'update', targetPlan: 'all', isActive: true, imageUrl: '' });
                                             setIsAnnModalOpen(true);
                                         }}
-                                        className="px-6 py-3 bg-slate-900 text-white rounded-2xl font-bold shadow-xl hover:bg-orange-600 transition-all active:scale-95 flex items-center gap-2"
+                                        className="px-6 py-3 bg-slate-900 text-white rounded-2xl font-bold shadow-xl hover:bg-black transition-all active:scale-95 flex items-center gap-2"
                                     >
                                         <Zap size={18} />
                                         Create Announcement
@@ -1838,7 +1839,7 @@ export const Admin: React.FC = () => {
                                                                 <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                                     <button
                                                                         onClick={() => fetchAnnStats(ann.id)}
-                                                                        className="p-2 bg-white border border-slate-200 rounded-lg hover:text-orange-600 hover:border-orange-200 transition-all shadow-sm"
+                                                                        className="p-2 bg-white border border-slate-200 rounded-lg hover:text-black hover:border-black transition-all shadow-sm"
                                                                         title="View Stats"
                                                                     >
                                                                         <BarChart2 size={14} />
@@ -1877,7 +1878,7 @@ export const Admin: React.FC = () => {
                                 <div className="relative bg-white rounded-[2.5rem] shadow-2xl border border-slate-200 w-full max-w-2xl flex flex-col max-h-[92vh] animate-in zoom-in-95 duration-200">
                                     <div className="p-6 border-b border-slate-100 flex items-center justify-between flex-shrink-0">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center text-orange-600">
+                                            <div className="w-10 h-10 bg-black-100 rounded-xl flex items-center justify-center text-black">
                                                 <BarChart2 size={20} />
                                             </div>
                                             <div>
@@ -1890,7 +1891,7 @@ export const Admin: React.FC = () => {
                                     <div className="overflow-y-auto custom-scrollbar p-8">
                                         {isAnnStatsLoading ? (
                                             <div className="py-20 flex flex-col items-center justify-center gap-4">
-                                                <RefreshCw size={32} className="animate-spin text-orange-600" />
+                                                <RefreshCw size={32} className="animate-spin text-black" />
                                                 <p className="text-sm font-bold text-slate-400">Calculating reach stats...</p>
                                             </div>
                                         ) : annStats ? (
@@ -1910,7 +1911,7 @@ export const Admin: React.FC = () => {
                                                         <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Acknowledged</p>
                                                     </div>
                                                     <div className="bg-white border border-slate-100 p-5 rounded-3xl shadow-sm text-center">
-                                                        <p className="text-2xl font-black text-orange-600">{annStats.remainingCount}</p>
+                                                        <p className="text-2xl font-black text-black">{annStats.remainingCount}</p>
                                                         <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Remaining</p>
                                                     </div>
                                                 </div>
@@ -1931,7 +1932,7 @@ export const Admin: React.FC = () => {
                                                                     </div>
                                                                     <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
                                                                         <div
-                                                                            className="h-full bg-orange-600 rounded-full transition-all duration-1000"
+                                                                            className="h-full bg-black rounded-full transition-all duration-1000"
                                                                             style={{ width: `${pct}%` }}
                                                                         />
                                                                     </div>
@@ -1946,7 +1947,7 @@ export const Admin: React.FC = () => {
                                         )}
                                     </div>
                                     <div className="p-6 border-t border-slate-100 flex justify-end">
-                                        <button onClick={() => setIsAnnStatsModalOpen(false)} className="px-6 py-3 bg-slate-900 text-white rounded-2xl font-bold shadow-lg shadow-slate-200 hover:bg-orange-600 transition-all active:scale-95">Close Insights</button>
+                                        <button onClick={() => setIsAnnStatsModalOpen(false)} className="px-6 py-3 bg-slate-900 text-white rounded-2xl font-bold shadow-lg shadow-slate-200 hover:bg-black transition-all active:scale-95">Close Insights</button>
                                     </div>
                                 </div>
                             </div>
@@ -1967,7 +1968,7 @@ export const Admin: React.FC = () => {
                                                 <label className="text-xs font-black uppercase tracking-widest text-slate-400">Title</label>
                                                 <input
                                                     type="text"
-                                                    className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-orange-500 font-bold"
+                                                    className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-black-500 font-bold"
                                                     value={annForm.title}
                                                     onChange={e => setAnnForm({ ...annForm, title: e.target.value })}
                                                     placeholder="e.g. Major Update Released!"
@@ -1976,7 +1977,7 @@ export const Admin: React.FC = () => {
                                             <div className="space-y-2">
                                                 <label className="text-xs font-black uppercase tracking-widest text-slate-400">Type</label>
                                                 <select
-                                                    className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-orange-500 font-bold"
+                                                    className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-black-500 font-bold"
                                                     value={annForm.type}
                                                     onChange={e => setAnnForm({ ...annForm, type: e.target.value as any })}
                                                 >
@@ -1992,7 +1993,7 @@ export const Admin: React.FC = () => {
                                             <div className="space-y-2">
                                                 <label className="text-xs font-black uppercase tracking-widest text-slate-400">Target Plan</label>
                                                 <select
-                                                    className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-orange-500 font-bold"
+                                                    className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-black-500 font-bold"
                                                     value={annForm.targetPlan}
                                                     onChange={e => setAnnForm({ ...annForm, targetPlan: e.target.value })}
                                                 >
@@ -2007,7 +2008,7 @@ export const Admin: React.FC = () => {
                                                 <div className="flex gap-2 min-w-0">
                                                     <input
                                                         type="text"
-                                                        className="flex-1 min-w-0 p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-orange-500 font-medium text-sm"
+                                                        className="flex-1 min-w-0 p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-black-500 font-medium text-sm"
                                                         placeholder="URL or Upload →"
                                                         value={annForm.imageUrl}
                                                         onChange={e => setAnnForm({ ...annForm, imageUrl: e.target.value })}
@@ -2024,7 +2025,7 @@ export const Admin: React.FC = () => {
                                                         className={`w-14 h-14 rounded-2xl border border-slate-200 flex items-center justify-center cursor-pointer transition-all hover:bg-slate-50 active:scale-95 ${isImageUploading ? 'bg-slate-100 pointer-events-none' : 'bg-white'}`}
                                                         title="Upload locally"
                                                     >
-                                                        {isImageUploading ? <RefreshCw size={20} className="animate-spin text-orange-600" /> : <Image size={20} className="text-slate-400" />}
+                                                        {isImageUploading ? <RefreshCw size={20} className="animate-spin text-black" /> : <Image size={20} className="text-slate-400" />}
                                                     </label>
                                                 </div>
                                                 {annForm.imageUrl && (
@@ -2044,7 +2045,7 @@ export const Admin: React.FC = () => {
                                         <div className="space-y-2">
                                             <label className="text-xs font-black uppercase tracking-widest text-slate-400">Content (HTML Supported)</label>
                                             <textarea
-                                                className="w-full h-40 p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-orange-500 font-medium resize-none"
+                                                className="w-full h-40 p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-black-500 font-medium resize-none"
                                                 placeholder="Write your announcement message here..."
                                                 value={annForm.content}
                                                 onChange={e => setAnnForm({ ...annForm, content: e.target.value })}
@@ -2068,7 +2069,7 @@ export const Admin: React.FC = () => {
                                             <button
                                                 onClick={handleSaveAnnouncement}
                                                 disabled={isAnnSaving}
-                                                className="w-full py-4 bg-slate-900 text-white rounded-[2rem] font-bold shadow-xl hover:bg-orange-600 transition-all active:scale-95 flex items-center justify-center gap-2"
+                                                className="w-full py-4 bg-slate-900 text-white rounded-[2rem] font-bold shadow-xl hover:bg-black transition-all active:scale-95 flex items-center justify-center gap-2"
                                             >
                                                 {isAnnSaving ? <RefreshCw size={20} className="animate-spin" /> : <Save size={20} />}
                                                 {isAnnSaving ? 'Saving...' : 'Save Announcement'}
@@ -2099,11 +2100,11 @@ export const Admin: React.FC = () => {
                                         Payments
                                     </button>
                                     <button
-                                        onClick={() => setSettingsTab('reddit')}
-                                        className={`flex-shrink-0 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${settingsTab === 'reddit' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                        onClick={() => setSettingsTab('x')}
+                                        className={`flex-shrink-0 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center gap-2 ${settingsTab === 'x' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                                     >
                                         <Globe size={18} />
-                                        Reddit API
+                                        X API
                                     </button>
                                     <button
                                         onClick={() => setSettingsTab('plans')}
@@ -2372,7 +2373,7 @@ export const Admin: React.FC = () => {
                                                                     </div>
                                                                     <button
                                                                         onClick={() => setStripeSettings({ ...stripeSettings, isSandbox: !stripeSettings.isSandbox })}
-                                                                        className={`w-14 h-8 rounded-full p-1 transition-colors duration-300 relative ${stripeSettings.isSandbox ? 'bg-orange-600' : 'bg-slate-300'}`}
+                                                                        className={`w-14 h-8 rounded-full p-1 transition-colors duration-300 relative ${stripeSettings.isSandbox ? 'bg-black' : 'bg-slate-300'}`}
                                                                     >
                                                                         <div className={`w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-300 ${stripeSettings.isSandbox ? 'translate-x-6' : 'translate-x-0'}`}></div>
                                                                     </button>
@@ -2458,7 +2459,7 @@ export const Admin: React.FC = () => {
                                                                     </div>
                                                                     <button
                                                                         onClick={() => setPaypalSettings({ ...paypalSettings, isSandbox: !paypalSettings.isSandbox })}
-                                                                        className={`w-14 h-8 rounded-full p-1 transition-colors duration-300 relative ${paypalSettings.isSandbox ? 'bg-orange-600' : 'bg-slate-300'}`}
+                                                                        className={`w-14 h-8 rounded-full p-1 transition-colors duration-300 relative ${paypalSettings.isSandbox ? 'bg-black' : 'bg-slate-300'}`}
                                                                     >
                                                                         <div className={`w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-300 ${paypalSettings.isSandbox ? 'translate-x-6' : 'translate-x-0'}`}></div>
                                                                     </button>
@@ -2584,15 +2585,15 @@ export const Admin: React.FC = () => {
                                         )
                                     }
 
-                                    {settingsTab === 'reddit' && (
+                                    {settingsTab === 'x' && (
                                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                                             <div className="space-y-6">
                                                 <div className="flex items-center gap-4 border-b border-slate-100 pb-6 mb-2">
-                                                    <div className="w-12 h-12 bg-orange-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-orange-100">
+                                                    <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white shadow-lg shadow-slate-100">
                                                         <Globe size={24} />
                                                     </div>
                                                     <div>
-                                                        <h2 className="text-xl font-bold text-slate-900">Reddit API Configuration</h2>
+                                                        <h2 className="text-xl font-bold text-slate-900">X API Configuration</h2>
                                                         <p className="text-slate-400 text-sm">Set up your application credentials.</p>
                                                     </div>
                                                 </div>
@@ -2602,9 +2603,9 @@ export const Admin: React.FC = () => {
                                                         <span className="text-sm font-bold text-slate-700 mb-2 block">Client ID</span>
                                                         <input
                                                             type="text"
-                                                            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-orange-50 focus:border-orange-500 focus:outline-none transition-all font-mono text-sm"
-                                                            value={redditSettings.clientId}
-                                                            onChange={(e) => setRedditSettings({ ...redditSettings, clientId: e.target.value })}
+                                                            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-black-50 focus:border-black-500 focus:outline-none transition-all font-mono text-sm"
+                                                            value={xSettings.clientId}
+                                                            onChange={(e) => setxSettings({ ...xSettings, clientId: e.target.value })}
                                                             placeholder="e.g. -XyZ123abc..."
                                                         />
                                                     </label>
@@ -2612,9 +2613,9 @@ export const Admin: React.FC = () => {
                                                         <span className="text-sm font-bold text-slate-700 mb-2 block">Client Secret</span>
                                                         <input
                                                             type="password"
-                                                            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-orange-50 focus:border-orange-500 focus:outline-none transition-all font-mono text-sm"
-                                                            value={redditSettings.clientSecret}
-                                                            onChange={(e) => setRedditSettings({ ...redditSettings, clientSecret: e.target.value })}
+                                                            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-black-50 focus:border-black-500 focus:outline-none transition-all font-mono text-sm"
+                                                            value={xSettings.clientSecret}
+                                                            onChange={(e) => setxSettings({ ...xSettings, clientSecret: e.target.value })}
                                                         />
                                                     </label>
                                                     <label className="block">
@@ -2623,13 +2624,13 @@ export const Admin: React.FC = () => {
                                                             <input
                                                                 type="text"
                                                                 className="w-full p-4 bg-slate-100 border border-slate-200 rounded-2xl font-mono text-sm text-slate-500 cursor-not-allowed"
-                                                                value={`${window.location.origin}/auth/reddit/callback`}
+                                                                value={`${window.location.origin}/auth/X/callback`}
                                                                 readOnly
                                                             />
                                                             <button
                                                                 type="button"
-                                                                onClick={() => navigator.clipboard.writeText(`${window.location.origin}/auth/reddit/callback`)}
-                                                                className="bg-white border border-slate-200 p-4 rounded-2xl hover:text-orange-600 hover:border-orange-200 transition-colors"
+                                                                onClick={() => navigator.clipboard.writeText(`${window.location.origin}/auth/X/callback`)}
+                                                                className="bg-white border border-slate-200 p-4 rounded-2xl hover:text-black hover:border-black transition-colors"
                                                                 title="Copy"
                                                             >
                                                                 <Copy size={20} />
@@ -2640,15 +2641,15 @@ export const Admin: React.FC = () => {
                                                         <span className="text-sm font-bold text-slate-700 mb-2 block">User Agent</span>
                                                         <input
                                                             type="text"
-                                                            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-orange-50 focus:border-orange-500 focus:outline-none transition-all font-mono text-sm"
-                                                            value={redditSettings.userAgent}
-                                                            onChange={(e) => setRedditSettings({ ...redditSettings, userAgent: e.target.value })}
+                                                            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-black-50 focus:border-black-500 focus:outline-none transition-all font-mono text-sm"
+                                                            value={xSettings.userAgent}
+                                                            onChange={(e) => setxSettings({ ...xSettings, userAgent: e.target.value })}
                                                         />
                                                     </label>
 
                                                     <div className="pt-6 mt-6 border-t border-slate-100 space-y-4">
                                                         <div className="flex items-center gap-2 mb-2">
-                                                            <Shield size={18} className="text-orange-600" />
+                                                            <Shield size={18} className="text-black" />
                                                             <h3 className="text-sm font-bold text-slate-900">Safety & Anti-Spam</h3>
                                                         </div>
 
@@ -2657,49 +2658,49 @@ export const Admin: React.FC = () => {
                                                                 <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 block">Min Delay (sec)</span>
                                                                 <input
                                                                     type="number"
-                                                                    className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-orange-50 focus:border-orange-500 focus:outline-none transition-all font-mono text-sm"
-                                                                    value={redditSettings.minDelay || 5}
-                                                                    onChange={(e) => setRedditSettings({ ...redditSettings, minDelay: parseInt(e.target.value) })}
+                                                                    className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-black-50 focus:border-black-500 focus:outline-none transition-all font-mono text-sm"
+                                                                    value={xSettings.minDelay || 5}
+                                                                    onChange={(e) => setxSettings({ ...xSettings, minDelay: parseInt(e.target.value) })}
                                                                 />
                                                             </label>
                                                             <label className="block">
                                                                 <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 block">Max Delay (sec)</span>
                                                                 <input
                                                                     type="number"
-                                                                    className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-orange-50 focus:border-orange-500 focus:outline-none transition-all font-mono text-sm"
-                                                                    value={redditSettings.maxDelay || 15}
-                                                                    onChange={(e) => setRedditSettings({ ...redditSettings, maxDelay: parseInt(e.target.value) })}
+                                                                    className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-black-50 focus:border-black-500 focus:outline-none transition-all font-mono text-sm"
+                                                                    value={xSettings.maxDelay || 15}
+                                                                    onChange={(e) => setxSettings({ ...xSettings, maxDelay: parseInt(e.target.value) })}
                                                                 />
                                                             </label>
                                                         </div>
 
-                                                        <div className="flex items-center justify-between p-4 bg-orange-50/50 rounded-2xl border border-orange-100">
+                                                        <div className="flex items-center justify-between p-4 bg-slate-50/50 rounded-2xl border border-black-100">
                                                             <div>
                                                                 <p className="text-xs font-bold text-slate-900">Anti-Spam Guard</p>
                                                                 <p className="text-[10px] text-slate-500">Prevent double-replying to the same post</p>
                                                             </div>
                                                             <button
                                                                 type="button"
-                                                                onClick={() => setRedditSettings({ ...redditSettings, antiSpam: !redditSettings.antiSpam })}
-                                                                className={`w-12 h-6 rounded-full p-1 transition-colors ${redditSettings.antiSpam ? 'bg-orange-600' : 'bg-slate-300'}`}
+                                                                onClick={() => setxSettings({ ...xSettings, antiSpam: !xSettings.antiSpam })}
+                                                                className={`w-12 h-6 rounded-full p-1 transition-colors ${xSettings.antiSpam ? 'bg-black' : 'bg-slate-300'}`}
                                                             >
-                                                                <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${redditSettings.antiSpam ? 'translate-x-6' : 'translate-x-0'}`} />
+                                                                <div className={`w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${xSettings.antiSpam ? 'translate-x-6' : 'translate-x-0'}`} />
                                                             </button>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <button
                                                     type="button"
-                                                    onClick={handleSaveRedditSettings}
-                                                    className="w-full py-4 bg-slate-900 text-white rounded-[2rem] font-bold shadow-xl hover:bg-orange-600 hover:shadow-orange-200 transition-all active:scale-95 flex items-center justify-center gap-2"
+                                                    onClick={handleSavexSettings}
+                                                    className="w-full py-4 bg-slate-900 text-white rounded-[2rem] font-bold shadow-xl hover:bg-black hover:shadow-slate-200 transition-all active:scale-95 flex items-center justify-center gap-2"
                                                 >
                                                     <Save size={20} />
-                                                    <span>Save Reddit Configuration</span>
+                                                    <span>Save X Configuration</span>
                                                 </button>
                                             </div>
-                                            <div className="bg-orange-50/50 p-8 rounded-[2rem] border border-orange-100 flex items-center justify-center">
+                                            <div className="bg-slate-50/50 p-8 rounded-[2rem] border border-black-100 flex items-center justify-center">
                                                 <div className="text-center space-y-4">
-                                                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto shadow-sm text-orange-600">
+                                                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto shadow-sm text-black">
                                                         <Globe size={32} />
                                                     </div>
                                                     <h3 className="font-bold text-slate-900">API Policy</h3>
@@ -2754,7 +2755,7 @@ export const Admin: React.FC = () => {
                                                                 <div className="flex items-center gap-2 mb-1">
                                                                     <h3 className="text-lg font-bold text-slate-900">{plan.name}</h3>
                                                                     {plan.isPopular && (
-                                                                        <span className="bg-orange-100 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">Popular</span>
+                                                                        <span className="bg-black-100 text-black text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">Popular</span>
                                                                     )}
                                                                 </div>
                                                                 <div className="text-slate-500 font-mono text-xs uppercase tracking-wider">{plan.id}</div>
@@ -2812,7 +2813,7 @@ export const Admin: React.FC = () => {
                                     {settingsTab === 'security' && (
                                         <div className="max-w-2xl">
                                             <div className="flex items-center gap-4 mb-8">
-                                                <div className="w-12 h-12 bg-orange-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-orange-200">
+                                                <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white shadow-lg shadow-slate-200">
                                                     <Shield size={24} />
                                                 </div>
                                                 <div>
@@ -2827,7 +2828,7 @@ export const Admin: React.FC = () => {
                                                         <label className="text-sm font-bold text-slate-700 ml-1">Current Password</label>
                                                         <input
                                                             type="password"
-                                                            className="w-full p-4 bg-white border border-slate-200 rounded-2xl focus:ring-4 focus:ring-orange-50 focus:border-orange-500 focus:outline-none transition-all placeholder:text-slate-300"
+                                                            className="w-full p-4 bg-white border border-slate-200 rounded-2xl focus:ring-4 focus:ring-black-50 focus:border-black-500 focus:outline-none transition-all placeholder:text-slate-300"
                                                             placeholder="••••••••"
                                                             value={passwordData.currentPassword}
                                                             onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
@@ -2838,7 +2839,7 @@ export const Admin: React.FC = () => {
                                                             <label className="text-sm font-bold text-slate-700 ml-1">New Password</label>
                                                             <input
                                                                 type="password"
-                                                                className="w-full p-4 bg-white border border-slate-200 rounded-2xl focus:ring-4 focus:ring-orange-50 focus:border-orange-500 focus:outline-none transition-all placeholder:text-slate-300"
+                                                                className="w-full p-4 bg-white border border-slate-200 rounded-2xl focus:ring-4 focus:ring-black-50 focus:border-black-500 focus:outline-none transition-all placeholder:text-slate-300"
                                                                 placeholder="••••••••"
                                                                 value={passwordData.newPassword}
                                                                 onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
@@ -2848,7 +2849,7 @@ export const Admin: React.FC = () => {
                                                             <label className="text-sm font-bold text-slate-700 ml-1">Confirm New Password</label>
                                                             <input
                                                                 type="password"
-                                                                className="w-full p-4 bg-white border border-slate-200 rounded-2xl focus:ring-4 focus:ring-orange-50 focus:border-orange-500 focus:outline-none transition-all placeholder:text-slate-300"
+                                                                className="w-full p-4 bg-white border border-slate-200 rounded-2xl focus:ring-4 focus:ring-black-50 focus:border-black-500 focus:outline-none transition-all placeholder:text-slate-300"
                                                                 placeholder="••••••••"
                                                                 value={passwordData.confirmPassword}
                                                                 onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
@@ -2867,7 +2868,7 @@ export const Admin: React.FC = () => {
                                                 <button
                                                     onClick={handlePasswordChange}
                                                     disabled={isPasswordSaving || !passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword}
-                                                    className="w-full py-4 bg-slate-900 text-white rounded-[2rem] font-bold shadow-xl hover:bg-orange-600 hover:shadow-orange-200 transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:active:scale-100"
+                                                    className="w-full py-4 bg-slate-900 text-white rounded-[2rem] font-bold shadow-xl hover:bg-black hover:shadow-slate-200 transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:active:scale-100"
                                                 >
                                                     {isPasswordSaving ? <RefreshCw size={20} className="animate-spin" /> : <Save size={20} />}
                                                     Update Password
@@ -3121,7 +3122,7 @@ export const Admin: React.FC = () => {
                                     ) : (
                                         systemLogs.map((log) => {
                                             let colorClass = 'text-slate-300';
-                                            if (log.level === 'WARN') colorClass = 'text-orange-400';
+                                            if (log.level === 'WARN') colorClass = 'text-black-400';
                                             if (log.level === 'ERROR') colorClass = 'text-red-400 font-bold';
                                             if (log.level === 'SUCCESS') colorClass = 'text-emerald-400 font-bold';
 
@@ -3200,7 +3201,7 @@ export const Admin: React.FC = () => {
                                     {/* Header */}
                                     <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between flex-shrink-0">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-14 h-14 rounded-2xl overflow-hidden bg-gradient-to-br from-orange-400 to-rose-500 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-orange-500/20 flex-shrink-0 border-4 border-white">
+                                            <div className="w-14 h-14 rounded-2xl overflow-hidden bg-gradient-to-br from-black-400 to-rose-500 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-slate-500/20 flex-shrink-0 border-4 border-white">
                                                 {detailUser.avatar ? (
                                                     <img src={detailUser.avatar} alt={detailUser.name} className="w-full h-full object-cover" />
                                                 ) : (
@@ -3227,14 +3228,14 @@ export const Admin: React.FC = () => {
                                                 </div>
                                             )}
                                             {detailUser.isSuspended && (
-                                                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-50 border border-orange-100 rounded-lg text-orange-600">
+                                                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 border border-black-100 rounded-lg text-black">
                                                     <Shield size={12} />
                                                     <span className="text-[10px] font-black uppercase tracking-widest">Suspended</span>
                                                 </div>
                                             )}
                                             <button
                                                 onClick={() => fetchDetailUser(detailUser.id, true)}
-                                                className={`p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-400 hover:text-slate-700 ${detailRefreshing ? 'animate-spin text-orange-500' : ''}`}
+                                                className={`p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-400 hover:text-slate-700 ${detailRefreshing ? 'animate-spin text-black' : ''}`}
                                                 title="Refresh now"
                                             >
                                                 <RefreshCw size={16} />
@@ -3283,7 +3284,7 @@ export const Admin: React.FC = () => {
                                                         <button
                                                             onClick={() => handleRestoreUser(detailUser.id || detailUser._id)}
                                                             disabled={isRestoringDetail}
-                                                            className="px-6 py-3.5 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-orange-600 transition-all shadow-xl shadow-slate-200 active:scale-95 flex items-center gap-2 disabled:opacity-50"
+                                                            className="px-6 py-3.5 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-slate-200 active:scale-95 flex items-center gap-2 disabled:opacity-50"
                                                         >
                                                             {isRestoringDetail ? <RefreshCw className="animate-spin" size={12} /> : <RefreshCw size={12} />}
                                                             {isRestoringDetail ? 'Processing...' : 'Cancel Deletion'}
@@ -3295,7 +3296,7 @@ export const Admin: React.FC = () => {
                                             {/* Overview Stats */}
                                             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                                 {[
-                                                    { label: 'Balance', value: `${detailUser.credits ?? 0} pts`, color: 'text-orange-600', bg: 'bg-orange-50', icon: <Zap size={14} className="text-orange-500" /> },
+                                                    { label: 'Balance', value: `${detailUser.credits ?? 0} pts`, color: 'text-black', bg: 'bg-slate-50', icon: <Zap size={14} className="text-black" /> },
                                                     { label: 'Plan', value: detailUser.plan || '—', color: 'text-blue-600', bg: 'bg-blue-50', icon: <CreditCard size={14} className="text-blue-500" /> },
                                                     { label: 'Total Spent', value: `${detailUser.usageStats?.totalSpent ?? 0} pts`, color: 'text-rose-600', bg: 'bg-rose-50', icon: <BarChart2 size={14} className="text-rose-500" /> },
                                                     { label: 'Avg / Day', value: `${detailUser.avgPerDay ?? 0} pts`, color: 'text-violet-600', bg: 'bg-violet-50', icon: <Activity size={14} className="text-violet-500" /> },
@@ -3415,7 +3416,7 @@ export const Admin: React.FC = () => {
                                                     <label className="text-xs font-black uppercase tracking-widest text-slate-400">Full Name</label>
                                                     <input
                                                         type="text"
-                                                        className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-orange-500 transition-all font-bold text-slate-700"
+                                                        className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-black-500 transition-all font-bold text-slate-700"
                                                         value={editForm.name}
                                                         onChange={e => setEditForm({ ...editForm, name: e.target.value })}
                                                         required
@@ -3425,7 +3426,7 @@ export const Admin: React.FC = () => {
                                                     <label className="text-xs font-black uppercase tracking-widest text-slate-400">Email Address</label>
                                                     <input
                                                         type="email"
-                                                        className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-orange-500 transition-all font-bold text-slate-700"
+                                                        className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-black-500 transition-all font-bold text-slate-700"
                                                         value={editForm.email}
                                                         onChange={e => setEditForm({ ...editForm, email: e.target.value })}
                                                         required
@@ -3437,7 +3438,7 @@ export const Admin: React.FC = () => {
                                                 <div className="space-y-2">
                                                     <label className="text-xs font-black uppercase tracking-widest text-slate-400">User Role</label>
                                                     <select
-                                                        className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-orange-500 transition-all font-bold text-slate-700"
+                                                        className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-black-500 transition-all font-bold text-slate-700"
                                                         value={editForm.role}
                                                         onChange={e => setEditForm({ ...editForm, role: e.target.value })}
                                                     >
@@ -3448,7 +3449,7 @@ export const Admin: React.FC = () => {
                                                 <div className="space-y-2">
                                                     <label className="text-xs font-black uppercase tracking-widest text-slate-400">Account Plan</label>
                                                     <select
-                                                        className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-orange-500 transition-all font-bold text-slate-700"
+                                                        className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-black-500 transition-all font-bold text-slate-700"
                                                         value={editForm.plan}
                                                         onChange={e => {
                                                             const newPlan = plans.find(p => p.name === e.target.value);
@@ -3467,10 +3468,10 @@ export const Admin: React.FC = () => {
                                                 {/* Current Balance Card */}
                                                 <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl">
                                                     <div className="flex items-center gap-2">
-                                                        <Zap size={15} className="text-orange-400 shrink-0" />
+                                                        <Zap size={15} className="text-black-400 shrink-0" />
                                                         <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Balance</span>
                                                     </div>
-                                                    <span className="text-xl font-black text-orange-600">
+                                                    <span className="text-xl font-black text-black">
                                                         {editForm.credits + (editForm.extraCreditsToAdd || 0)} pts
                                                     </span>
                                                 </div>
@@ -3511,11 +3512,11 @@ export const Admin: React.FC = () => {
                                             <div className="space-y-2">
                                                 <label className="text-xs font-black uppercase tracking-widest text-slate-400">Custom Daily Limit (Points)</label>
                                                 <div className="relative">
-                                                    <Zap size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-400" />
+                                                    <Zap size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-black-400" />
                                                     <input
                                                         type="number"
                                                         min="0"
-                                                        className="w-full pl-11 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-orange-500 transition-all font-bold text-slate-700"
+                                                        className="w-full pl-11 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-black-500 transition-all font-bold text-slate-700"
                                                         value={editForm.customDailyLimit || 0}
                                                         onChange={e => setEditForm({ ...editForm, customDailyLimit: parseInt(e.target.value) || 0 })}
                                                         placeholder="0 = Use plan default"
@@ -3528,7 +3529,7 @@ export const Admin: React.FC = () => {
                                                 <label className="text-xs font-black uppercase tracking-widest text-slate-400">New Password (leave blank to keep current)</label>
                                                 <input
                                                     type="password"
-                                                    className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-orange-500 transition-all font-mono text-slate-700"
+                                                    className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-black-500 transition-all font-mono text-slate-700"
                                                     value={editForm.password}
                                                     placeholder="••••••••"
                                                     onChange={e => setEditForm({ ...editForm, password: e.target.value })}
@@ -3541,7 +3542,7 @@ export const Admin: React.FC = () => {
                                                     <label className="text-xs font-black uppercase tracking-widest text-slate-400">Account Status</label>
                                                     <select
                                                         className={`w-full p-4 border rounded-2xl focus:outline-none transition-all font-bold ${editForm.status === 'Active' ? 'bg-green-50 text-green-700 border-green-200' :
-                                                            editForm.status === 'Suspended' ? 'bg-orange-50 text-orange-700 border-orange-200' :
+                                                            editForm.status === 'Suspended' ? 'bg-slate-50 text-black-700 border-black' :
                                                                 'bg-red-50 text-red-700 border-red-200'
                                                             }`}
                                                         value={editForm.status}
@@ -3570,7 +3571,7 @@ export const Admin: React.FC = () => {
                                             </div>
 
                                             <div className="pt-4">
-                                                <button type="submit" className="w-full py-4 bg-slate-900 text-white rounded-[2rem] font-bold shadow-xl hover:bg-orange-600 transition-all active:scale-95">
+                                                <button type="submit" className="w-full py-4 bg-slate-900 text-white rounded-[2rem] font-bold shadow-xl hover:bg-black transition-all active:scale-95">
                                                     Save User Changes
                                                 </button>
                                             </div>
@@ -3602,7 +3603,7 @@ export const Admin: React.FC = () => {
                                                         value={planForm.id || ''}
                                                         onChange={(e) => setPlanForm({ ...planForm, id: e.target.value })}
                                                         disabled={!!planForm.id}
-                                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 disabled:opacity-50"
+                                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-black-500/20 disabled:opacity-50"
                                                     />
                                                 </label>
                                                 <label className="space-y-2">
@@ -3612,7 +3613,7 @@ export const Admin: React.FC = () => {
                                                         placeholder="e.g. Pro Plan"
                                                         value={planForm.name || ''}
                                                         onChange={(e) => setPlanForm({ ...planForm, name: e.target.value })}
-                                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+                                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-black-500/20"
                                                     />
                                                 </label>
                                             </div>
@@ -3624,7 +3625,7 @@ export const Admin: React.FC = () => {
                                                         type="number"
                                                         value={planForm.dailyLimitMonthly || 0}
                                                         onChange={(e) => setPlanForm({ ...planForm, dailyLimitMonthly: parseInt(e.target.value) || 0 })}
-                                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+                                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-black-500/20"
                                                     />
                                                 </label>
                                                 <label className="space-y-2">
@@ -3633,7 +3634,7 @@ export const Admin: React.FC = () => {
                                                         type="number"
                                                         value={planForm.dailyLimitYearly || 0}
                                                         onChange={(e) => setPlanForm({ ...planForm, dailyLimitYearly: parseInt(e.target.value) || 0 })}
-                                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+                                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-black-500/20"
                                                     />
                                                 </label>
                                             </div>
@@ -3645,7 +3646,7 @@ export const Admin: React.FC = () => {
                                                         type="number"
                                                         value={planForm.monthlyPrice || 0}
                                                         onChange={(e) => setPlanForm({ ...planForm, monthlyPrice: parseFloat(e.target.value) || 0 })}
-                                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+                                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-black-500/20"
                                                     />
                                                 </label>
                                                 <label className="space-y-2">
@@ -3654,7 +3655,7 @@ export const Admin: React.FC = () => {
                                                         type="number"
                                                         value={planForm.yearlyPrice || 0}
                                                         onChange={(e) => setPlanForm({ ...planForm, yearlyPrice: parseFloat(e.target.value) || 0 })}
-                                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+                                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-black-500/20"
                                                     />
                                                 </label>
                                                 <label className="space-y-2">
@@ -3663,26 +3664,26 @@ export const Admin: React.FC = () => {
                                                         type="number"
                                                         value={planForm.credits || 0}
                                                         onChange={(e) => setPlanForm({ ...planForm, credits: parseInt(e.target.value) || 0 })}
-                                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+                                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-black-500/20"
                                                     />
                                                 </label>
                                             </div>
 
                                             <div className="space-y-2">
-                                                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Max Reddit Accounts</span>
+                                                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Max X Accounts</span>
                                                 <input
                                                     type="number"
                                                     min="1"
                                                     value={planForm.maxAccounts || 1}
                                                     onChange={(e) => setPlanForm({ ...planForm, maxAccounts: parseInt(e.target.value) || 1 })}
-                                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+                                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-black-500/20"
                                                 />
                                             </div>
 
                                             <div className="space-y-2">
                                                 <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Features (One per line)</span>
                                                 <textarea
-                                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20 h-32"
+                                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-black-500/20 h-32"
                                                     placeholder="Feature 1&#10;Feature 2&#10;Feature 3"
                                                     value={planForm.features?.join('\n') || ''}
                                                     onChange={(e) => setPlanForm({ ...planForm, features: e.target.value.split('\n') })}
@@ -3691,7 +3692,7 @@ export const Admin: React.FC = () => {
 
                                             <div className="grid grid-cols-2 gap-4 pt-2">
                                                 <label className="flex items-center gap-3 cursor-pointer group">
-                                                    <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-colors ${planForm.allowImages ? 'bg-orange-500 border-orange-500 text-white' : 'border-slate-300 text-transparent group-hover:border-orange-400'}`}>
+                                                    <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-colors ${planForm.allowImages ? 'bg-slate-500 border-black-500 text-white' : 'border-slate-300 text-transparent group-hover:border-black-400'}`}>
                                                         <Check size={16} strokeWidth={4} />
                                                         <input
                                                             type="checkbox"
@@ -3755,7 +3756,7 @@ export const Admin: React.FC = () => {
 
                                             <div className="flex items-center gap-4">
                                                 <label className="flex items-center gap-3 cursor-pointer group">
-                                                    <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-colors ${planForm.isPopular ? 'bg-orange-500 border-orange-500 text-white' : 'border-slate-300 text-transparent group-hover:border-orange-400'}`}>
+                                                    <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-colors ${planForm.isPopular ? 'bg-slate-500 border-black-500 text-white' : 'border-slate-300 text-transparent group-hover:border-black-400'}`}>
                                                         <Check size={16} strokeWidth={4} />
                                                         <input
                                                             type="checkbox"
@@ -3773,13 +3774,13 @@ export const Admin: React.FC = () => {
                                                             placeholder="Highlight Text (e.g. Best Value)"
                                                             value={planForm.highlightText || ''}
                                                             onChange={(e) => setPlanForm({ ...planForm, highlightText: e.target.value })}
-                                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 font-bold text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+                                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 font-bold text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-black-500/20"
                                                         />
                                                     </div>
                                                 )}
                                             </div>
 
-                                            <button onClick={handleSavePlan} className="w-full py-4 bg-slate-900 text-white rounded-[2rem] font-bold shadow-xl hover:bg-orange-600 transition-all active:scale-95 flex items-center justify-center gap-2">
+                                            <button onClick={handleSavePlan} className="w-full py-4 bg-slate-900 text-white rounded-[2rem] font-bold shadow-xl hover:bg-black transition-all active:scale-95 flex items-center justify-center gap-2">
                                                 <Save size={20} />
                                                 Save Plan
                                             </button>

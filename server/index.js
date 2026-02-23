@@ -17,7 +17,7 @@ dotenv.config();
 
 // MongoDB Integration
 import mongoose from 'mongoose';
-import { User, TrackingLink, BrandProfile, Plan, Ticket, Setting, RedditReply, RedditPost, SystemLog, Announcement, CancellationFeedback } from './models.js';
+import { User, TrackingLink, BrandProfile, Plan, Ticket, Setting, XReply, XPost, SystemLog, Announcement, CancellationFeedback } from './models.js';
 
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
@@ -112,14 +112,14 @@ const saveSettings = (data) => {
 const DEFAULT_EMAIL_TEMPLATES = {
   'welcome': {
     name: 'Welcome Email',
-    subject: 'Welcome to Redditgo! 🚀',
-    body: `<h1>Welcome, {{name}}!</h1><p>We're thrilled to have you here. Redditgo is designed to help you scale your Reddit outreach authentically.</p><p>Get started by connecting your Reddit account in the dashboard.</p><p>Best,<br/>The Redditgo Team</p>`,
+    subject: 'Welcome to XGo! 🚀',
+    body: `<h1>Welcome, {{name}}!</h1><p>We're thrilled to have you here. XGo is designed to help you scale your X (Twitter) outreach authentically.</p><p>Get started by connecting your X account in the dashboard.</p><p>Best,<br/>The XGo Team</p>`,
     active: true
   },
   'reset_password': {
     name: 'Reset Password',
-    subject: 'Reset your password - Redditgo',
-    body: `<h1>Password Reset Request</h1><p>You requested a password reset. Click the button below to set a new password:</p><p><a href="{{reset_link}}" style="background:#EA580C;color:white;padding:12px 24px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">Reset Password</a></p><p>If you didn't request this, you can safely ignore this email.</p>`,
+    subject: 'Reset your password - XGo',
+    body: `<h1>Password Reset Request</h1><p>You requested a password reset. Click the button below to set a new password:</p><p><a href="{{reset_link}}" style="background:#000000;color:white;padding:12px 24px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">Reset Password</a></p><p>If you didn't request this, you can safely ignore this email.</p>`,
     active: true
   },
   'payment_success': {
@@ -147,7 +147,7 @@ const DEFAULT_EMAIL_TEMPLATES = {
         </tr>
         <tr style="border-top: 1px dashed #e2e8f0;">
           <td style="padding: 20px 0 0 0; font-size: 18px; font-weight: bold; color: #0f172a;">Total Paid:</td>
-          <td style="padding: 20px 0 0 0; text-align: right; font-size: 18px; font-weight: 900; color: #EA580C;">{{amount}} {{currency}}</td>
+          <td style="padding: 20px 0 0 0; text-align: right; font-size: 18px; font-weight: 900; color: #000000;">{{amount}} {{currency}}</td>
         </tr>
       </table>
     </div>
@@ -174,26 +174,26 @@ const DEFAULT_EMAIL_TEMPLATES = {
   },
   'verify_email': {
     name: 'Verify Email',
-    subject: 'Action Required: Verify your email - Redditgo',
-    body: `<h1>Welcome to Redditgo, {{name}}!</h1><p>Please confirm your email address to activate your account and start your outreach journey.</p><p><a href="{{verify_link}}" style="background:#EA580C;color:white;padding:12px 24px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">Verify Email</a></p><p>This link will expire in 24 hours.</p>`,
+    subject: 'Action Required: Verify your email - XGo',
+    body: `<h1>Welcome to XGo, {{name}}!</h1><p>Please confirm your email address to activate your account and start your outreach journey.</p><p><a href="{{verify_link}}" style="background:#000000;color:white;padding:12px 24px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">Verify Email</a></p><p>This link will expire in 24 hours.</p>`,
     active: true
   },
   'two_factor_code': {
     name: '2FA Verification Code',
-    subject: 'Your Verification Code - Redditgo',
-    body: `<h1>Verification Code</h1><p>Hi {{name}},</p><p>We received a login attempt for your account. Use the following code to complete your login:</p><div style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #EA580C; margin: 20px 0;">{{code}}</div><p>This code will expire in 10 minutes. If you did not attempt to log in, please ignore this email or change your password.</p>`,
+    subject: 'Your Verification Code - XGo',
+    body: `<h1>Verification Code</h1><p>Hi {{name}},</p><p>We received a login attempt for your account. Use the following code to complete your login:</p><div style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #000000; margin: 20px 0;">{{code}}</div><p>This code will expire in 10 minutes. If you did not attempt to log in, please ignore this email or change your password.</p>`,
     active: true
   },
   'account_status_changed': {
     name: 'Account Status Update',
-    subject: 'Important: Your account status has been updated - Redditgo',
+    subject: 'Important: Your account status has been updated - XGo',
     body: `<h1>Account Status Update</h1><p>Hi {{name}},</p><p>Your account status has been changed to: <strong>{{status}}</strong></p><p><strong>Reason:</strong> {{reason}}</p><p>If you believe this is a mistake, please contact our support team.</p>`,
     active: true
   },
   'plan_expired': {
     name: 'Subscription Expired',
-    subject: 'Your subscription has expired - Redditgo',
-    body: `<h1>Subscription Expired</h1><p>Hi {{name}}, your premium subscription has expired. You have been returned to the <strong>Starter</strong> plan.</p><p>To continue using premium features and higher limits, please upgrade your plan.</p><p><a href="{{upgrade_link}}" style="background:#EA580C;color:white;padding:12px 24px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">Upgrade Plan</a></p>`,
+    subject: 'Your subscription has expired - XGo',
+    body: `<h1>Subscription Expired</h1><p>Hi {{name}}, your premium subscription has expired. You have been returned to the <strong>Starter</strong> plan.</p><p>To continue using premium features and higher limits, please upgrade your plan.</p><p><a href="{{upgrade_link}}" style="background:#000000;color:white;padding:12px 24px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">Upgrade Plan</a></p>`,
     active: true
   },
   'cancellation_confirmed': {
@@ -208,12 +208,12 @@ const DEFAULT_EMAIL_TEMPLATES = {
   },
   'plan_expired_notice': {
     name: 'Subscription Ended',
-    subject: 'Your Redditgo subscription has ended',
+    subject: 'Your XGo subscription has ended',
     body: `<h1>Subscription Period Ended</h1>
     <p>Hi {{name}}, your subscription to <strong>{{plan_name}}</strong> has now expired.</p>
     <p>Your account has been moved to the Starter plan. If you had remaining credits, they are still available in your account balance for future use.</p>
     <p>We hope to see you back soon! To keep using premium features, you can upgrade at any time.</p>
-    <p><a href="{{upgrade_link}}" style="background:#EA580C;color:white;padding:12px 24px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">View Pricing Plans</a></p>`,
+    <p><a href="{{upgrade_link}}" style="background:#000000;color:white;padding:12px 24px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">View Pricing Plans</a></p>`,
     active: true
   },
   'deletion_scheduled': {
@@ -228,7 +228,7 @@ const DEFAULT_EMAIL_TEMPLATES = {
   },
   'refund_processed': {
     name: 'Refund Success',
-    subject: 'Refund Processed - Redditgo',
+    subject: 'Refund Processed - XGo',
     body: `<h1>Refund Processed</h1><p>Hi {{name}}, we have successfully processed your refund for transaction <strong>{{transaction_id}}</strong>.</p><p>As a result, your account has been returned to the Starter plan. If you have any questions, please reply to this email.</p>`,
     active: true
   },
@@ -237,7 +237,7 @@ const DEFAULT_EMAIL_TEMPLATES = {
     subject: 'Confirmation: Your account deletion request has been cancelled',
     body: `<h1>Deletion Request Cancelled</h1>
     <p>Hi {{name}},</p>
-    <p>This email confirms that your request to delete your Redditgo account has been successfully cancelled.</p>
+    <p>This email confirms that your request to delete your XGo account has been successfully cancelled.</p>
     <p>Your account is now fully active, and all your data and credits remain intact. You can continue using our services as usual.</p>
     <p>If you have any questions or did not authorize this action, please contact our support team immediately.</p>`,
     active: true
@@ -250,29 +250,29 @@ const DEFAULT_EMAIL_TEMPLATES = {
     <p>This is a confirmation that your account has been upgraded to the <strong>{{plan_name}}</strong> plan by an administrator.</p>
     <p>Your new credit balance is: <strong>{{credits}}</strong></p>
     <p>You can now enjoy all the benefits of your new plan. If you have any questions about this change, please contact our support team.</p>
-    <p><a href="{{settings_url}}" style="background:#EA580C;color:white;padding:12px 24px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">View Account Settings</a></p>`,
+    <p><a href="{{settings_url}}" style="background:#000000;color:white;padding:12px 24px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">View Account Settings</a></p>`,
     active: true
   },
   'plan_changed': {
     name: 'Plan Changed',
-    subject: 'Your Redditgo plan has been updated! 🔄',
+    subject: 'Your XGo plan has been updated! 🔄',
     body: `<h1>Plan Updated</h1>
     <p>Hi {{name}},</p>
     <p>We're confirming that your account has been successfully switched to the <strong>{{plan_name}}</strong> plan.</p>
     <p>Any previous subscription benefits have been updated according to your new plan. Your current credit balance is: <strong>{{credits}}</strong></p>
     <p>If you have any questions about this change, we're here to help!</p>
-    <p><a href="{{settings_url}}" style="background:#EA580C;color:white;padding:12px 24px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">View Your Dashboard</a></p>`,
+    <p><a href="{{settings_url}}" style="background:#000000;color:white;padding:12px 24px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block;">View Your Dashboard</a></p>`,
     active: true
   },
   'two_factor_updated': {
     name: '2FA Status Updated',
-    subject: 'Security Alert: 2FA settings changed - Redditgo',
+    subject: 'Security Alert: 2FA settings changed - XGo',
     body: `<h1>2FA Status Updated</h1><p>Hi {{name}},</p><p>This is a security notification to inform you that Two-Factor Authentication (2FA) has been <strong>{{status}}</strong> on your account at {{time}}.</p><p>If you did not perform this action, please secure your account immediately by changing your password.</p>`,
     active: true
   },
   'password_updated': {
     name: 'Password Updated',
-    subject: 'Security Alert: Password changed - Redditgo',
+    subject: 'Security Alert: Password changed - XGo',
     body: `<h1>Password Updated</h1><p>Hi {{name}},</p><p>Your account password was successfully changed on {{time}}.</p><p>If you did not perform this action, please contact our support team immediately.</p>`,
     active: true
   }
@@ -353,8 +353,8 @@ const runGlobalCheck = async () => {
       const userId = u.id || u._id;
       await Promise.all([
         BrandProfile.deleteMany({ userId: userId.toString() }),
-        RedditReply.deleteMany({ userId: userId.toString() }),
-        RedditPost.deleteMany({ userId: userId.toString() }),
+        XReply.deleteMany({ userId: userId.toString() }),
+        XPost.deleteMany({ userId: userId.toString() }),
         TrackingLink.deleteMany({ userId: userId.toString() }),
         User.deleteOne({ _id: u._id })
       ]);
@@ -408,19 +408,19 @@ const sendEmail = async (templateId, to, variables = {}) => {
     });
 
     const mailOptions = {
-      from: smtpSettings.from || `"Redditgo" <${smtpSettings.user}>`,
+      from: smtpSettings.from || `"XGo" <${smtpSettings.user}>`,
       to,
       subject,
       html: `
         <div style="font-family: 'Inter', sans-serif; color: #1e293b; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 16px;">
           <div style="text-align: center; margin-bottom: 30px;">
-            <h1 style="color: #EA580C; margin: 0;">Redditgo</h1>
+            <h1 style="color: #000000; margin: 0;">XGo</h1>
           </div>
           <div style="line-height: 1.6;">
             ${body}
           </div>
           <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #f1f5f9; text-align: center; color: #94a3b8; font-size: 12px;">
-            © ${new Date().getFullYear()} Redditgo. All rights reserved.
+            © ${new Date().getFullYear()} XGo. All rights reserved.
           </div>
         </div>
       `
@@ -828,7 +828,7 @@ app.get(['/t/:id', '/t/:id/'], async (req, res) => {
       id: cleanId,
       url: link.originalUrl,
       userId: link.userId,
-      subreddit: link.subreddit
+      topic: link.topic
     });
     console.log(`[TRACKING DATA] Click Recorded: ${cleanId} | New Total: ${link.clicks} | User: ${link.userId}`);
 
@@ -841,7 +841,7 @@ app.get(['/t/:id', '/t/:id/'], async (req, res) => {
 // ─── Create Tracking Link ──────────────────────────────────────────────────
 app.post('/api/tracking/create', async (req, res) => {
   try {
-    const { userId, originalUrl, subreddit, postId, type } = req.body;
+    const { userId, originalUrl, topic: topic, postId, type } = req.body;
     if (!userId || !originalUrl) return res.status(400).json({ error: 'Missing required fields' });
 
     const user = await User.findOne({ id: userId.toString() });
@@ -865,7 +865,7 @@ app.post('/api/tracking/create', async (req, res) => {
       userId: userId.toString(),
       originalUrl,
       trackingUrl,
-      subreddit,
+      topic,
       postId,
       type,
       createdAt: new Date().toISOString(),
@@ -1181,6 +1181,7 @@ app.post('/api/auth/signup', async (req, res) => {
       billingCycle: 'monthly',
       status: 'Active',
       credits: 100, // Grant initial credits upon signup
+      xLinked: false,
       subscriptionStart: new Date().toISOString(),
       subscriptionEnd: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString(),
       hasCompletedOnboarding: false,
@@ -1548,7 +1549,7 @@ let aiSettings = savedData.ai || {
   model: 'gemini-1.5-flash',
   temperature: 0.75,
   maxOutputTokens: 1000,
-  systemPrompt: `IDENTITY: You are a Reddit growth expert acting as a highly helpful, authentic power-user. You don't sell; you solve.
+  systemPrompt: `IDENTITY: You are a X growth expert acting as a highly helpful, authentic power-user. You don't sell; you solve.
 
 CORE STRATEGY:
 1. VALUE FIRST: Address the OP's pain point immediately with a non-obvious, actionable insight.
@@ -1596,12 +1597,12 @@ let paypalSettings = savedData.paypal || {
   enabled: false
 };
 
-// Reddit Settings (In-memory)
-let redditSettings = savedData.reddit || {
+// X Settings (In-memory)
+let XSettings = savedData.X || {
   clientId: '',
   clientSecret: '',
   redirectUri: '',
-  userAgent: 'RedigoApp/1.0',
+  userAgent: 'XGoApp/1.0',
   minDelay: 5,
   maxDelay: 15,
   antiSpam: true
@@ -1610,7 +1611,7 @@ let redditSettings = savedData.reddit || {
 const sleep = (ms) => new Promise(res => setTimeout(res, ms));
 
 const getDynamicUserAgent = (userId) => {
-  const base = redditSettings.userAgent || 'RedigoApp/1.0';
+  const base = XSettings.userAgent || 'XGoApp/1.0';
   return userId ? `${base} (UID: ${userId})` : base;
 };
 
@@ -1820,9 +1821,9 @@ let smtpSettings = savedData.smtp || {
   secure: false
 };
 
-// Store user Reddit tokens (Initialized from DB/Cache)
-if (!settingsCache.userRedditTokens) settingsCache.userRedditTokens = {};
-const userRedditTokens = settingsCache.userRedditTokens;
+// Store user X tokens (Initialized from DB/Cache)
+if (!settingsCache.userXTokens) settingsCache.userXTokens = {};
+const userXTokens = settingsCache.userXTokens;
 
 // Plans API Endpoints
 // Public configuration for UI
@@ -2077,12 +2078,12 @@ let brandProfiles = savedData.brandProfiles || {};
 // Brand Profile Endpoints
 // Default Profile fallback
 const DEFAULT_BRAND_PROFILE = {
-  brandName: 'RedditGo',
-  description: 'AI-powered Reddit marketing tool that helps SaaS founders find leads and engage authentically in relevant conversations.',
+  brandName: 'XGo',
+  description: 'AI-powered X marketing tool that helps SaaS founders find leads and engage authentically in relevant conversations.',
   targetAudience: 'SaaS founders, indie hackers, and marketers',
-  problem: 'Struggling to find relevant Reddit discussions and engaging without seeming like spam.',
-  website: 'https://redditgo.online/',
-  primaryColor: '#EA580C',
+  problem: 'Struggling to find relevant X discussions and engaging without seeming like spam.',
+  website: 'https://XGo.online/',
+  primaryColor: '#000000',
   secondaryColor: '#1E293B',
   brandTone: 'Helpful Peer'
 };
@@ -2110,9 +2111,9 @@ app.get('/api/user/brand-profile', async (req, res) => {
 // (Duplicate POST /api/user/brand-profile removed as it's now handled above)
 
 const saveTokens = async (userId, username, tokenData) => {
-  if (!userRedditTokens[userId]) userRedditTokens[userId] = {};
-  userRedditTokens[userId][username] = tokenData;
-  saveSettings({ userRedditTokens });
+  if (!userXTokens[userId]) userXTokens[userId] = {};
+  userXTokens[userId][username] = tokenData;
+  saveSettings({ userXTokens });
 
   try {
     const user = await User.findOne({ id: userId.toString() });
@@ -3138,8 +3139,8 @@ app.delete('/api/admin/users/:id', adminAuth, async (req, res) => {
     // Cascade delete: Remove user, their replies, and their posts
     await Promise.all([
       User.deleteOne({ id: userId }),
-      RedditReply.deleteMany({ userId: userId }),
-      RedditPost.deleteMany({ userId: userId })
+      XReply.deleteMany({ userId: userId }),
+      XPost.deleteMany({ userId: userId })
     ]);
 
     addSystemLog('WARN', `[Admin] Permanently deleted user ${userId} and all associated data.`);
@@ -3218,14 +3219,14 @@ app.post('/api/admin/paypal-settings', adminAuth, (req, res) => {
   res.json({ message: 'PayPal settings updated', settings: paypalSettings });
 });
 
-// Reddit Settings Management
-app.get('/api/admin/reddit-settings', adminAuth, (req, res) => {
-  const safe = { ...redditSettings };
+// X Settings Management
+app.get('/api/admin/x-settings', adminAuth, (req, res) => {
+  const safe = { ...XSettings };
   if (safe.clientSecret) safe.clientSecret = '********' + safe.clientSecret.substring(safe.clientSecret.length - 4);
   res.json(safe);
 });
 
-app.post('/api/admin/reddit-settings', adminAuth, (req, res) => {
+app.post('/api/admin/x-settings', adminAuth, (req, res) => {
   const newSettings = { ...req.body };
   if (newSettings.clientSecret && newSettings.clientSecret.includes('****')) delete newSettings.clientSecret;
 
@@ -3233,10 +3234,10 @@ app.post('/api/admin/reddit-settings', adminAuth, (req, res) => {
   if (newSettings.minDelay) newSettings.minDelay = Number(newSettings.minDelay);
   if (newSettings.maxDelay) newSettings.maxDelay = Number(newSettings.maxDelay);
 
-  redditSettings = { ...redditSettings, ...newSettings };
-  saveSettings({ reddit: redditSettings });
-  console.log('[Reddit] Configuration updated');
-  res.json({ message: 'Reddit settings updated', settings: redditSettings });
+  XSettings = { ...XSettings, ...newSettings };
+  saveSettings({ X: XSettings });
+  console.log('[X] Configuration updated');
+  res.json({ message: 'X settings updated', settings: XSettings });
 });
 
 // SMTP Settings Management
@@ -3388,46 +3389,46 @@ app.delete('/api/support/tickets/:id', adminAuth, async (req, res) => {
   }
 });
 
-// --- Reddit OAuth2 Flow ---
+// --- X OAuth2 Flow ---
 
-app.get('/api/auth/reddit/url', (req, res) => {
-  if (!redditSettings.clientId) {
-    return res.status(500).json({ error: 'Reddit Client ID not configured by Admin' });
+app.get('/api/auth/x/url', (req, res) => {
+  if (!XSettings.clientId) {
+    return res.status(500).json({ error: 'X Client ID not configured by Admin' });
   }
 
   const host = req.get('host');
   const protocol = host.includes('localhost') ? 'http' : 'https';
-  // Use configured URI if available, otherwise construct dynamic one
-  const redirectUri = redditSettings.redirectUri && redditSettings.redirectUri.trim() !== ''
-    ? redditSettings.redirectUri
-    : `${protocol}://${host}/auth/reddit/callback`;
+  const redirectUri = XSettings.redirectUri && XSettings.redirectUri.trim() !== ''
+    ? XSettings.redirectUri
+    : `${protocol}://${host}/auth/x/callback`;
 
   const state = Math.random().toString(36).substring(7);
-  const scope = 'identity read submit';
-  const url = `https://www.reddit.com/api/v1/authorize?client_id=${redditSettings.clientId}&response_type=code&state=${state}&redirect_uri=${encodeURIComponent(redirectUri)}&duration=permanent&scope=${scope}`;
+  const scope = encodeURIComponent('tweet.read tweet.write users.read offline.access');
+  // Use OAuth 2.0 PKCE (plain for simplified migration)
+  const url = `https://twitter.com/i/oauth2/authorize?response_type=code&client_id=${XSettings.clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&state=${state}&code_challenge=challenge&code_challenge_method=plain`;
 
-  // Return the redirectUri used so frontend can store it if needed (optional)
   res.json({ url, redirectUri });
 });
 
-app.post('/api/auth/reddit/callback', async (req, res) => {
+app.post('/api/auth/x/callback', async (req, res) => {
   const { code, userId } = req.body;
   if (!code) return res.status(400).json({ error: 'Code is required' });
 
   const host = req.get('host');
   const protocol = host.includes('localhost') ? 'http' : 'https';
-  const redirectUri = redditSettings.redirectUri && redditSettings.redirectUri.trim() !== ''
-    ? redditSettings.redirectUri
-    : `${protocol}://${host}/auth/reddit/callback`;
+  const redirectUri = XSettings.redirectUri && XSettings.redirectUri.trim() !== ''
+    ? XSettings.redirectUri
+    : `${protocol}://${host}/auth/x/callback`;
 
   try {
-    const auth = Buffer.from(`${redditSettings.clientId}:${redditSettings.clientSecret}`).toString('base64');
+    const auth = Buffer.from(`${XSettings.clientId}:${XSettings.clientSecret}`).toString('base64');
     const params = new URLSearchParams();
     params.append('grant_type', 'authorization_code');
     params.append('code', code);
     params.append('redirect_uri', redirectUri);
+    params.append('code_verifier', 'challenge');
 
-    const response = await fetch('https://www.reddit.com/api/v1/access_token', {
+    const response = await fetch('https://api.twitter.com/2/oauth2/token', {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${auth}`,
@@ -3438,9 +3439,9 @@ app.post('/api/auth/reddit/callback', async (req, res) => {
     });
 
     const data = await response.json();
-    if (data.error) throw new Error(data.error);
+    if (data.error) throw new Error(data.error_description || data.error);
 
-    const meRes = await fetch('https://oauth.reddit.com/api/v1/me', {
+    const meRes = await fetch('https://api.twitter.com/2/users/me?user.fields=profile_image_url', {
       headers: {
         'Authorization': `Bearer ${data.access_token}`,
         'User-Agent': getDynamicUserAgent(userId)
@@ -3448,8 +3449,10 @@ app.post('/api/auth/reddit/callback', async (req, res) => {
     });
 
     const meData = await meRes.json();
-    const redditUsername = meData.name;
-    const redditIcon = meData.icon_img;
+    if (!meData.data) throw new Error('Failed to fetch user data from X');
+
+    const XUsername = meData.data.username;
+    const XIcon = meData.data.profile_image_url;
 
     const user = await User.findOne({ id: userId.toString() });
     if (user) {
@@ -3460,20 +3463,20 @@ app.post('/api/auth/reddit/callback', async (req, res) => {
       }
 
       const currentAccounts = user.connectedAccounts || [];
-      const alreadyConnected = currentAccounts.find(a => a.username === redditUsername);
+      const alreadyConnected = currentAccounts.find(a => a.username === XUsername);
 
       if (!alreadyConnected && currentAccounts.length >= limit) {
         return res.status(403).json({ error: `Account limit reached for ${user.plan} plan (${limit} accounts max).` });
       }
 
       if (alreadyConnected) {
-        alreadyConnected.icon = redditIcon;
+        alreadyConnected.icon = XIcon;
         alreadyConnected.lastSeen = new Date().toISOString();
       } else {
         if (!user.connectedAccounts) user.connectedAccounts = [];
         user.connectedAccounts.push({
-          username: redditUsername,
-          icon: redditIcon,
+          username: XUsername,
+          icon: XIcon,
           connectedAt: new Date().toISOString(),
           lastSeen: new Date().toISOString()
         });
@@ -3481,15 +3484,15 @@ app.post('/api/auth/reddit/callback', async (req, res) => {
       await user.save();
     }
 
-    saveTokens(userId, redditUsername, {
+    saveTokens(userId, XUsername, {
       accessToken: data.access_token,
       refreshToken: data.refresh_token,
       expiresAt: Date.now() + (data.expires_in * 1000)
     });
 
-    res.json({ success: true, username: redditUsername });
+    res.json({ success: true, username: XUsername });
   } catch (error) {
-    console.error('[Reddit OAuth Error]', error);
+    console.error('[X OAuth Error]', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -3506,10 +3509,10 @@ const getValidToken = async (userId, username) => {
 
   // Fallback to memory if not found in DB or DB missing tokens
   if (!targetAccount || !targetAccount.accessToken) {
-    if (userRedditTokens[userId]) {
-      const uName = username || Object.keys(userRedditTokens[userId])[0];
-      if (userRedditTokens[userId][uName]) {
-        targetAccount = { ...userRedditTokens[userId][uName], username: uName };
+    if (userXTokens[userId]) {
+      const uName = username || Object.keys(userXTokens[userId])[0];
+      if (userXTokens[userId][uName]) {
+        targetAccount = { ...userXTokens[userId][uName], username: uName };
       }
     }
   }
@@ -3522,17 +3525,18 @@ const getValidToken = async (userId, username) => {
 
   // Refresh token
   try {
-    const auth = Buffer.from(`${redditSettings.clientId}:${redditSettings.clientSecret}`).toString('base64');
-    const response = await fetch('https://www.reddit.com/api/v1/access_token', {
+    const auth = Buffer.from(`${XSettings.clientId}:${XSettings.clientSecret}`).toString('base64');
+    const response = await fetch('https://api.twitter.com/2/oauth2/token', {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${auth}`,
         'Content-Type': 'application/x-www-form-urlencoded',
-        'User-Agent': redditSettings.userAgent
+        'User-Agent': XSettings.userAgent
       },
       body: new URLSearchParams({
         grant_type: 'refresh_token',
-        refresh_token: targetAccount.refreshToken
+        refresh_token: targetAccount.refreshToken,
+        client_id: XSettings.clientId
       })
     });
 
@@ -3548,12 +3552,12 @@ const getValidToken = async (userId, username) => {
     await saveTokens(userId, targetAccount.username || username, newTokens);
     return data.access_token;
   } catch (err) {
-    console.error('[Reddit Token Refresh Error]', err);
+    console.error('[X Token Refresh Error]', err);
     return null;
   }
 };
 
-app.get('/api/user/reddit/status', async (req, res) => {
+app.get('/api/user/x/status', async (req, res) => {
   try {
     const { userId } = req.query;
     if (!userId) return res.status(400).json({ error: 'User ID required' });
@@ -3572,7 +3576,7 @@ app.get('/api/user/reddit/status', async (req, res) => {
   }
 });
 
-app.post('/api/user/reddit/disconnect', async (req, res) => {
+app.post('/api/user/x/disconnect', async (req, res) => {
   try {
     const { userId, username } = req.body;
     if (!userId || !username) return res.status(400).json({ error: 'Missing userId or username' });
@@ -3583,12 +3587,12 @@ app.post('/api/user/reddit/disconnect', async (req, res) => {
       await user.save();
     }
 
-    if (userRedditTokens[userId]) {
-      delete userRedditTokens[userId][username];
-      saveSettings({ userRedditTokens });
+    if (userXTokens[userId]) {
+      delete userXTokens[userId][username];
+      saveSettings({ userXTokens });
     }
 
-    addSystemLog('INFO', `User disconnected Reddit account: ${username}`, { userId });
+    addSystemLog('INFO', `User disconnected X account: ${username}`, { userId });
 
     res.json({ success: true });
   } catch (err) {
@@ -3608,14 +3612,14 @@ app.post('/api/generate', async (req, res) => {
     }
 
     // SAFETY: Anti-Spam pre-check (Only for comments)
-    if (redditSettings.antiSpam && type === 'comment') {
+    if (XSettings.antiSpam && type === 'comment') {
       const postId = context?.postId || (typeof context === 'string' && context.match(/post_id: (\w+)/)?.[1]);
       if (postId) {
-        const alreadyReplied = await RedditReply.findOne({ userId: userId.toString(), postId: postId });
+        const alreadyReplied = await XReply.findOne({ userId: userId.toString(), postId: postId });
         if (alreadyReplied) {
           return res.status(409).json({
             error: 'DOUBLE_POST_PREVENTION',
-            message: 'You have already replied to this post with this account. Double-posting is blocked to protect your account from Reddit bans.'
+            message: 'You have already replied to this post with this account. Double-posting is blocked to protect your account from X bans.'
           });
         }
       }
@@ -3685,8 +3689,8 @@ app.post('/api/generate', async (req, res) => {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${keyToUse}`,
-          'HTTP-Referer': `https://redditgo.online`, // Specific for this app production or dynamic
-          'X-Title': 'RedditGo Content Architect'
+          'HTTP-Referer': `https://XGo.online`, // Specific for this app production or dynamic
+          'X-Title': 'XGo Content Architect'
         },
         body: JSON.stringify({
           model: aiSettings.model,
@@ -3894,77 +3898,72 @@ app.get('/api/user/latest-image', async (req, res) => {
   }
 });
 
-// Reddit Fetching Proxy (Free JSON Method)
-// Post Reply to Reddit
-app.post('/api/reddit/reply', async (req, res) => {
+// X Fetching Proxy (Free JSON Method)
+// Post Reply to X
+app.post('/api/x/reply', async (req, res) => {
   try {
-    const { userId, postId, comment, postTitle, subreddit, productMention, redditUsername } = req.body;
+    const { userId, postId, comment, postTitle, topic: topic, productMention, xHandle: XUsername } = req.body;
     if (!userId || !comment) return res.status(400).json({ error: 'Missing required fields' });
 
-    console.log(`[Reddit] Posting reply for user ${userId} (account: ${redditUsername || 'default'}) on post ${postId}`);
+    console.log(`[X] Posting reply for user ${userId} (account: ${XUsername || 'default'}) on post ${postId}`);
 
-    const token = await getValidToken(userId, redditUsername);
-    let redditCommentId = null;
+    const token = await getValidToken(userId, XUsername);
+    let XCommentId = null;
 
-    // If it's a real Reddit post (not from MOCK_POSTS), attempt real API call
+    // If it's a real X Post (not from MOCK_POSTS), attempt real API call
     if (token && postId && !['1', '2', '3', '4'].includes(postId)) {
       // SAFETY: Double-Reply Check (Final Guard before API call)
-      if (redditSettings.antiSpam) {
-        const doubleCheck = await RedditReply.findOne({ userId: userId.toString(), postId: postId });
+      if (XSettings.antiSpam) {
+        const doubleCheck = await XReply.findOne({ userId: userId.toString(), postId: postId });
         if (doubleCheck) throw new Error('You have already replied to this post. Double-replying is blocked.');
       }
 
       // SAFETY: Randomized Delay (Human Touch)
-      const min = redditSettings.minDelay || 5;
-      const max = redditSettings.maxDelay || 15;
+      const min = XSettings.minDelay || 5;
+      const max = XSettings.maxDelay || 15;
       const waitTime = Math.floor(Math.random() * (max - min + 1) + min) * 1000;
-      console.log(`[Reddit] Humanizing... waiting ${waitTime / 1000}s before sending reply.`);
+      console.log(`[X] Humanizing... waiting ${waitTime / 1000}s before sending reply.`);
       await sleep(waitTime);
 
-      const response = await fetch('https://oauth.reddit.com/api/comment', {
+      const response = await fetch('https://api.twitter.com/2/tweets', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/json',
           'User-Agent': getDynamicUserAgent(userId)
         },
-        body: new URLSearchParams({
-          api_type: 'json',
+        body: JSON.stringify({
           text: comment,
-          thing_id: `t3_${postId}`
+          reply: {
+            in_reply_to_tweet_id: postId
+          }
         })
       });
 
+      const XResponse = await response.json();
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error('[Reddit Reply Error]', errorData);
-        throw new Error('Failed to post to Reddit API');
+        console.error('[X Reply Error]', XResponse);
+        throw new Error(XResponse.detail || 'Failed to post to X API');
       }
 
-      const redditResponse = await response.json();
-      try {
-        const commentData = redditResponse.json?.data?.things?.[0]?.data;
-        if (commentData && commentData.id) {
-          redditCommentId = `t1_${commentData.id}`;
-        }
-      } catch (e) {
-        console.error('Error parsing Reddit comment ID:', e);
+      if (XResponse.data && XResponse.data.id) {
+        XCommentId = XResponse.data.id;
       }
     }
 
     // Save to history
-    const entry = new RedditReply({
+    const entry = new XReply({
       id: Math.random().toString(36).substr(2, 9),
       userId: userId.toString(),
       postId,
-      redditCommentId,
-      postTitle: postTitle || 'Reddit Post',
+      XCommentId,
+      postTitle: postTitle || 'X Post',
       postUrl: req.body.postUrl || '#',
       postContent: req.body.postContent || '',
-      subreddit: subreddit || 'unknown',
+      subtopic: topic || 'unknown',
       comment,
       productMention,
-      redditUsername: redditUsername || 'unknown',
+      XUsername: XUsername || 'unknown',
       deployedAt: new Date().toISOString(),
       status: 'Sent',
       ups: 0,
@@ -3973,12 +3972,12 @@ app.post('/api/reddit/reply', async (req, res) => {
     });
 
     await entry.save();
-    addSystemLog('SUCCESS', `Reddit Reply sent by User ${userId}`, { subreddit, postTitle });
+    addSystemLog('SUCCESS', `X Reply sent by User ${userId}`, { topic: topic, postTitle });
 
     res.json({ success: true, entry });
   } catch (error) {
-    addSystemLog('ERROR', `Reddit Reply Failed: ${error.message}`);
-    console.error('Reddit Reply Posting Error:', error);
+    addSystemLog('ERROR', `X Reply Failed: ${error.message}`);
+    console.error('X Reply Posting Error:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -3989,26 +3988,26 @@ app.get('/api/user/replies', async (req, res) => {
     const { userId } = req.query;
     if (!userId) return res.status(400).json({ error: 'User ID required' });
 
-    const history = await RedditReply.find({ userId: userId.toString() }).sort({ deployedAt: -1 });
+    const history = await XReply.find({ userId: userId.toString() }).sort({ deployedAt: -1 });
     res.json(history);
   } catch (err) {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Create New Reddit Post
-app.post('/api/reddit/post', async (req, res) => {
+// Create New X Post
+app.post('/api/x/post', async (req, res) => {
   try {
-    const { userId, subreddit, title, text, kind, redditUsername } = req.body;
-    if (!userId || !subreddit || !title) return res.status(400).json({ error: 'Missing required fields' });
+    const { userId, topic: topic, title, text, kind, xHandle: XUsername } = req.body;
+    if (!userId || !topic || !title) return res.status(400).json({ error: 'Missing required fields' });
 
-    const token = await getValidToken(userId, redditUsername);
-    if (!token) return res.status(401).json({ error: 'Reddit account not linked' });
+    const token = await getValidToken(userId, XUsername);
+    if (!token) return res.status(401).json({ error: 'X account not linked' });
 
     // SAFETY: Anti-Spam / Double-Post Check
-    if (redditSettings.antiSpam) {
+    if (XSettings.antiSpam) {
       const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
-      const recentPost = await RedditPost.findOne({
+      const recentPost = await XPost.findOne({
         userId: userId.toString(),
         postTitle: title,
         deployedAt: { $gt: oneHourAgo }
@@ -4016,45 +4015,37 @@ app.post('/api/reddit/post', async (req, res) => {
       if (recentPost) throw new Error('You have already posted a topic with this exact title recently. Please wait a bit or change the title.');
     }
 
-    const bodyParams = new URLSearchParams({
-      api_type: 'json',
-      sr: subreddit,
-      title: title,
-      kind: kind || 'self',
-    });
-
-    if (kind === 'link') bodyParams.append('url', text);
-    else bodyParams.append('text', text);
-
     // SAFETY: Randomized Delay (Human Touch)
-    const min = redditSettings.minDelay || 5;
-    const max = redditSettings.maxDelay || 15;
+    const min = XSettings.minDelay || 5;
+    const max = XSettings.maxDelay || 15;
     const waitTime = Math.floor(Math.random() * (max - min + 1) + min) * 1000;
-    console.log(`[Reddit] Humanizing... waiting ${waitTime / 1000}s before submitting post.`);
+    console.log(`[X] Humanizing... waiting ${waitTime / 1000}s before submitting post.`);
     await sleep(waitTime);
 
-    const response = await fetch('https://oauth.reddit.com/api/submit', {
+    const response = await fetch('https://api.twitter.com/2/tweets', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'application/json',
         'User-Agent': getDynamicUserAgent(userId)
       },
-      body: bodyParams
+      body: JSON.stringify({
+        text: `${title}\n\n${text}`
+      })
     });
 
-    const redditResponse = await response.json();
-    if (!response.ok) throw new Error(redditResponse.json?.errors?.[0]?.[1] || 'Failed to submit to Reddit API');
+    const XResponse = await response.json();
+    if (!response.ok) throw new Error(XResponse.detail || 'Failed to submit to X API');
 
-    const entry = new RedditPost({
+    const entry = new XPost({
       id: Math.random().toString(36).substring(2, 11),
       userId: userId.toString(),
-      subreddit,
+      topic,
       postTitle: title,
       postContent: text,
-      postUrl: `https://reddit.com${redditResponse.json.data.url || ''}`,
-      redditUsername: redditUsername || 'unknown',
-      redditCommentId: redditResponse.json.data.id || redditResponse.json.data.name || null,
+      postUrl: `https://x.com/any/status/${XResponse.data.id}`,
+      XUsername: XUsername || 'unknown',
+      XCommentId: XResponse.data.id,
       deployedAt: new Date().toISOString(),
       status: 'Sent',
       ups: 0,
@@ -4063,11 +4054,11 @@ app.post('/api/reddit/post', async (req, res) => {
     });
 
     await entry.save();
-    addSystemLog('SUCCESS', `Reddit Post submitted: ${title}`, { subreddit });
+    addSystemLog('SUCCESS', `X Post submitted: ${title}`, { topic: topic });
 
-    res.json({ success: true, redditResponse });
+    res.json({ success: true, XResponse });
   } catch (error) {
-    addSystemLog('ERROR', `Reddit Post Failed: ${error.message}`);
+    addSystemLog('ERROR', `X Post Failed: ${error.message}`);
     res.status(500).json({ error: error.message });
   }
 });
@@ -4078,124 +4069,126 @@ app.get('/api/user/posts', async (req, res) => {
     const { userId } = req.query;
     if (!userId) return res.status(400).json({ error: 'User ID required' });
 
-    const history = await RedditPost.find({ userId: userId.toString() }).sort({ deployedAt: -1 });
+    const history = await XPost.find({ userId: userId.toString() }).sort({ deployedAt: -1 });
     res.json(history);
   } catch (err) {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Sync History for Posts with Real Reddit Data
+// Sync History for Posts with Real X Data
 app.get('/api/user/posts/sync', async (req, res) => {
   try {
     const { userId } = req.query;
     if (!userId) return res.status(400).json({ error: 'User ID required' });
 
-    const userPosts = await RedditPost.find({ userId: userId.toString(), redditCommentId: { $ne: null } });
+    const userPosts = await XPost.find({ userId: userId.toString(), XCommentId: { $ne: null } });
 
     if (userPosts.length > 0) {
       const token = await getValidToken(userId);
       if (token) {
-        const ids = userPosts.map(r => r.redditCommentId.startsWith('t3_') ? r.redditCommentId : `t3_${r.redditCommentId}`).join(',');
-        const response = await fetch(`https://oauth.reddit.com/api/info?id=${ids}`, {
+        const ids = userPosts.map(r => r.XCommentId).join(',');
+        const response = await fetch(`https://api.twitter.com/2/tweets?ids=${ids}&tweet.fields=public_metrics`, {
           headers: {
             'Authorization': `Bearer ${token}`,
-            'User-Agent': redditSettings.userAgent
+            'User-Agent': XSettings.userAgent
           }
         });
 
         if (response.ok) {
           const data = await response.json();
-          const liveItems = data.data.children;
+          const liveItems = data.data || [];
 
-          for (const child of liveItems) {
-            const liveData = child.data;
-            const entryIdMatch = liveData.name || `t3_${liveData.id}`;
-            await RedditPost.updateOne(
-              { $or: [{ redditCommentId: entryIdMatch }, { redditCommentId: entryIdMatch.replace('t3_', '') }] },
-              { $set: { ups: liveData.ups, replies: liveData.num_comments || 0 } }
+          for (const liveData of liveItems) {
+            await XPost.updateOne(
+              { XCommentId: liveData.id },
+              { $set: { ups: liveData.public_metrics?.like_count || 0, replies: liveData.public_metrics?.reply_count || 0 } }
             );
           }
         }
       }
     }
 
-    const updatedHistory = await RedditPost.find({ userId: userId.toString() }).sort({ deployedAt: -1 });
+    const updatedHistory = await XPost.find({ userId: userId.toString() }).sort({ deployedAt: -1 });
     res.json(updatedHistory);
   } catch (error) {
-    console.error('[Reddit Post Sync Error]', error);
+    console.error('[X Post Sync Error]', error);
     res.status(500).json({ error: 'Sync failed' });
   }
 });
 
-// Sync History with Real Reddit Data
+// Sync History with Real X Data
 app.get('/api/user/replies/sync', async (req, res) => {
   try {
     const { userId } = req.query;
     if (!userId) return res.status(400).json({ error: 'User ID required' });
 
-    const userReplies = await RedditReply.find({ userId: userId.toString(), redditCommentId: { $ne: null } });
+    const userReplies = await XReply.find({ userId: userId.toString(), XCommentId: { $ne: null } });
 
     if (userReplies.length > 0) {
       const token = await getValidToken(userId);
       if (token) {
-        const ids = userReplies.map(r => r.redditCommentId).join(',');
-        const response = await fetch(`https://oauth.reddit.com/api/info?id=${ids}`, {
+        const ids = userReplies.map(r => r.XCommentId).join(',');
+        const response = await fetch(`https://api.twitter.com/2/tweets?ids=${ids}&tweet.fields=public_metrics`, {
           headers: {
             'Authorization': `Bearer ${token}`,
-            'User-Agent': redditSettings.userAgent
+            'User-Agent': XSettings.userAgent
           }
         });
 
         if (response.ok) {
           const data = await response.json();
-          const liveItems = data.data.children;
+          const liveItems = data.data || [];
 
-          for (const child of liveItems) {
-            const liveData = child.data;
-            await RedditReply.updateOne(
-              { redditCommentId: liveData.name },
-              { $set: { ups: liveData.ups, replies: liveData.num_comments || 0 } }
+          for (const liveData of liveItems) {
+            await XReply.updateOne(
+              { XCommentId: liveData.id },
+              { $set: { ups: liveData.public_metrics?.like_count || 0, replies: liveData.public_metrics?.reply_count || 0 } }
             );
           }
         }
       }
     }
 
-    const updatedHistory = await RedditReply.find({ userId: userId.toString() }).sort({ deployedAt: -1 });
+    const updatedHistory = await XReply.find({ userId: userId.toString() }).sort({ deployedAt: -1 });
     res.json(updatedHistory);
   } catch (error) {
-    console.error('[Reddit Sync Error] Non-critical sync failure:', error);
+    console.error('[X Sync Error] Non-critical sync failure:', error);
     res.status(500).json({ error: 'Sync failed' });
   }
 });
 
-// Fetch Real-time Reddit Profile (Karma)
-app.get('/api/user/reddit/profile', async (req, res) => {
+// Fetch Real-time X Profile (Karma)
+app.get('/api/user/x/profile', async (req, res) => {
   const { userId, username } = req.query;
   if (!userId) return res.status(400).json({ error: 'User ID required' });
 
   try {
     const token = await getValidToken(userId, username);
-    if (!token) return res.status(401).json({ error: 'Reddit account not linked' });
+    if (!token) return res.status(401).json({ error: 'X account not linked' });
 
-    const response = await fetch('https://oauth.reddit.com/api/v1/me', {
+    const response = await fetch('https://api.twitter.com/2/users/me?user.fields=profile_image_url,public_metrics,description', {
       headers: {
         'Authorization': `Bearer ${token}`,
-        'User-Agent': redditSettings.userAgent
+        'User-Agent': XSettings.userAgent
       }
     });
 
-    if (!response.ok) throw new Error('Failed to fetch Reddit profile');
+    if (!response.ok) throw new Error('Failed to fetch X profile');
     const data = await response.json();
+    if (!data.data) throw new Error('Invalid response from X API');
+
+    const profile = data.data;
+    const metrics = profile.public_metrics || {};
 
     res.json({
-      name: data.name,
-      commentKarma: data.comment_karma,
-      linkKarma: data.link_karma,
-      totalKarma: data.total_karma,
-      hasModMail: data.has_mod_mail,
-      icon: data.icon_img
+      name: profile.name,
+      username: profile.username,
+      followers: metrics.followers_count || 0,
+      following: metrics.following_count || 0,
+      tweets: metrics.tweet_count || 0,
+      description: profile.description,
+      icon: profile.profile_image_url
     });
   } catch (error) {
     console.error('Profile Fetch Error:', error);
@@ -4203,10 +4196,10 @@ app.get('/api/user/reddit/profile', async (req, res) => {
   }
 });
 
-app.get('/api/reddit/posts', async (req, res) => {
+app.get('/api/x/posts', async (req, res) => {
   try {
-    const { subreddit = 'saas', keywords = '', userId } = req.query;
-    console.log(`[Reddit] Fetching for User ${userId} from r/${subreddit}`);
+    const { topic: topic = 'saas', keywords = '', userId } = req.query;
+    console.log(`[X] Fetching for User ${userId} from topic: ${topic}`);
 
     const token = userId ? await getValidToken(userId) : null;
 
@@ -4214,33 +4207,33 @@ app.get('/api/reddit/posts', async (req, res) => {
 
     if (token) {
       // Use Official API with OAuth Token
-      const searchQuery = keywords ? `${keywords} subreddit:${subreddit}` : `subreddit:${subreddit}`;
-      url = `https://oauth.reddit.com/r/${subreddit}/search.json?q=${encodeURIComponent(searchQuery)}&sort=new&limit=25`;
+      const searchQuery = keywords ? `${keywords} topic:${topic}` : `topic:${topic}`;
+      url = `https://api.twitter.com/2/tweets/search/recent?query=${encodeURIComponent(searchQuery)}&max_results=25`;
       headers = {
         'Authorization': `Bearer ${token}`,
         'User-Agent': getDynamicUserAgent(userId)
       };
     } else {
-      return res.status(401).json({ error: 'Reddit account not linked. Please go to Settings to link your account.' });
+      return res.status(401).json({ error: 'X account not linked. Please go to Settings to link your account.' });
     }
 
     const response = await fetch(url, { headers });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`[Reddit Error] Status: ${response.status} - ${errorText.substring(0, 100)}`);
-      throw new Error(`Reddit API Blocked (Status ${response.status}). Please link your Reddit account in Dashboard.`);
+      console.error(`[X Error] Status: ${response.status} - ${errorText.substring(0, 100)}`);
+      throw new Error(`X API Blocked (Status ${response.status}). Please link your X account in Dashboard.`);
     }
 
     const data = await response.json();
     const keywordList = keywords.toLowerCase().split(',').map(k => k.trim()).filter(k => k);
 
-    const posts = data.data.children.map(child => {
-      const post = child.data;
+    if (!data.data) return res.json([]);
 
+    const posts = data.data.map(post => {
       // Relevance & Opportunity Scoring
       let score = 0;
-      const content = (post.title + ' ' + post.selftext).toLowerCase();
+      const content = post.text.toLowerCase();
 
       // Keyword matching
       let matchCount = 0;
@@ -4261,10 +4254,6 @@ app.get('/api/reddit/posts', async (req, res) => {
       // Score for intent
       if (intent !== 'General') score += 20;
 
-      // Engagement score (capped)
-      score += Math.min(post.ups / 5, 20);
-      score += Math.min(post.num_comments * 2, 20);
-
       // Final normalized score (0-100)
       const opportunityScore = Math.min(Math.round(score), 100);
 
@@ -4274,24 +4263,24 @@ app.get('/api/reddit/posts', async (req, res) => {
 
       return {
         id: post.id,
-        title: post.title,
-        author: post.author,
-        subreddit: post.subreddit,
-        ups: post.ups,
-        num_comments: post.num_comments,
-        selftext: post.selftext,
-        url: `https://reddit.com${post.permalink}`,
-        created_utc: post.created_utc,
+        title: post.text.slice(0, 50) + (post.text.length > 50 ? '...' : ''),
+        author: 'User', // Author ID could be mapped if user.fields used
+        subtopic: topic,
+        ups: 0, // Placeholder
+        num_comments: 0, // Placeholder
+        selftext: post.text,
+        url: `https://x.com/any/status/${post.id}`,
+        created_utc: Date.now(),
         opportunityScore,
         intent,
-        isHot: post.ups > 100 || post.num_comments > 50,
+        isHot: false,
         competitors: mentionedCompetitors
       };
     });
 
     res.json(posts.sort((a, b) => b.opportunityScore - a.opportunityScore).slice(0, 20));
   } catch (error) {
-    console.error('Reddit Fetch Error:', error);
+    console.error('X Fetch Error:', error);
     res.status(500).json({ error: error.message });
   }
 });

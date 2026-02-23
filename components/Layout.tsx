@@ -35,13 +35,13 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ icon: Icon, label, path, acti
     to={path}
     onClick={onClick}
     className={`flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 group ${active
-      ? 'bg-orange-600 text-white shadow-lg shadow-orange-200 font-semibold translate-x-1'
+      ? 'bg-black text-white shadow-lg shadow-slate-200 font-semibold translate-x-1'
       : 'text-slate-500 hover:bg-white hover:text-slate-900 hover:shadow-sm'
       }`}
   >
     <Icon
       size={20}
-      className={`${active ? 'text-white' : 'group-hover:text-orange-500 transition-colors'}`}
+      className={`${active ? 'text-white' : 'group-hover:text-black transition-colors'}`}
     />
     <span className="text-sm">{label}</span>
   </Link>
@@ -110,17 +110,17 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
       {/* ── Mobile top bar ── */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 shadow-sm">
         <Link to="/dashboard" className="flex items-center gap-2 active:scale-95 transition-all group">
-          <div className="w-8 h-8 bg-orange-600 rounded-xl flex items-center justify-center text-white shadow-md group-hover:rotate-12 transition-transform">
+          <div className="w-8 h-8 bg-black rounded-xl flex items-center justify-center text-white shadow-md group-hover:rotate-12 transition-transform">
             <Zap fill="currentColor" size={16} />
           </div>
-          <span className="text-lg font-extrabold tracking-tight text-slate-900">RedditGo</span>
+          <span className="text-lg font-extrabold tracking-tight text-slate-900">XGo</span>
         </Link>
 
         <div className="flex items-center gap-3">
           {/* Mobile Credits Badge - Clickable */}
           <Link
             to="/pricing"
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-600/10 border border-orange-600/20 rounded-xl text-orange-600 active:scale-95 transition-all"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-black/10 border border-black/20 rounded-xl text-black active:scale-95 transition-all"
           >
             <Zap size={14} fill="currentColor" />
             <span className="text-xs font-black">{user?.credits || 0}</span>
@@ -129,12 +129,12 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
           <div className="relative" ref={profileRef}>
             <button
               onClick={(e) => { e.stopPropagation(); setIsProfileOpen(!isProfileOpen); }}
-              className="w-9 h-9 rounded-xl bg-gradient-to-tr from-orange-600 to-orange-400 p-0.5 shadow-sm text-white flex items-center justify-center font-black text-[10px] uppercase active:scale-95 transition-all"
+              className="w-9 h-9 rounded-xl bg-gradient-to-tr from-black to-slate-800 p-0.5 shadow-sm text-white flex items-center justify-center font-black text-[10px] uppercase active:scale-95 transition-all"
             >
               {user?.avatar ? (
                 <img src={user.avatar} alt="Profile" className="w-full h-full object-cover rounded-[0.55rem]" />
               ) : (
-                <div className="w-full h-full bg-white rounded-[0.55rem] flex items-center justify-center text-orange-600">
+                <div className="w-full h-full bg-white rounded-[0.55rem] flex items-center justify-center text-black">
                   {user?.name ? user.name.substring(0, 2).toUpperCase() : 'JD'}
                 </div>
               )}
@@ -147,7 +147,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
                   onClick={() => setIsProfileOpen(false)}
                   className="block px-4 py-3 border-b border-slate-50 mb-1 hover:bg-slate-50 transition-colors group/mobile-info"
                 >
-                  <p className="text-xs font-black text-slate-900 truncate group-hover/mobile-info:text-orange-600 transition-colors">{user?.name}</p>
+                  <p className="text-xs font-black text-slate-900 truncate group-hover/mobile-info:text-black transition-colors">{user?.name}</p>
                   <p className="text-[10px] font-bold text-slate-400 truncate">{user?.email}</p>
                 </Link>
                 <div className="space-y-0.5">
@@ -180,7 +180,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
               e.stopPropagation();
               setIsOpen(!isOpen);
             }}
-            className="p-2.5 bg-slate-100 hover:bg-orange-50 hover:text-orange-600 text-slate-600 rounded-xl transition-all active:scale-95"
+            className="p-2.5 bg-slate-100 hover:bg-slate-50 hover:text-black text-slate-600 rounded-xl transition-all active:scale-95"
             aria-label="Open menu"
           >
             {isOpen ? <X size={22} /> : <Menu size={22} />}
@@ -201,10 +201,10 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
       >
         <div className="flex items-center justify-between px-6 pt-6 pb-4 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 bg-orange-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-orange-100 ring-4 ring-orange-50">
+            <div className="w-11 h-11 bg-black rounded-2xl flex items-center justify-center text-white shadow-xl shadow-slate-100 ring-4 ring-slate-50">
               <Zap fill="currentColor" size={24} />
             </div>
-            <h1 className="text-xl font-extrabold tracking-tight text-slate-900">RedditGo</h1>
+            <h1 className="text-xl font-extrabold tracking-tight text-slate-900">XGo</h1>
           </div>
           <button
             onClick={() => setIsOpen(false)}
@@ -238,7 +238,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
               <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full blur-2xl -mr-6 -mt-6 group-hover:scale-150 transition-transform duration-500" />
               <div className="relative z-10">
                 <div className="flex items-center gap-2 mb-1">
-                  <Shield size={16} className="text-orange-500 fill-orange-500 animate-pulse" />
+                  <Shield size={16} className="text-black fill-black animate-pulse" />
                   <span className="font-bold text-sm tracking-wide">Back to Admin</span>
                 </div>
                 <p className="text-slate-400 text-[10px] leading-relaxed font-medium">Access system controls and management.</p>
@@ -250,7 +250,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
             <Link
               to="/pricing"
               onClick={() => setIsOpen(false)}
-              className="block bg-gradient-to-br from-orange-500 to-red-500 p-4 rounded-3xl shadow-lg shadow-orange-200 text-white relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300"
+              className="block bg-gradient-to-br from-black to-slate-800 p-4 rounded-3xl shadow-lg shadow-slate-200 text-white relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300"
             >
               <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full blur-2xl -mr-6 -mt-6 group-hover:scale-150 transition-transform duration-500" />
               <div className="relative z-10">
@@ -258,7 +258,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
                   <Crown size={16} className="text-yellow-300 fill-yellow-300 animate-pulse" />
                   <span className="font-bold text-sm tracking-wide">Upgrade to Pro</span>
                 </div>
-                <p className="text-orange-100 text-[10px] leading-relaxed font-medium">Unlock unlimited AI replies and advanced analytics.</p>
+                <p className="text-slate-100 text-[10px] leading-relaxed font-medium">Unlock unlimited AI replies and advanced analytics.</p>
               </div>
             </Link>
           )}
@@ -266,7 +266,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
           <Link
             to="/settings"
             onClick={() => setIsOpen(false)}
-            className="block bg-white/80 border border-slate-200/60 p-3 rounded-2xl shadow-sm hover:border-orange-300 hover:shadow-md transition-all group bg-gradient-to-br from-white to-slate-50/50"
+            className="block bg-white/80 border border-slate-200/60 p-3 rounded-2xl shadow-sm hover:border-black hover:shadow-md transition-all group bg-gradient-to-br from-white to-slate-50/50"
           >
             <div className="flex items-center gap-3">
               {user?.avatar ? (
@@ -277,7 +277,7 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
                 </div>
               )}
               <div className="flex-1 overflow-hidden">
-                <p className="text-sm font-bold text-slate-900 truncate group-hover:text-orange-600 transition-colors">{user?.name || 'Guest User'}</p>
+                <p className="text-sm font-bold text-slate-900 truncate group-hover:text-black transition-colors">{user?.name || 'Guest User'}</p>
                 <div className="flex items-center gap-1.5">
                   <span className={`w-1.5 h-1.5 rounded-full ${user?.plan === 'Starter' ? 'bg-slate-400' : 'bg-green-500 animate-pulse'}`} />
                   <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider group-hover:text-slate-600 transition-colors">{user?.plan || 'Guest'} Plan</p>
@@ -306,16 +306,16 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
             {/* Credits System Indicator - Clickable */}
             <Link
               to="/pricing"
-              className="flex items-center gap-3 px-5 py-2.5 bg-white border border-slate-200/60 rounded-2xl shadow-sm group cursor-pointer hover:border-orange-200 hover:shadow-md transition-all active:scale-[0.98]"
+              className="flex items-center gap-3 px-5 py-2.5 bg-white border border-slate-200/60 rounded-2xl shadow-sm group cursor-pointer hover:border-black hover:shadow-md transition-all active:scale-[0.98]"
             >
-              <div className="w-8 h-8 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-8 h-8 bg-slate-100 text-black rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                 <Zap size={16} fill="currentColor" />
               </div>
               <div>
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">Available Credits</p>
                 <p className="text-sm font-black text-slate-900 leading-none">{user?.credits || 0} <span className="text-[10px] text-slate-400 font-bold tracking-normal">points</span></p>
               </div>
-              <div className="ml-2 w-5 h-5 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 group-hover:bg-orange-600 group-hover:text-white transition-all">
+              <div className="ml-2 w-5 h-5 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 group-hover:bg-black group-hover:text-white transition-all">
                 <Plus size={12} />
               </div>
             </Link>
@@ -326,8 +326,8 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
                 onClick={(e) => e.stopPropagation()}
                 className="text-right hidden xl:block group/name"
               >
-                <p className="text-sm font-black text-slate-900 leading-none mb-1 group-hover/name:text-orange-600 transition-colors">{user?.name || 'Guest User'}</p>
-                <p className="text-[10px] font-bold text-orange-600 uppercase tracking-widest leading-none">
+                <p className="text-sm font-black text-slate-900 leading-none mb-1 group-hover/name:text-black transition-colors">{user?.name || 'Guest User'}</p>
+                <p className="text-[10px] font-bold text-black uppercase tracking-widest leading-none">
                   {user?.plan || 'Starter'} Plan
                 </p>
               </Link>
@@ -335,11 +335,11 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
                 onClick={(e) => { e.stopPropagation(); setIsProfileOpen(!isProfileOpen); }}
                 className="relative group focus:outline-none"
               >
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-orange-600 to-orange-400 p-0.5 shadow-lg shadow-orange-100 group-hover:scale-105 transition-all cursor-pointer">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-black to-slate-800 p-0.5 shadow-lg shadow-slate-100 group-hover:scale-105 transition-all cursor-pointer">
                   {user?.avatar ? (
                     <img src={user.avatar} alt="Profile" className="w-full h-full object-cover rounded-[0.85rem]" />
                   ) : (
-                    <div className="w-full h-full bg-white rounded-[0.85rem] flex items-center justify-center text-orange-600 font-black text-lg">
+                    <div className="w-full h-full bg-white rounded-[0.85rem] flex items-center justify-center text-black font-black text-lg">
                       {user?.name ? user.name.substring(0, 2).toUpperCase() : 'JD'}
                     </div>
                   )}
@@ -352,9 +352,9 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
                 <div className="absolute top-full right-0 mt-4 w-72 bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 p-3 z-50 animate-in fade-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
                   <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-[1.8rem] mb-2">
                     {user?.avatar ? (
-                      <img src={user.avatar} alt="Profile" className="w-10 h-10 rounded-xl object-cover bg-orange-600" />
+                      <img src={user.avatar} alt="Profile" className="w-10 h-10 rounded-xl object-cover bg-black" />
                     ) : (
-                      <div className="w-10 h-10 rounded-xl bg-orange-600 flex items-center justify-center text-white font-black">
+                      <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center text-white font-black">
                         {user?.name ? user.name.substring(0, 1).toUpperCase() : 'U'}
                       </div>
                     )}
@@ -367,21 +367,21 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
                   <div className="space-y-1">
                     <Link to="/pricing" onClick={() => setIsProfileOpen(false)} className="w-full flex items-center justify-between px-5 py-3 hover:bg-slate-50 rounded-2xl text-slate-600 transition-all group">
                       <div className="flex items-center gap-3">
-                        <CreditCard size={18} className="group-hover:text-orange-600" />
+                        <CreditCard size={18} className="group-hover:text-black" />
                         <span className="text-sm font-bold">Manage Plan</span>
                       </div>
                       <ChevronRight size={14} className="text-slate-300" />
                     </Link>
                     <Link to="/settings" onClick={() => setIsProfileOpen(false)} className="w-full flex items-center justify-between px-5 py-3 hover:bg-slate-50 rounded-2xl text-slate-600 transition-all group">
                       <div className="flex items-center gap-3">
-                        <Settings size={18} className="group-hover:text-orange-600" />
+                        <Settings size={18} className="group-hover:text-black" />
                         <span className="text-sm font-bold">Settings</span>
                       </div>
                       <ChevronRight size={14} className="text-slate-300" />
                     </Link>
                     <Link to="/support" onClick={() => setIsProfileOpen(false)} className="w-full flex items-center justify-between px-5 py-3 hover:bg-slate-50 rounded-2xl text-slate-600 transition-all group">
                       <div className="flex items-center gap-3">
-                        <LifeBuoy size={18} className="group-hover:text-orange-600" />
+                        <LifeBuoy size={18} className="group-hover:text-black" />
                         <span className="text-sm font-bold">Help & Support</span>
                       </div>
                       <ChevronRight size={14} className="text-slate-300" />

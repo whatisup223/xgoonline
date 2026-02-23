@@ -142,7 +142,7 @@ export const LoginPage: React.FC = () => {
     return (
         <div className="min-h-screen bg-slate-50 font-['Outfit'] flex items-center justify-center p-6 relative overflow-hidden">
             {/* Background Decorative Elements similar to Landing Page */}
-            <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-orange-200/40 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 -z-10 animate-pulse-slow"></div>
+            <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-slate-200/40 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 -z-10 animate-pulse-slow"></div>
             <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-blue-200/30 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2 -z-10 animate-pulse-slow delay-700"></div>
 
             <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col md:flex-row min-h-[600px]">
@@ -150,28 +150,28 @@ export const LoginPage: React.FC = () => {
                 {/* Left Side - Value Prop (Light Theme) */}
                 <div className="w-full md:w-5/12 bg-slate-50 p-10 flex flex-col justify-between relative overflow-hidden">
                     {/* Background Gradients */}
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-orange-100 rounded-full blur-3xl -mr-16 -mt-16"></div>
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-slate-100 rounded-full blur-3xl -mr-16 -mt-16"></div>
                     <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-50 rounded-full blur-3xl -ml-16 -mb-16"></div>
 
                     <div className="relative z-10">
-                        <Link to="/" className="inline-flex items-center gap-2 text-slate-500 hover:text-orange-600 transition-colors font-bold mb-8 group">
+                        <Link to="/" className="inline-flex items-center gap-2 text-slate-500 hover:text-black transition-colors font-bold mb-8 group">
                             <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
                             Back to Home
                         </Link>
 
                         <div className="space-y-6">
-                            <div className="inline-flex items-center gap-2 bg-orange-100 px-3 py-1 rounded-full w-fit">
-                                <Zap size={16} className="text-orange-600 fill-orange-600" />
-                                <span className="text-orange-700 font-bold text-xs uppercase tracking-wider">Ai Power</span>
+                            <div className="inline-flex items-center gap-2 bg-slate-100 px-3 py-1 rounded-full w-fit">
+                                <Zap size={16} className="text-black fill-black" />
+                                <span className="text-slate-700 font-bold text-xs uppercase tracking-wider">Ai Power</span>
                             </div>
 
                             <h1 className="text-4xl font-extrabold text-slate-900 leading-[1.1]">
-                                Your <span className="text-orange-600">AI Agent</span> is waiting.
+                                Your <span className="text-black">AI Agent</span> is waiting.
                             </h1>
 
                             <div className="space-y-4 pt-2">
                                 <div className="flex gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-                                    <div className="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600 flex-shrink-0">
+                                    <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-black flex-shrink-0">
                                         <Bot size={20} />
                                     </div>
                                     <div>
@@ -194,7 +194,7 @@ export const LoginPage: React.FC = () => {
                     </div>
 
                     <div className="relative z-10 pt-8 text-slate-400 text-xs font-medium">
-                        © 2026 RedditGo AI.
+                        © 2026 XGo AI.
                     </div>
                 </div>
 
@@ -235,7 +235,7 @@ export const LoginPage: React.FC = () => {
                                         id="email"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all font-medium text-slate-900 placeholder:text-slate-400"
+                                        className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black transition-all font-medium text-slate-900 placeholder:text-slate-400"
                                         placeholder="name@company.com"
                                         required
                                     />
@@ -244,14 +244,14 @@ export const LoginPage: React.FC = () => {
                                 <div className="space-y-1.5">
                                     <div className="flex items-center justify-between">
                                         <label className="text-sm font-bold text-slate-700" htmlFor="password">Password</label>
-                                        <Link to="/forgot-password" className="text-sm font-bold text-orange-600 hover:text-orange-700">Forgot password?</Link>
+                                        <Link to="/forgot-password" className="text-sm font-bold text-black hover:text-slate-700">Forgot password?</Link>
                                     </div>
                                     <input
                                         type="password"
                                         id="password"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all font-medium text-slate-900 placeholder:text-slate-400"
+                                        className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black transition-all font-medium text-slate-900 placeholder:text-slate-400"
                                         placeholder="••••••••"
                                         required
                                     />
@@ -274,7 +274,7 @@ export const LoginPage: React.FC = () => {
                                         id="mfaCode"
                                         value={mfaCode}
                                         onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                                        className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all font-black text-2xl text-center tracking-[10px] text-slate-900 placeholder:text-slate-300 placeholder:tracking-normal placeholder:text-sm placeholder:font-medium"
+                                        className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black transition-all font-black text-2xl text-center tracking-[10px] text-slate-900 placeholder:text-slate-300 placeholder:tracking-normal placeholder:text-sm placeholder:font-medium"
                                         placeholder="Enter 6-digit code"
                                         required
                                         autoFocus
@@ -284,7 +284,7 @@ export const LoginPage: React.FC = () => {
                                 <button
                                     type="submit"
                                     disabled={isMfaLoading}
-                                    className="w-full py-3.5 bg-orange-600 text-white rounded-xl font-bold text-lg hover:bg-orange-700 transition-colors shadow-lg shadow-orange-200 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                                    className="w-full py-3.5 bg-black text-white rounded-xl font-bold text-lg hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                                 >
                                     {isMfaLoading ? <Loader2 className="animate-spin" size={20} /> : <>Verify & Login <Check size={20} /></>}
                                 </button>
@@ -294,7 +294,7 @@ export const LoginPage: React.FC = () => {
                                         type="button"
                                         onClick={handleResend2FA}
                                         disabled={resendTimer > 0}
-                                        className="text-orange-600 font-bold text-sm hover:text-orange-700 disabled:text-slate-400 transition-colors"
+                                        className="text-black font-bold text-sm hover:text-slate-700 disabled:text-slate-400 transition-colors"
                                     >
                                         {resendTimer > 0 ? `Resend code in ${resendTimer}s` : "Didn't receive code? Resend"}
                                     </button>
@@ -312,7 +312,7 @@ export const LoginPage: React.FC = () => {
 
                         <div className="text-center">
                             <p className="text-slate-500 font-medium text-sm">
-                                Don't have an account? <Link to="/signup" className="text-orange-600 font-bold hover:text-orange-700">Sign Up</Link>
+                                Don't have an account? <Link to="/signup" className="text-black font-bold hover:text-slate-700">Sign Up</Link>
                             </p>
                         </div>
                     </div>

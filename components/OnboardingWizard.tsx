@@ -30,7 +30,7 @@ export const OnboardingWizard: React.FC = () => {
     };
 
     // Wizard State
-    const [isRedditLinked, setIsRedditLinked] = useState(false);
+    const [isXLinked, setIsXLinked] = useState(false);
     const [showSkipWarning, setShowSkipWarning] = useState(false);
 
     // Brand Settings Data
@@ -41,7 +41,7 @@ export const OnboardingWizard: React.FC = () => {
         targetAudience: '',
         problem: '',
         visualIdentity: '',
-        primaryColor: '#EA580C',
+        primaryColor: '#000000',
         secondaryColor: '#1E293B',
         brandTone: 'professional',
         customTone: ''
@@ -111,13 +111,13 @@ export const OnboardingWizard: React.FC = () => {
         }
     };
 
-    const handleConnectReddit = async () => {
+    const handleConnectX = async () => {
         try {
-            const res = await fetch('/api/auth/reddit/url');
+            const res = await fetch('/api/auth/x/url');
             const { url } = await res.json();
             window.location.href = url;
         } catch (e) {
-            alert("Failed to get Reddit auth URL");
+            alert("Failed to get X auth URL");
         }
     };
 
@@ -129,7 +129,7 @@ export const OnboardingWizard: React.FC = () => {
 
                 {/* Sidebar Info Section (Visual Branding) */}
                 <div className="w-full md:w-[280px] bg-slate-900 p-4 md:py-8 md:px-7 flex flex-col justify-between relative overflow-hidden shrink-0">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-orange-600/20 rounded-full blur-[80px] -mr-32 -mt-32" />
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-black/20 rounded-full blur-[80px] -mr-32 -mt-32" />
                     <div className="absolute bottom-0 left-0 w-48 h-48 bg-indigo-600/20 rounded-full blur-[60px] -ml-24 -mb-24" />
 
                     <div className="relative z-10">
@@ -144,10 +144,10 @@ export const OnboardingWizard: React.FC = () => {
                                         <ChevronLeft size={16} />
                                     </button>
                                 )}
-                                <div className="w-8 h-8 md:w-10 md:h-10 bg-orange-600 rounded-lg md:rounded-xl flex items-center justify-center text-white shadow-lg shadow-orange-900/20">
+                                <div className="w-8 h-8 md:w-10 md:h-10 bg-black rounded-lg md:rounded-xl flex items-center justify-center text-white shadow-lg shadow-slate-900/20">
                                     <Zap fill="currentColor" size={16} className="md:w-[20px]" />
                                 </div>
-                                <h2 className="text-lg md:text-xl font-black tracking-tight text-white uppercase">redditgo</h2>
+                                <h2 className="text-lg md:text-xl font-black tracking-tight text-white uppercase">XGo</h2>
                             </div>
 
                             {/* Mobile Step Counter */}
@@ -159,7 +159,7 @@ export const OnboardingWizard: React.FC = () => {
                         {/* Sidebar Content - Hidden on mobile, shown on desktop */}
                         <div className="hidden md:block space-y-6">
                             <div className="space-y-2">
-                                <p className="text-orange-500 font-black text-xs uppercase tracking-widest">Onboarding</p>
+                                <p className="text-black font-black text-xs uppercase tracking-widest">Onboarding</p>
                                 <h1 className="text-3xl font-black text-white leading-tight">Setting up your engine.</h1>
                             </div>
 
@@ -177,10 +177,10 @@ export const OnboardingWizard: React.FC = () => {
                                         onClick={() => updateStep(item.s)}
                                         className={`flex items-center gap-4 group w-full text-left transition-all cursor-pointer`}
                                     >
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all duration-500 ${step >= item.s ? 'bg-orange-600 border-orange-600 text-white' : 'border-slate-700 text-slate-500'} ${item.s === step ? 'ring-4 ring-orange-500/20 scale-110' : ''}`}>
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all duration-500 ${step >= item.s ? 'bg-black border-black-600 text-white' : 'border-slate-700 text-slate-500'} ${item.s === step ? 'ring-4 ring-slate-500/20 scale-110' : ''}`}>
                                             {step > item.s ? <Check size={14} strokeWidth={4} /> : <span className="text-xs font-black">{item.s}</span>}
                                         </div>
-                                        <span className={`text-sm font-bold transition-all ${step >= item.s ? 'text-white' : 'text-slate-500'} ${item.s === step ? 'text-orange-400' : ''}`}>{item.label}</span>
+                                        <span className={`text-sm font-bold transition-all ${step >= item.s ? 'text-white' : 'text-slate-500'} ${item.s === step ? 'text-black-400' : ''}`}>{item.label}</span>
                                     </button>
                                 ))}
                             </div>
@@ -189,7 +189,7 @@ export const OnboardingWizard: React.FC = () => {
                         {/* Mobile Progress Bar (Horizontal) */}
                         <div className="md:hidden w-full h-1 bg-white/10 rounded-full overflow-hidden mt-2">
                             <div
-                                className="h-full bg-orange-600 transition-all duration-500"
+                                className="h-full bg-black transition-all duration-500"
                                 style={{ width: `${(step / totalSteps) * 100}%` }}
                             />
                         </div>
@@ -200,7 +200,7 @@ export const OnboardingWizard: React.FC = () => {
                             <Star size={18} />
                         </div>
                         <p className="text-[10px] text-slate-400 font-medium">
-                            Join 5,000+ brands growing organically on Reddit.
+                            Join 5,000+ brands growing organically on X.
                         </p>
                     </div>
                 </div>
@@ -214,23 +214,23 @@ export const OnboardingWizard: React.FC = () => {
                             <div className="space-y-5 md:space-y-6 animate-in slide-in-from-bottom-8 duration-700">
                                 <div className="space-y-2 md:space-y-3 text-center md:text-left">
                                     <h2 className="text-2xl md:text-4xl font-black text-slate-900 tracking-tight">
-                                        Hello, <span className="text-orange-600">{user?.name?.split(' ')[0]}</span>.
+                                        Hello, <span className="text-black">{user?.name?.split(' ')[0]}</span>.
                                     </h2>
                                     <p className="text-slate-500 text-sm md:text-base font-medium leading-relaxed max-w-md mx-auto md:mx-0">
-                                        We're excited to help you automate your Reddit marketing. Let's get the basics sorted in under 2 minutes.
+                                        We're excited to help you automate your X marketing. Let's get the basics sorted in under 2 minutes.
                                     </p>
                                 </div>
                                 <div className="grid grid-cols-1 gap-3">
-                                    <div className="p-4 bg-slate-50 rounded-[2rem] border border-slate-100 flex items-center gap-5 group hover:border-orange-200 transition-all">
-                                        <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-orange-600 shadow-sm group-hover:scale-110 transition-transform shrink-0">
+                                    <div className="p-4 bg-slate-50 rounded-[2rem] border border-slate-100 flex items-center gap-5 group hover:border-black transition-all">
+                                        <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-black shadow-sm group-hover:scale-110 transition-transform shrink-0">
                                             <Sparkles size={24} />
                                         </div>
                                         <div>
                                             <p className="font-black text-slate-900 text-base">Post Agent</p>
-                                            <p className="text-xs text-slate-400 font-medium font-['Outfit']">Create engaging Reddit posts that drive massive traffic.</p>
+                                            <p className="text-xs text-slate-400 font-medium font-['Outfit']">Create engaging X posts that drive massive traffic.</p>
                                         </div>
                                     </div>
-                                    <div className="p-4 bg-slate-50 rounded-[2rem] border border-slate-100 flex items-center gap-5 group hover:border-orange-200 transition-all">
+                                    <div className="p-4 bg-slate-50 rounded-[2rem] border border-slate-100 flex items-center gap-5 group hover:border-black transition-all">
                                         <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-blue-600 shadow-sm group-hover:scale-110 transition-transform shrink-0">
                                             <Target size={24} />
                                         </div>
@@ -239,7 +239,7 @@ export const OnboardingWizard: React.FC = () => {
                                             <p className="text-xs text-slate-400 font-medium font-['Outfit']">Automate authentic discussions in relevant communities.</p>
                                         </div>
                                     </div>
-                                    <div className="p-4 bg-slate-50 rounded-[2rem] border border-slate-100 flex items-center gap-5 group hover:border-orange-200 transition-all">
+                                    <div className="p-4 bg-slate-50 rounded-[2rem] border border-slate-100 flex items-center gap-5 group hover:border-black transition-all">
                                         <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-purple-600 shadow-sm group-hover:scale-110 transition-transform shrink-0">
                                             <BarChart3 size={24} />
                                         </div>
@@ -266,7 +266,7 @@ export const OnboardingWizard: React.FC = () => {
                                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Brand Name</label>
                                             <input
                                                 type="text"
-                                                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-orange-50 focus:border-orange-500 focus:outline-none transition-all font-bold text-sm"
+                                                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-slate-50 focus:border-black-500 focus:outline-none transition-all font-bold text-sm"
                                                 placeholder="e.g. Marketation"
                                                 value={brandData.brandName}
                                                 onChange={(e) => setBrandData({ ...brandData, brandName: e.target.value })}
@@ -276,7 +276,7 @@ export const OnboardingWizard: React.FC = () => {
                                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Website URL</label>
                                             <input
                                                 type="text"
-                                                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-orange-50 focus:border-orange-500 focus:outline-none transition-all font-bold text-sm"
+                                                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-slate-50 focus:border-black-500 focus:outline-none transition-all font-bold text-sm"
                                                 placeholder="https://example.com"
                                                 value={brandData.website}
                                                 onChange={(e) => setBrandData({ ...brandData, website: e.target.value })}
@@ -287,7 +287,7 @@ export const OnboardingWizard: React.FC = () => {
                                     <div className="space-y-1.5">
                                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Brand Description</label>
                                         <textarea
-                                            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-orange-50 focus:border-orange-500 focus:outline-none transition-all font-medium h-24 resize-none text-sm shadow-inner"
+                                            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-slate-50 focus:border-black-500 focus:outline-none transition-all font-medium h-24 resize-none text-sm shadow-inner"
                                             placeholder="What does your company actually do?"
                                             value={brandData.description}
                                             onChange={(e) => setBrandData({ ...brandData, description: e.target.value })}
@@ -310,7 +310,7 @@ export const OnboardingWizard: React.FC = () => {
                                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Target Audience</label>
                                         <input
                                             type="text"
-                                            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-orange-50 focus:border-orange-500 focus:outline-none transition-all font-bold text-sm"
+                                            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-slate-50 focus:border-black-500 focus:outline-none transition-all font-bold text-sm"
                                             placeholder="e.g. SaaS Founders, Marketing Managers"
                                             value={brandData.targetAudience}
                                             onChange={(e) => setBrandData({ ...brandData, targetAudience: e.target.value })}
@@ -320,7 +320,7 @@ export const OnboardingWizard: React.FC = () => {
                                     <div className="space-y-1.5">
                                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Main Problem You Solve</label>
                                         <textarea
-                                            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-orange-50 focus:border-orange-500 focus:outline-none transition-all font-medium h-24 resize-none text-sm shadow-inner"
+                                            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-slate-50 focus:border-black-500 focus:outline-none transition-all font-medium h-24 resize-none text-sm shadow-inner"
                                             placeholder="What specific problem are you solving for them?"
                                             value={brandData.problem}
                                             onChange={(e) => setBrandData({ ...brandData, problem: e.target.value })}
@@ -343,7 +343,7 @@ export const OnboardingWizard: React.FC = () => {
                                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Visual Identity / Vibe</label>
                                         <input
                                             type="text"
-                                            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-orange-50 focus:border-orange-500 focus:outline-none transition-all font-bold text-sm"
+                                            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-slate-50 focus:border-black-500 focus:outline-none transition-all font-bold text-sm"
                                             placeholder="e.g. Modern, Minimalist, Dark Mode"
                                             value={brandData.visualIdentity}
                                             onChange={(e) => setBrandData({ ...brandData, visualIdentity: e.target.value })}
@@ -391,7 +391,7 @@ export const OnboardingWizard: React.FC = () => {
                                     <div className="space-y-1.5">
                                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Default Brand Tone</label>
                                         <select
-                                            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-orange-50 focus:border-orange-500 focus:outline-none transition-all font-bold text-sm appearance-none cursor-pointer"
+                                            className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-slate-50 focus:border-black-500 focus:outline-none transition-all font-bold text-sm appearance-none cursor-pointer"
                                             value={brandData.brandTone}
                                             onChange={(e) => setBrandData({ ...brandData, brandTone: e.target.value })}
                                         >
@@ -408,7 +408,7 @@ export const OnboardingWizard: React.FC = () => {
                                         <div className="space-y-1.5 animate-in slide-in-from-top-2 duration-300">
                                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Describe Your Custom Tone</label>
                                             <textarea
-                                                className="w-full p-4 bg-slate-50 border border-orange-200 rounded-2xl focus:ring-4 focus:ring-orange-50 focus:border-orange-500 focus:outline-none transition-all font-medium h-24 resize-none text-sm shadow-inner"
+                                                className="w-full p-4 bg-slate-50 border border-black rounded-2xl focus:ring-4 focus:ring-slate-50 focus:border-black-500 focus:outline-none transition-all font-medium h-24 resize-none text-sm shadow-inner"
                                                 placeholder="Describe your brand voice..."
                                                 value={brandData.customTone}
                                                 onChange={(e) => setBrandData({ ...brandData, customTone: e.target.value })}
@@ -419,24 +419,24 @@ export const OnboardingWizard: React.FC = () => {
                             </div>
                         )}
 
-                        {/* Step 5: Reddit Link */}
+                        {/* Step 5: X Link */}
                         {step === 5 && (
                             <div className="space-y-8 animate-in slide-in-from-right-8 duration-700 flex flex-col items-center text-center">
-                                <div className="w-20 h-20 bg-orange-600 rounded-[1.5rem] flex items-center justify-center text-white shadow-xl shadow-orange-200 rotate-12 ring-4 ring-orange-50">
+                                <div className="w-20 h-20 bg-black rounded-[1.5rem] flex items-center justify-center text-white shadow-xl shadow-slate-200 rotate-12 ring-4 ring-slate-50">
                                     <Globe size={36} />
                                 </div>
                                 <div className="space-y-3">
-                                    <h2 className="text-3xl font-black text-slate-900 tracking-tight">Sync Reddit</h2>
+                                    <h2 className="text-3xl font-black text-slate-900 tracking-tight">Sync X</h2>
                                     <p className="text-slate-500 text-sm font-medium max-w-md mx-auto leading-relaxed">
                                         We need your permission to discover relevant threads and post your AI-generated replies.
                                     </p>
                                 </div>
                                 <button
-                                    onClick={handleConnectReddit}
-                                    className="w-full max-w-sm py-4 bg-[#FF4500] text-white rounded-[1.5rem] font-black shadow-[0_16px_32px_-8px_rgba(255,69,0,0.3)] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 group text-sm"
+                                    onClick={handleConnectX}
+                                    className="w-full max-w-sm py-4 bg-[#000000] text-white rounded-[1.5rem] font-black shadow-[0_16px_32px_-8px_rgba(0,0,0,0.3)] hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 group text-sm"
                                 >
                                     <Globe size={20} className="group-hover:rotate-12 transition-transform" />
-                                    Link Reddit Account
+                                    Link X Account
                                 </button>
                                 <div className="flex items-center gap-2 text-slate-400 font-bold text-xs uppercase tracking-widest">
                                     <Shield size={14} className="text-green-500" />
@@ -467,26 +467,26 @@ export const OnboardingWizard: React.FC = () => {
                                         </div>
                                         <Check className="text-green-500" size={18} strokeWidth={3} />
                                     </div>
-                                    <div className={`p-4 rounded-2xl flex items-center justify-between border transition-all ${isRedditLinked ? 'bg-slate-50 border-slate-100' : 'bg-orange-50 border-orange-100'}`}>
+                                    <div className={`p-4 rounded-2xl flex items-center justify-between border transition-all ${isXLinked ? 'bg-slate-50 border-slate-100' : 'bg-slate-50 border-slate-100'}`}>
                                         <div className="flex items-center gap-3">
-                                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isRedditLinked ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'}`}>
+                                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isXLinked ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-black'}`}>
                                                 <Globe size={16} />
                                             </div>
-                                            <span className="font-bold text-slate-900 text-sm">Reddit Account</span>
+                                            <span className="font-bold text-slate-900 text-sm">X Account</span>
                                         </div>
-                                        {isRedditLinked ? (
+                                        {isXLinked ? (
                                             <Check className="text-green-500" size={18} strokeWidth={3} />
                                         ) : (
                                             <button
                                                 onClick={() => updateStep(5)}
-                                                className="text-[10px] font-black text-orange-600 uppercase underline tracking-widest hover:text-orange-700"
+                                                className="text-[10px] font-black text-black uppercase underline tracking-widest hover:text-black"
                                             >
                                                 Link Now
                                             </button>
                                         )}
                                     </div>
                                 </div>
-                                <div className="bg-gradient-to-r from-orange-500 to-red-500 p-6 rounded-3xl text-white shadow-xl shadow-orange-200 transform hover:scale-[1.02] transition-transform border border-orange-400 relative overflow-hidden w-full max-w-sm cursor-default">
+                                <div className="bg-gradient-to-r from-black to-slate-800 p-6 rounded-3xl text-white shadow-xl shadow-slate-200 transform hover:scale-[1.02] transition-transform border border-black relative overflow-hidden w-full max-w-sm cursor-default">
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-8 -mt-8 animate-pulse-slow" />
                                     <div className="relative z-10 flex items-center justify-between">
                                         <div className="flex items-center gap-4">
@@ -495,10 +495,10 @@ export const OnboardingWizard: React.FC = () => {
                                             </div>
                                             <div className="text-left">
                                                 <p className="font-black text-2xl leading-none tracking-tight">100 Credits</p>
-                                                <p className="text-orange-100 text-[10px] font-black uppercase tracking-widest mt-1.5 opacity-90">Setup Bonus Unlocked</p>
+                                                <p className="text-slate-100 text-[10px] font-black uppercase tracking-widest mt-1.5 opacity-90">Setup Bonus Unlocked</p>
                                             </div>
                                         </div>
-                                        <div className="bg-white text-orange-600 px-3 py-1.5 rounded-full text-[10px] font-black shadow-lg tracking-wider uppercase">
+                                        <div className="bg-white text-black px-3 py-1.5 rounded-full text-[10px] font-black shadow-lg tracking-wider uppercase">
                                             Added
                                         </div>
                                     </div>
@@ -510,13 +510,13 @@ export const OnboardingWizard: React.FC = () => {
                         {showSkipWarning && (
                             <div className="absolute inset-0 bg-white/95 backdrop-blur-sm z-50 flex items-center justify-center p-8 text-center animate-in fade-in zoom-in-95">
                                 <div className="space-y-6 max-w-xs">
-                                    <div className="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto">
+                                    <div className="w-16 h-16 bg-slate-100 text-black rounded-full flex items-center justify-center mx-auto">
                                         <Shield size={32} />
                                     </div>
                                     <div className="space-y-2">
                                         <h3 className="text-xl font-black text-slate-900">Are you sure?</h3>
                                         <p className="text-sm text-slate-500 font-medium">
-                                            Without linking Reddit, you won't be able to use the AI agents to post or reply.
+                                            Without linking X, you won't be able to use the AI agents to post or reply.
                                         </p>
                                     </div>
                                     <div className="flex flex-col gap-2">
@@ -579,7 +579,7 @@ export const OnboardingWizard: React.FC = () => {
                                 <button
                                     onClick={step === 4 ? handleSaveBrand : handleNext}
                                     disabled={isLoading}
-                                    className="px-8 py-4 bg-slate-900 text-white rounded-[1.5rem] font-black shadow-xl shadow-slate-200 hover:bg-orange-600 hover:shadow-orange-200 transition-all active:scale-95 flex items-center gap-2 text-sm"
+                                    className="px-8 py-4 bg-slate-900 text-white rounded-[1.5rem] font-black shadow-xl shadow-slate-200 hover:bg-black hover:shadow-slate-200 transition-all active:scale-95 flex items-center gap-2 text-sm"
                                 >
                                     {isLoading ? 'Saving...' : 'Continue'}
                                     <ArrowRight size={18} />
@@ -588,7 +588,7 @@ export const OnboardingWizard: React.FC = () => {
                                 <button
                                     onClick={handleFinish}
                                     disabled={isLoading}
-                                    className="px-10 py-5 bg-orange-600 text-white rounded-[1.8rem] font-black shadow-[0_20px_40px_-10px_rgba(234,88,12,0.4)] hover:bg-orange-700 hover:scale-105 transition-all active:scale-95 flex items-center gap-3 group"
+                                    className="px-10 py-5 bg-black text-white rounded-[1.8rem] font-black shadow-[0_20px_40px_-10px_rgba(234,88,12,0.4)] hover:bg-black-700 hover:scale-105 transition-all active:scale-95 flex items-center gap-3 group"
                                 >
                                     <Rocket size={22} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                                     Launch Dashboard

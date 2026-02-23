@@ -1,42 +1,51 @@
 
-export interface RedditPost {
+export interface XTweet {
   id: string;
-  title: string;
-  author: string;
-  subreddit: string;
-  ups: number;
-  num_comments: number;
-  selftext: string;
-  url: string;
-  created_utc: number;
+  title?: string;
+  author?: string;
+  topic?: string;
+  likes?: number;
+  num_replies?: number;
+  text?: string;
+  url?: string;
+  created_at?: number;
+  // Extended fields used in Comments agent
+  subX?: string;
+  ups?: number;
+  num_comments?: number;
+  selftext?: string;
+  created_utc?: number;
+  opportunityScore?: number;
+  intent?: string;
 }
 
 export interface GeneratedReply {
-  comment: string;
-  tone: string;
-  actionable_points: string[];
-  keywords: string[];
+  reply?: string;
+  comment?: string;
+  tone?: string;
+  actionable_points?: string[];
+  keywords?: string[];
 }
 
 export interface ScheduledPost {
   id: string;
   postId: string;
   postTitle: string;
-  subreddit: string;
+  topic: string;
   replyContent: string;
   scheduledTime: string;
   status: 'pending' | 'posted' | 'failed';
   engagement?: {
-    upvotes: number;
+    likes: number;
     replies: number;
   };
 }
 
 export interface UserSettings {
-  redditLinked: boolean;
-  redditUsername: string | null;
+  xLinked: boolean;
+  xHandle: string | null;
   subscriptionPlan: 'free' | 'pro' | 'business';
-  trackedSubreddits: string[];
+  trackedKeywords: string[];
   autoReplyEnabled: boolean;
 }
 

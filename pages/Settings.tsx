@@ -13,12 +13,12 @@ import { useAuth } from '../context/AuthContext';
 type Tab = 'profile' | 'brand' | 'billing' | 'history';
 
 const DEFAULT_BRAND = {
-    brandName: 'Redditgo',
-    description: 'An AI-powered Reddit outreach tool that helps SaaS founders find and engage with their target audience authentically.',
+    brandName: 'XGo',
+    description: 'An AI-powered X outreach tool that helps SaaS founders find and engage with their target audience authentically.',
     targetAudience: 'SaaS founders, indie hackers, B2B marketers',
-    problem: 'Manual Reddit outreach is slow, inconsistent, and hard to scale without sounding spammy.',
-    website: 'https://redditgo.online/',
-    primaryColor: '#EA580C',
+    problem: 'Manual X outreach is slow, inconsistent, and hard to scale without sounding spammy.',
+    website: 'https://XGo.online/',
+    primaryColor: '#0F172A',
     secondaryColor: '#1E293B',
     brandTone: 'professional',
     customTone: ''
@@ -166,7 +166,7 @@ export const Settings: React.FC = () => {
     const navigateToSettings = (tab: Tab) => {
         setActiveTab(tab);
     };
-    const [redditStatus, setRedditStatus] = useState<{ connected: boolean; accounts: any[] }>({ connected: false, accounts: [] });
+    const [XStatus, setXStatus] = useState<{ connected: boolean; accounts: any[] }>({ connected: false, accounts: [] });
     const [loading, setLoading] = useState(true);
     const [brandSaving, setBrandSaving] = useState(false);
     const [brandSaved, setBrandSaved] = useState(false);
@@ -218,8 +218,8 @@ export const Settings: React.FC = () => {
 
                 // Logo
                 ctx.font = 'bold 42px Arial';
-                ctx.fillStyle = '#ea580c';
-                ctx.fillText('Redditgo', 50, 95);
+                ctx.fillStyle = '#0F172A';
+                ctx.fillText('XGo', 50, 95);
 
                 // Right header info
                 ctx.textAlign = 'right';
@@ -313,7 +313,7 @@ export const Settings: React.FC = () => {
                 ctx.font = 'bold 24px Arial';
                 ctx.fillStyle = '#0f172a';
                 ctx.fillText('Total:', 600, lineY + 80);
-                ctx.fillStyle = '#ea580c';
+                ctx.fillStyle = '#0F172A';
                 ctx.fillText(`${price} ${currency}`, 725, lineY + 80);
 
                 // Payment Method Indicator
@@ -360,7 +360,7 @@ export const Settings: React.FC = () => {
                 ctx.fillStyle = '#94a3b8';
                 ctx.fillText('This is a computer-generated receipt. No signature is required.', 400, 670);
                 ctx.font = 'bold 13px Arial';
-                ctx.fillText('https://redditgo.online', 400, 688);
+                ctx.fillText('https://XGo.online', 400, 688);
 
                 resolve(canvas.toDataURL('image/png'));
             }
@@ -378,17 +378,17 @@ export const Settings: React.FC = () => {
         const fetchData = async () => {
             if (!user?.id) { setLoading(false); return; }
             try {
-                const [redditRes, brandRes, plansRes] = await Promise.all([
-                    fetch(`/api/user/reddit/status?userId=${user.id}`),
+                const [XRes, brandRes, plansRes] = await Promise.all([
+                    fetch(`/api/user/x/status?userId=${user.id}`),
                     fetch(`/api/user/brand-profile?userId=${user.id}`),
                     fetch('/api/plans')
                 ]);
 
-                if (redditRes.ok) {
-                    const status = await redditRes.json();
-                    setRedditStatus(status);
+                if (XRes.ok) {
+                    const status = await XRes.json();
+                    setXStatus(status);
                 } else {
-                    setRedditStatus({ connected: false, accounts: [] });
+                    setXStatus({ connected: false, accounts: [] });
                 }
 
                 if (brandRes.ok) {
@@ -403,7 +403,7 @@ export const Settings: React.FC = () => {
                 }
             } catch (err) {
                 console.error("Failed to fetch settings:", err);
-                setRedditStatus({ connected: false, accounts: [] });
+                setXStatus({ connected: false, accounts: [] });
             } finally {
                 setLoading(false);
             }
@@ -411,13 +411,13 @@ export const Settings: React.FC = () => {
         fetchData();
     }, [user]);
 
-    const handleConnectReddit = async () => {
+    const handleConnectX = async () => {
         try {
-            const response = await fetch('/api/auth/reddit/url');
+            const response = await fetch('/api/auth/x/url');
             const data = await response.json();
             if (data.url) window.location.href = data.url;
         } catch {
-            alert('Failed to initiate Reddit connection');
+            alert('Failed to initiate X connection');
         }
     };
 
@@ -542,7 +542,7 @@ export const Settings: React.FC = () => {
 
     if (!user) return (
         <div className="min-h-[400px] flex items-center justify-center">
-            <RefreshCw className="animate-spin text-orange-600" size={32} />
+            <RefreshCw className="animate-spin text-black" size={32} />
         </div>
     );
 
@@ -609,7 +609,7 @@ export const Settings: React.FC = () => {
                 <div className="space-y-1">
                     <p className="text-slate-400 font-semibold text-sm">Welcome back, {user?.name?.split(' ')[0] || 'there'}</p>
                     <div className="flex items-center gap-2">
-                        <span className="w-1.5 h-7 bg-orange-600 rounded-full" />
+                        <span className="w-1.5 h-7 bg-black rounded-full" />
                         <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Settings</h1>
                     </div>
                     <p className="text-slate-400 font-medium text-sm pl-4">Manage your account, brand, and preferences.</p>
@@ -644,11 +644,11 @@ export const Settings: React.FC = () => {
                 <div className="space-y-8">
                     <section className="space-y-4">
                         <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2">
-                            <User className="text-orange-600" size={20} /> Profile Information
+                            <User className="text-black" size={20} /> Profile Information
                         </h2>
                         <div className="bg-white p-8 rounded-[2rem] border border-slate-200/60 shadow-sm space-y-6">
                             <div className="flex items-center gap-6">
-                                <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 text-2xl font-black border-4 border-white shadow-lg shrink-0 overflow-hidden relative">
+                                <div className="w-20 h-20 bg-slate-200 rounded-full flex items-center justify-center text-black text-2xl font-black border-4 border-white shadow-lg shrink-0 overflow-hidden relative">
                                     {avatarUrl ? (
                                         <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
                                     ) : (
@@ -668,14 +668,14 @@ export const Settings: React.FC = () => {
                                         type="text"
                                         value={profileName}
                                         onChange={(e) => setProfileName(e.target.value)}
-                                        className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none font-bold text-slate-900 focus:border-orange-500 transition-colors"
+                                        className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none font-bold text-slate-900 focus:border-black transition-colors"
                                     />
                                 </label>
                                 <label className="space-y-2">
                                     <span className="text-sm font-bold text-slate-700">Profile Picture</span>
                                     <div className="flex gap-2">
                                         <label className="flex-1 cursor-pointer group">
-                                            <div className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-500 group-hover:bg-slate-100 group-hover:border-orange-200 group-hover:text-orange-600 transition-all flex items-center justify-center gap-2">
+                                            <div className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-500 group-hover:bg-slate-100 group-hover:border-black-200 group-hover:text-black transition-all flex items-center justify-center gap-2">
                                                 <Upload size={18} />
                                                 <span className="text-sm">Choose Image...</span>
                                             </div>
@@ -720,7 +720,7 @@ export const Settings: React.FC = () => {
                                 <button
                                     onClick={handleSaveProfile}
                                     disabled={isProfileSaving || !profileName.trim()}
-                                    className="px-8 py-3 bg-slate-900 text-white rounded-xl font-black hover:bg-orange-600 transition-all disabled:opacity-50 disabled:grayscale flex items-center gap-2"
+                                    className="px-8 py-3 bg-slate-900 text-white rounded-xl font-black hover:bg-black transition-all disabled:opacity-50 disabled:grayscale flex items-center gap-2"
                                 >
                                     {isProfileSaving ? <RefreshCw className="animate-spin" size={16} /> : <Save size={16} />}
                                     Save Changes
@@ -731,7 +731,7 @@ export const Settings: React.FC = () => {
 
                     <section className="space-y-4">
                         <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2">
-                            <Shield className="text-orange-600" size={20} /> Security & Password
+                            <Shield className="text-black" size={20} /> Security & Password
                         </h2>
                         <div className="bg-white p-8 rounded-[2rem] border border-slate-200/60 shadow-sm space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -742,7 +742,7 @@ export const Settings: React.FC = () => {
                                         placeholder="••••••••"
                                         value={passwordData.currentPassword}
                                         onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                                        className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none font-bold text-slate-900 focus:border-orange-500 transition-colors"
+                                        className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none font-bold text-slate-900 focus:border-black transition-colors"
                                     />
                                 </label>
                                 <label className="space-y-2">
@@ -752,7 +752,7 @@ export const Settings: React.FC = () => {
                                         placeholder="••••••••"
                                         value={passwordData.newPassword}
                                         onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                                        className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none font-bold text-slate-900 focus:border-orange-500 transition-colors"
+                                        className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none font-bold text-slate-900 focus:border-black transition-colors"
                                     />
                                 </label>
                                 <label className="space-y-2">
@@ -762,7 +762,7 @@ export const Settings: React.FC = () => {
                                         placeholder="••••••••"
                                         value={passwordData.confirmPassword}
                                         onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                                        className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none font-bold text-slate-900 focus:border-orange-500 transition-colors"
+                                        className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none font-bold text-slate-900 focus:border-black transition-colors"
                                     />
                                 </label>
                             </div>
@@ -778,7 +778,7 @@ export const Settings: React.FC = () => {
                                 <button
                                     onClick={handlePasswordChange}
                                     disabled={isPasswordSaving || !passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword}
-                                    className="px-8 py-3 bg-slate-900 text-white rounded-xl font-black hover:bg-orange-600 transition-all disabled:opacity-50 disabled:grayscale flex items-center gap-2"
+                                    className="px-8 py-3 bg-slate-900 text-white rounded-xl font-black hover:bg-black transition-all disabled:opacity-50 disabled:grayscale flex items-center gap-2"
                                 >
                                     {isPasswordSaving ? <RefreshCw className="animate-spin" size={16} /> : <Shield size={16} />}
                                     Update Password
@@ -818,7 +818,7 @@ export const Settings: React.FC = () => {
                                             setProfileMessage({ type: 'error', text: 'Failed to update 2FA settings' });
                                         }
                                     }}
-                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${user.twoFactorEnabled ? 'bg-orange-600' : 'bg-slate-300'}`}
+                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${user.twoFactorEnabled ? 'bg-black' : 'bg-slate-300'}`}
                                 >
                                     <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${user.twoFactorEnabled ? 'translate-x-6' : 'translate-x-1'}`} />
                                 </button>
@@ -846,16 +846,16 @@ export const Settings: React.FC = () => {
                                             <div>
                                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Account Slots</p>
                                                 <p className="text-sm font-bold text-slate-900">
-                                                    {(redditStatus.accounts || []).length} / {plans.find(p => (p.id || '').toLowerCase() === (user.plan || '').toLowerCase() || (p.name || '').toLowerCase() === (user.plan || '').toLowerCase())?.maxAccounts || 1} <span className="text-slate-400 font-medium ml-1">accounts connected</span>
+                                                    {(XStatus.accounts || []).length} / {plans.find(p => (p.id || '').toLowerCase() === (user.plan || '').toLowerCase() || (p.name || '').toLowerCase() === (user.plan || '').toLowerCase())?.maxAccounts || 1} <span className="text-slate-400 font-medium ml-1">accounts connected</span>
                                                 </p>
                                             </div>
                                         </div>
-                                        {(redditStatus.accounts || []).length >= (plans.find(p => (p.id || '').toLowerCase() === (user.plan || '').toLowerCase() || (p.name || '').toLowerCase() === (user.plan || '').toLowerCase())?.maxAccounts || 1) ? (
-                                            <Link to="/pricing" className="text-[10px] font-black text-orange-600 bg-orange-50 px-3 py-1.5 rounded-lg hover:bg-orange-100 transition-colors">UPGRADE FOR MORE</Link>
+                                        {(XStatus.accounts || []).length >= (plans.find(p => (p.id || '').toLowerCase() === (user.plan || '').toLowerCase() || (p.name || '').toLowerCase() === (user.plan || '').toLowerCase())?.maxAccounts || 1) ? (
+                                            <Link to="/pricing" className="text-[10px] font-black text-black bg-slate-50 px-3 py-1.5 rounded-lg hover:bg-slate-200 transition-colors">UPGRADE FOR MORE</Link>
                                         ) : (
                                             <button
-                                                onClick={handleConnectReddit}
-                                                className="text-[10px] font-black text-white bg-slate-900 px-4 py-1.5 rounded-lg hover:bg-orange-600 transition-all flex items-center gap-2"
+                                                onClick={handleConnectX}
+                                                className="text-[10px] font-black text-white bg-slate-900 px-4 py-1.5 rounded-lg hover:bg-black transition-all flex items-center gap-2"
                                             >
                                                 <RefreshCw size={10} /> LINK NEW ACCOUNT
                                             </button>
@@ -863,17 +863,17 @@ export const Settings: React.FC = () => {
                                     </div>
 
                                     {/* Account List */}
-                                    {(redditStatus.accounts || []).length > 0 ? (
+                                    {(XStatus.accounts || []).length > 0 ? (
                                         <div className="space-y-3">
-                                            {(redditStatus.accounts || []).map((acc: any) => (
-                                                <div key={acc.username} className="flex items-center justify-between p-5 bg-white border border-slate-100 rounded-[1.5rem] hover:border-orange-200 transition-all group">
+                                            {(XStatus.accounts || []).map((acc: any) => (
+                                                <div key={acc.username} className="flex items-center justify-between p-5 bg-white border border-slate-100 rounded-[1.5rem] hover:border-black-200 transition-all group">
                                                     <div className="flex items-center gap-4">
                                                         {acc.icon
                                                             ? <img src={acc.icon} alt={acc.username} className="w-10 h-10 rounded-xl border-2 border-white shadow-sm" />
-                                                            : <div className="w-10 h-10 bg-orange-600 rounded-xl flex items-center justify-center text-white font-black">R</div>
+                                                            : <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center text-white font-black">R</div>
                                                         }
                                                         <div>
-                                                            <p className="font-bold text-slate-900 group-hover:text-orange-600 transition-colors">u/{acc.username}</p>
+                                                            <p className="font-bold text-slate-900 group-hover:text-black transition-colors">u/{acc.username}</p>
                                                             <p className="text-[10px] text-slate-400 font-medium">Linked on {new Date(acc.connectedAt).toLocaleDateString()}</p>
                                                         </div>
                                                     </div>
@@ -884,7 +884,7 @@ export const Settings: React.FC = () => {
                                                         <button
                                                             onClick={async () => {
                                                                 if (window.confirm(`Disconnect u/${acc.username}?`)) {
-                                                                    const res = await fetch('/api/user/reddit/disconnect', {
+                                                                    const res = await fetch('/api/user/x/disconnect', {
                                                                         method: 'POST',
                                                                         headers: { 'Content-Type': 'application/json' },
                                                                         body: JSON.stringify({ userId: user.id, username: acc.username })
@@ -903,10 +903,10 @@ export const Settings: React.FC = () => {
                                     ) : (
                                         <div className="text-center py-10 bg-slate-50 rounded-[2rem] border border-dashed border-slate-200">
                                             <Globe className="mx-auto text-slate-300 mb-3" size={40} />
-                                            <p className="font-bold text-slate-900">No Reddit accounts linked</p>
+                                            <p className="font-bold text-slate-900">No X accounts linked</p>
                                             <p className="text-xs text-slate-400 mb-6">Connect your first account to start using AI outreach.</p>
-                                            <button onClick={handleConnectReddit} className="px-8 py-3 bg-slate-900 text-white rounded-xl text-xs font-black hover:bg-orange-600 transition-all shadow-xl shadow-slate-200">
-                                                LINK REDDIT ACCOUNT
+                                            <button onClick={handleConnectX} className="px-8 py-3 bg-slate-900 text-white rounded-xl text-xs font-black hover:bg-black transition-all shadow-xl shadow-slate-200">
+                                                LINK X ACCOUNT
                                             </button>
                                         </div>
                                     )}
@@ -952,13 +952,13 @@ export const Settings: React.FC = () => {
                 <div className="space-y-6">
 
                     {/* AI Memory Banner */}
-                    <div className="p-5 bg-gradient-to-r from-orange-500 to-amber-500 rounded-3xl flex items-center gap-4 text-white shadow-xl shadow-orange-200">
+                    <div className="p-5 bg-gradient-to-r from-black-500 to-amber-500 rounded-3xl flex items-center gap-4 text-white shadow-xl shadow-slate-200">
                         <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0">
                             <Zap size={22} className="text-white" />
                         </div>
                         <div>
                             <p className="font-extrabold text-base">AI Brand Memory — Fill Once, Used Everywhere</p>
-                            <p className="text-orange-100 text-sm font-medium mt-0.5">
+                            <p className="text-black-100 text-sm font-medium mt-0.5">
                                 Every AI post & comment will automatically use this context. No need to re-enter anything.
                             </p>
                         </div>
@@ -969,7 +969,7 @@ export const Settings: React.FC = () => {
                         {/* ── Section 1: Brand Identity ── */}
                         <div className="p-8 space-y-6">
                             <div className="flex items-center gap-3 pb-2 border-b border-slate-50">
-                                <div className="w-9 h-9 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center">
+                                <div className="w-9 h-9 bg-slate-50 text-black rounded-xl flex items-center justify-center">
                                     <Building2 size={16} />
                                 </div>
                                 <div>
@@ -985,8 +985,8 @@ export const Settings: React.FC = () => {
                                     </label>
                                     <input
                                         type="text"
-                                        placeholder="e.g. Redditgo"
-                                        className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-orange-500 font-bold transition-all text-slate-900"
+                                        placeholder="e.g. XGo"
+                                        className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-black font-bold transition-all text-slate-900"
                                         value={brandProfile.brandName}
                                         onChange={e => setBrandProfile(p => ({ ...p, brandName: e.target.value }))}
                                     />
@@ -998,7 +998,7 @@ export const Settings: React.FC = () => {
                                     <input
                                         type="text"
                                         placeholder="https://yoursite.com"
-                                        className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-orange-500 font-bold transition-all text-slate-900"
+                                        className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-black font-bold transition-all text-slate-900"
                                         value={brandProfile.website}
                                         onChange={e => setBrandProfile(p => ({ ...p, website: e.target.value }))}
                                     />
@@ -1009,8 +1009,8 @@ export const Settings: React.FC = () => {
                                 <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">What does your product do?</label>
                                 <textarea
                                     rows={2}
-                                    placeholder="e.g. Redditgo is an AI-powered Reddit outreach tool that helps SaaS founders find and engage with their target audience authentically."
-                                    className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-orange-500 font-medium text-slate-700 resize-none transition-all"
+                                    placeholder="e.g. XGo is an AI-powered X outreach tool that helps SaaS founders find and engage with their target audience authentically."
+                                    className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-black font-medium text-slate-700 resize-none transition-all"
                                     value={brandProfile.description}
                                     onChange={e => setBrandProfile(p => ({ ...p, description: e.target.value }))}
                                 />
@@ -1035,7 +1035,7 @@ export const Settings: React.FC = () => {
                                     <input
                                         type="text"
                                         placeholder="e.g. SaaS founders, B2B marketers"
-                                        className="w-full p-4 bg-white border border-slate-100 rounded-2xl focus:outline-none focus:border-orange-500 font-bold transition-all text-slate-900"
+                                        className="w-full p-4 bg-white border border-slate-100 rounded-2xl focus:outline-none focus:border-black font-bold transition-all text-slate-900"
                                         value={brandProfile.targetAudience}
                                         onChange={e => setBrandProfile(p => ({ ...p, targetAudience: e.target.value }))}
                                     />
@@ -1044,8 +1044,8 @@ export const Settings: React.FC = () => {
                                     <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Main Problem You Solve</label>
                                     <input
                                         type="text"
-                                        placeholder="e.g. Manual Reddit outreach is slow and ineffective"
-                                        className="w-full p-4 bg-white border border-slate-100 rounded-2xl focus:outline-none focus:border-orange-500 font-bold transition-all text-slate-900"
+                                        placeholder="e.g. Manual X outreach is slow and ineffective"
+                                        className="w-full p-4 bg-white border border-slate-100 rounded-2xl focus:outline-none focus:border-black font-bold transition-all text-slate-900"
                                         value={brandProfile.problem}
                                         onChange={e => setBrandProfile(p => ({ ...p, problem: e.target.value }))}
                                     />
@@ -1085,15 +1085,15 @@ export const Settings: React.FC = () => {
                                                 type="text"
                                                 value={brandProfile.primaryColor}
                                                 onChange={e => setBrandProfile(p => ({ ...p, primaryColor: e.target.value }))}
-                                                className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:border-orange-500 font-mono font-bold text-slate-700 text-sm"
-                                                placeholder="#EA580C"
+                                                className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:border-black font-mono font-bold text-slate-700 text-sm"
+                                                placeholder="#0F172A"
                                             />
                                             <p className="text-[10px] text-slate-400 font-medium mt-1 px-1">Main brand color</p>
                                         </div>
                                     </div>
                                     {/* Preset swatches */}
                                     <div className="flex gap-2 flex-wrap">
-                                        {['#EA580C', '#3B82F6', '#8B5CF6', '#10B981', '#F59E0B', '#EF4444', '#EC4899', '#06B6D4'].map(c => (
+                                        {['#0F172A', '#3B82F6', '#8B5CF6', '#10B981', '#F59E0B', '#EF4444', '#EC4899', '#06B6D4'].map(c => (
                                             <button
                                                 key={c}
                                                 onClick={() => setBrandProfile(p => ({ ...p, primaryColor: c }))}
@@ -1123,7 +1123,7 @@ export const Settings: React.FC = () => {
                                                 type="text"
                                                 value={brandProfile.secondaryColor}
                                                 onChange={e => setBrandProfile(p => ({ ...p, secondaryColor: e.target.value }))}
-                                                className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:border-orange-500 font-mono font-bold text-slate-700 text-sm"
+                                                className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:border-black font-mono font-bold text-slate-700 text-sm"
                                                 placeholder="#1E293B"
                                             />
                                             <p className="text-[10px] text-slate-400 font-medium mt-1 px-1">Background / accent color</p>
@@ -1174,7 +1174,7 @@ export const Settings: React.FC = () => {
                                         key={t.id}
                                         onClick={() => setBrandProfile(p => ({ ...p, brandTone: t.id }))}
                                         className={`p-4 rounded-2xl border-2 text-left transition-all ${brandProfile.brandTone === t.id
-                                            ? 'border-orange-500 bg-orange-50 shadow-md shadow-orange-100'
+                                            ? 'border-black bg-slate-50 shadow-md shadow-slate-100'
                                             : 'border-slate-100 bg-white hover:border-slate-200 hover:shadow-sm'
                                             }`}
                                     >
@@ -1183,7 +1183,7 @@ export const Settings: React.FC = () => {
                                         <p className="text-[10px] text-slate-400 font-medium mt-0.5 leading-tight">{t.desc}</p>
                                         {brandProfile.brandTone === t.id && (
                                             <div className="mt-2">
-                                                <Check size={12} className="text-orange-600" />
+                                                <Check size={12} className="text-black" />
                                             </div>
                                         )}
                                     </button>
@@ -1199,7 +1199,7 @@ export const Settings: React.FC = () => {
                                     <textarea
                                         rows={3}
                                         placeholder="e.g. We communicate like a knowledgeable friend — never corporate, always direct, occasionally humorous, and always backed by data. We challenge assumptions and celebrate contrarian thinking."
-                                        className="w-full p-4 bg-white border border-orange-200 rounded-2xl focus:outline-none focus:border-orange-500 font-medium text-slate-700 resize-none transition-all"
+                                        className="w-full p-4 bg-white border border-black-200 rounded-2xl focus:outline-none focus:border-black font-medium text-slate-700 resize-none transition-all"
                                         value={brandProfile.customTone}
                                         onChange={e => setBrandProfile(p => ({ ...p, customTone: e.target.value }))}
                                     />
@@ -1220,7 +1220,7 @@ export const Settings: React.FC = () => {
                                 disabled={brandSaving || !brandProfile.brandName}
                                 className={`w-full py-5 rounded-[2rem] font-black transition-all flex items-center justify-center gap-3 text-lg ${brandSaved
                                     ? 'bg-green-600 text-white shadow-lg shadow-green-200'
-                                    : 'bg-orange-600 text-white hover:bg-orange-50 shadow-2xl shadow-orange-200 disabled:opacity-50 disabled:grayscale'
+                                    : 'bg-black text-white hover:bg-slate-50 shadow-2xl shadow-slate-200 disabled:opacity-50 disabled:grayscale'
                                     }`}
                             >
                                 {brandSaving
@@ -1248,10 +1248,10 @@ export const Settings: React.FC = () => {
 
                         {/* Current Plan Card */}
                         <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-8 rounded-[2.5rem] shadow-2xl text-white relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 w-80 h-80 bg-orange-600/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:bg-orange-600/20 transition-all duration-700" />
+                            <div className="absolute top-0 right-0 w-80 h-80 bg-black/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:bg-black/20 transition-all duration-700" />
                             <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
                                 <div>
-                                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-lg text-[10px] font-black tracking-widest uppercase mb-4 text-orange-400">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-lg text-[10px] font-black tracking-widest uppercase mb-4 text-slate-400">
                                         <Shield size={12} /> Current Plan
                                     </div>
                                     <p className="text-4xl font-extrabold mb-2">{user.plan || 'Starter'} Plan ({user.billingCycle || 'monthly'})</p>
@@ -1262,7 +1262,7 @@ export const Settings: React.FC = () => {
                                                 : 'Your plan serves you well. Keep growing!'}
                                         </p>
                                         {user.subscriptionEnd && user.plan !== 'Starter' && (
-                                            <p className="text-orange-400 text-xs font-bold flex items-center gap-1.5">
+                                            <p className="text-slate-400 text-xs font-bold flex items-center gap-1.5">
                                                 <RefreshCw size={12} /> Renews/Expires on: {new Date(user.subscriptionEnd).toLocaleDateString()}
                                             </p>
                                         )}
@@ -1270,7 +1270,7 @@ export const Settings: React.FC = () => {
                                 </div>
                                 <div className="text-right">
                                     {user.plan === 'Starter' ? (
-                                        <Link to="/pricing" className="px-8 py-3 bg-orange-600 text-white rounded-xl font-black hover:bg-orange-500 hover:shadow-lg hover:shadow-orange-600/30 transition-all inline-block">
+                                        <Link to="/pricing" className="px-8 py-3 bg-black text-white rounded-xl font-black hover:bg-slate-500 hover:shadow-lg hover:shadow-black-600/30 transition-all inline-block">
                                             UPGRADE NOW
                                         </Link>
                                     ) : (
@@ -1283,7 +1283,7 @@ export const Settings: React.FC = () => {
                                                         Active
                                                     </div>
                                                 ) : (
-                                                    <div className="flex items-center justify-end gap-2 text-orange-400 font-black">
+                                                    <div className="flex items-center justify-end gap-2 text-slate-400 font-black">
                                                         <Archive size={14} />
                                                         Cancelling soon
                                                     </div>
@@ -1306,7 +1306,7 @@ export const Settings: React.FC = () => {
                         {/* Usage & Credits */}
                         <div className="flex flex-col gap-8">
                             {/* Credit Balance Banner */}
-                            <div className="bg-gradient-to-br from-orange-600 to-amber-600 p-8 rounded-[2.5rem] shadow-xl text-white relative overflow-hidden flex flex-col justify-between h-full min-h-[200px] group">
+                            <div className="bg-gradient-to-br from-black-600 to-amber-600 p-8 rounded-[2.5rem] shadow-xl text-white relative overflow-hidden flex flex-col justify-between h-full min-h-[200px] group">
                                 <div className="relative z-10 flex items-start justify-between">
                                     <div className="flex items-center gap-3">
                                         <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm">
@@ -1314,10 +1314,10 @@ export const Settings: React.FC = () => {
                                         </div>
                                         <div>
                                             <h2 className="text-lg font-bold text-white/90">Credit Balance</h2>
-                                            <p className="text-orange-100 text-xs font-medium">Available AI generations</p>
+                                            <p className="text-black-100 text-xs font-medium">Available AI generations</p>
                                         </div>
                                     </div>
-                                    <Link to="/pricing" className="px-4 py-2 bg-white text-orange-600 text-xs font-black rounded-xl hover:bg-orange-50 transition-all shadow-lg shadow-black/10">
+                                    <Link to="/pricing" className="px-4 py-2 bg-white text-black text-xs font-black rounded-xl hover:bg-slate-50 transition-all shadow-lg shadow-black/10">
                                         TOP UP +
                                     </Link>
                                 </div>
@@ -1325,7 +1325,7 @@ export const Settings: React.FC = () => {
                                 <div className="relative z-10 space-y-4 mt-6">
                                     <div>
                                         <span className="text-5xl font-black text-white tracking-tight">{user.credits || 0}</span>
-                                        <span className="text-sm font-bold text-orange-200 uppercase tracking-widest ml-2">Credits</span>
+                                        <span className="text-sm font-bold text-black-200 uppercase tracking-widest ml-2">Credits</span>
                                     </div>
 
                                     <div className="w-full bg-black/20 rounded-full h-3 overflow-hidden backdrop-blur-sm">
@@ -1338,7 +1338,7 @@ export const Settings: React.FC = () => {
 
                                 {/* Decorative Elements */}
                                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-[60px] -translate-y-1/2 translate-x-1/2 group-hover:bg-white/20 transition-all duration-700 pointer-events-none" />
-                                <div className="absolute bottom-0 left-0 w-48 h-48 bg-orange-900/20 rounded-full blur-[40px] translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+                                <div className="absolute bottom-0 left-0 w-48 h-48 bg-black-900/20 rounded-full blur-[40px] translate-y-1/2 -translate-x-1/2 pointer-events-none" />
                             </div>
 
                             {/* Billing History Card - Now Below */}
@@ -1357,12 +1357,12 @@ export const Settings: React.FC = () => {
                                 <div className="max-h-[400px] overflow-y-auto pr-2 custom-scrollbar space-y-3">
                                     {(user.transactions && Array.isArray(user.transactions) && user.transactions.length > 0) ? (
                                         [...user.transactions].reverse().map((tx, i) => (
-                                            <div key={tx.id || i} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 group hover:border-orange-200 transition-all">
+                                            <div key={tx.id || i} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 group hover:border-black-200 transition-all">
                                                 <div className="flex items-center gap-4">
                                                     <div className={`p-2.5 rounded-xl border border-slate-100 transition-colors ${tx.type === 'stripe_payment' ? 'bg-indigo-100 text-indigo-600' :
                                                         tx.type === 'paypal_payment' ? 'bg-blue-100 text-blue-600' :
                                                             tx.type === 'admin_plan_change' ? 'bg-purple-100 text-purple-600' :
-                                                                'bg-orange-100 text-orange-600'
+                                                                'bg-slate-200 text-black'
                                                         }`}>
                                                         {tx.type === 'stripe_payment' ? <CreditCard size={18} /> :
                                                             tx.type === 'paypal_payment' ? <Globe size={18} /> :
@@ -1373,7 +1373,7 @@ export const Settings: React.FC = () => {
                                                         <div className="flex items-center gap-2">
                                                             <p className="text-sm font-bold text-slate-900">{tx.description || 'Transaction'}</p>
                                                             {tx.isAdjustment && (
-                                                                <span className="text-[8px] font-black bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded uppercase tracking-tighter">Adjusted by Admin</span>
+                                                                <span className="text-[8px] font-black bg-slate-200 text-black-700 px-1.5 py-0.5 rounded uppercase tracking-tighter">Adjusted by Admin</span>
                                                             )}
                                                         </div>
                                                         <p className="text-[10px] text-slate-400 font-medium">{new Date(tx.date).toLocaleDateString()} • {new Date(tx.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
@@ -1408,7 +1408,7 @@ export const Settings: React.FC = () => {
                                                                 link.href = dataUrl;
                                                                 link.click();
                                                             }}
-                                                            className="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition-all"
+                                                            className="p-2 text-slate-400 hover:text-black hover:bg-slate-50 rounded-xl transition-all"
                                                             title="Download Invoice"
                                                         >
                                                             <Upload className="rotate-180" size={18} />
@@ -1438,7 +1438,7 @@ export const Settings: React.FC = () => {
                         <div className="bg-gradient-to-r from-slate-900 to-slate-800 p-6 md:p-8 rounded-[2rem] shadow-xl text-white relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
                             <div className="relative z-10 flex items-center gap-4">
                                 <div className="p-3 bg-white/10 rounded-2xl backdrop-blur-sm">
-                                    <RefreshCw className="text-orange-400" size={24} />
+                                    <RefreshCw className="text-slate-400" size={24} />
                                 </div>
                                 <div>
                                     <h2 className="text-lg font-bold text-white/90">Total Credits Used</h2>
@@ -1450,7 +1450,7 @@ export const Settings: React.FC = () => {
                                     <p className="text-4xl font-black text-white tracking-tight leading-none bg-clip-text text-transparent bg-gradient-to-b from-white to-slate-400">
                                         {user.usageStats?.totalSpent || 0}
                                     </p>
-                                    <p className="text-xs font-bold text-orange-400 uppercase tracking-widest mt-1">Total Credits</p>
+                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Total Credits</p>
                                 </div>
                                 {(() => {
                                     // Determine the daily limit
@@ -1466,14 +1466,14 @@ export const Settings: React.FC = () => {
                                         <div className="w-full md:w-60 space-y-2.5 flex flex-col items-start md:items-end border-t border-white/10 pt-4 md:border-t-0 md:pt-0">
                                             <div className="flex justify-between w-full text-[10px] font-black uppercase tracking-widest text-white/50">
                                                 <div className="flex items-center gap-1.5">
-                                                    <Zap size={10} className="text-orange-400" />
+                                                    <Zap size={10} className="text-slate-400" />
                                                     <span>Daily Limit</span>
                                                 </div>
                                                 <span className="text-white">{currentUsage} / {dailyLimit} pts</span>
                                             </div>
                                             <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden border border-white/5 relative">
                                                 <div
-                                                    className="h-full bg-gradient-to-r from-orange-500 to-amber-400 rounded-full transition-all duration-1000 shadow-[0_0_12px_rgba(249,115,22,0.6)]"
+                                                    className="h-full bg-gradient-to-r from-black to-slate-800 rounded-full transition-all duration-1000 shadow-[0_0_12px_rgba(0,0,0,0.6)]"
                                                     style={{ width: `${Math.min(100, (currentUsage / dailyLimit) * 100)}%` }}
                                                 />
                                             </div>
@@ -1483,7 +1483,7 @@ export const Settings: React.FC = () => {
                                 })()}
                             </div>
                             {/* Decorative background blur */}
-                            <div className="absolute top-1/2 right-0 w-64 h-64 bg-orange-600/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                            <div className="absolute top-1/2 right-0 w-64 h-64 bg-black/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
                         </div>
 
                         {/* Summary Cards */}
@@ -1550,7 +1550,7 @@ export const Settings: React.FC = () => {
                                         }
 
                                         return (
-                                            <div key={i} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-orange-200 transition-all">
+                                            <div key={i} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-black-200 transition-all">
                                                 <div className="flex items-center gap-4">
                                                     <div className={`p-2.5 rounded-xl border border-slate-100 ${colorClass}`}>
                                                         {icon}
@@ -1561,7 +1561,7 @@ export const Settings: React.FC = () => {
                                                     </div>
                                                 </div>
                                                 <div className="text-right">
-                                                    <p className="text-sm font-black text-orange-600">
+                                                    <p className="text-sm font-black text-black">
                                                         -{item.cost} Credits
                                                     </p>
                                                 </div>
@@ -1610,7 +1610,7 @@ export const Settings: React.FC = () => {
                                     link.href = previewInvoice;
                                     link.click();
                                 }}
-                                className="px-5 py-2.5 bg-orange-600 text-white font-bold rounded-xl hover:bg-orange-500 shadow-lg shadow-orange-200 transition-all flex items-center gap-2"
+                                className="px-5 py-2.5 bg-black text-white font-bold rounded-xl hover:bg-slate-500 shadow-lg shadow-slate-200 transition-all flex items-center gap-2"
                             >
                                 <Upload className="rotate-180" size={16} /> Download
                             </button>
@@ -1643,7 +1643,7 @@ export const Settings: React.FC = () => {
                                 <button
                                     key={opt.id}
                                     onClick={() => setCancelReason(opt.label)}
-                                    className={`w-full p-4 rounded-2xl border-2 text-left font-bold transition-all flex items-center justify-between ${cancelReason === opt.label ? 'border-orange-600 bg-orange-50 text-orange-600' : 'border-slate-100 hover:border-slate-200 text-slate-600'}`}
+                                    className={`w-full p-4 rounded-2xl border-2 text-left font-bold transition-all flex items-center justify-between ${cancelReason === opt.label ? 'border-black-600 bg-slate-50 text-black' : 'border-slate-100 hover:border-slate-200 text-slate-600'}`}
                                 >
                                     {opt.label}
                                     {cancelReason === opt.label && <Check size={18} />}
@@ -1653,7 +1653,7 @@ export const Settings: React.FC = () => {
                             <textarea
                                 placeholder="Any additional comments? (Optional)"
                                 rows={3}
-                                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-orange-500 font-medium text-slate-700 resize-none transition-all"
+                                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:border-black font-medium text-slate-700 resize-none transition-all"
                                 value={cancelComment}
                                 onChange={e => setCancelComment(e.target.value)}
                             />

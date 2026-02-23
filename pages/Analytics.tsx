@@ -95,7 +95,7 @@ export const Analytics: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedEntry, setSelectedEntry] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<'comments' | 'posts' | 'links'>('comments');
-  const [redditStatus, setRedditStatus] = useState<{ connected: boolean; accounts: any[] }>({ connected: false, accounts: [] });
+  const [XStatus, setXStatus] = useState<{ connected: boolean; accounts: any[] }>({ connected: false, accounts: [] });
   const [selectedAccount, setSelectedAccount] = useState<string>('all');
   const [trackingLinks, setTrackingLinks] = useState<any[]>([]);
 
@@ -135,16 +135,16 @@ export const Analytics: React.FC = () => {
         setTrackingLinks(Array.isArray(tracksData) ? tracksData : []);
       }
 
-      const profileRes = await fetch(`/api/user/reddit/profile?userId=${user.id}${selectedAccount !== 'all' ? `&username=${selectedAccount}` : ''}&_=${ts}`);
+      const profileRes = await fetch(`/api/user/x/profile?userId=${user.id}${selectedAccount !== 'all' ? `&username=${selectedAccount}` : ''}&_=${ts}`);
       if (profileRes.ok) {
         const profileData = await profileRes.json();
         setProfile(profileData);
       }
 
-      const statusRes = await fetch(`/api/user/reddit/status?userId=${user.id}&_=${ts}`);
+      const statusRes = await fetch(`/api/user/x/status?userId=${user.id}&_=${ts}`);
       if (statusRes.ok) {
         const status = await statusRes.json();
-        setRedditStatus(status);
+        setXStatus(status);
       }
     } catch (err) {
       console.error('Failed to fetch data', err);
@@ -174,7 +174,7 @@ export const Analytics: React.FC = () => {
     return true;
   }).filter(item => {
     if (selectedAccount === 'all') return true;
-    return item.redditUsername === selectedAccount;
+    return item.XUsername === selectedAccount;
   });
 
   const filteredTrackingLinks = useMemo(() => {
@@ -213,7 +213,7 @@ export const Analytics: React.FC = () => {
       return isCreatedRecently || hasRecentClicks;
     }).filter(item => {
       if (selectedAccount === 'all') return true;
-      return item.redditUsername === selectedAccount;
+      return item.XUsername === selectedAccount;
     });
   }, [trackingLinks, dateFilter, customRange, selectedAccount]);
 
@@ -302,7 +302,7 @@ export const Analytics: React.FC = () => {
     }, 0);
   }, [trackingLinks, dateFilter, customRange]);
 
-  const activeSubreddits = new Set([...activeHistory, ...activeLinks].map(r => r.subreddit)).size;
+  const activetopics = new Set([...activeHistory, ...activeLinks].map(r => r.topic)).size;
 
   const sentimentData = [
     { name: 'Supportive', value: activeHistory.filter(h => h.ups > 2).length, color: '#10b981' },
@@ -311,7 +311,7 @@ export const Analytics: React.FC = () => {
   ];
 
   const subPerformance = [...activeHistory, ...activeLinks].reduce((acc: any, curr) => {
-    const sub = curr.subreddit;
+    const sub = curr.topic;
     if (!sub) return acc;
     const score = (curr.ups || 0) + (curr.replies || 0) + (curr.clicks || 0);
     acc[sub] = (acc[sub] || 0) + score;
@@ -373,12 +373,12 @@ export const Analytics: React.FC = () => {
           <div className="bg-white w-full max-w-4xl rounded-[2rem] md:rounded-[3rem] shadow-2xl overflow-hidden flex flex-col max-h-[95vh] md:max-h-[90vh] animate-in zoom-in-95 duration-300">
             <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-orange-600 rounded-2xl text-white">
+                <div className="p-3 bg-black rounded-2xl text-white">
                   <LayoutList size={24} />
                 </div>
                 <div>
                   <h2 className="text-xl font-extrabold text-slate-900">Outreach Details</h2>
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">r/{selectedEntry.subreddit} • {new Date(selectedEntry.deployedAt).toLocaleString()}</p>
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">#{selectedEntry.topic} • {new Date(selectedEntry.deployedAt).toLocaleString()}</p>
                 </div>
               </div>
               <button onClick={() => setSelectedEntry(null)} className="p-3 hover:bg-slate-100 rounded-2xl text-slate-400 transition-colors">
@@ -394,7 +394,7 @@ export const Analytics: React.FC = () => {
                     <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-widest">Original Post</h3>
                   </div>
                   <a href={selectedEntry.postUrl} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors">
-                    View on Reddit <ExternalLink size={12} />
+                    View on X <ExternalLink size={12} />
                   </a>
                 </div>
                 <div className="bg-slate-50 rounded-3xl p-8 border border-slate-100">
@@ -405,11 +405,11 @@ export const Analytics: React.FC = () => {
 
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-6 bg-orange-600 rounded-full"></span>
+                  <span className="w-1.5 h-6 bg-black rounded-full"></span>
                   <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-widest">Our AI Reply</h3>
                 </div>
-                <div className="bg-orange-50/30 rounded-3xl p-8 border border-orange-100 relative">
-                  <div className="absolute top-0 right-10 -translate-y-1/2 bg-orange-600 text-white px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest shadow-lg shadow-orange-200">
+                <div className="bg-slate-50/30 rounded-3xl p-8 border border-slate-100 relative">
+                  <div className="absolute top-0 right-10 -translate-y-1/2 bg-black text-white px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest shadow-lg shadow-slate-200">
                     {selectedEntry.productMention} Mentioned
                   </div>
                   <p className="text-slate-800 text-base leading-relaxed whitespace-pre-wrap italic font-medium">"{selectedEntry.comment}"</p>
@@ -419,8 +419,8 @@ export const Analytics: React.FC = () => {
 
             <div className="p-8 bg-slate-50/50 border-t border-slate-100 flex justify-end gap-4 font-bold">
               <button onClick={() => setSelectedEntry(null)} className="px-8 py-4 bg-white border border-slate-200 rounded-[1.5rem] text-slate-600 hover:shadow-md transition-all active:scale-95">Close</button>
-              <a href={selectedEntry.postUrl} target="_blank" rel="noreferrer" className="px-8 py-4 bg-orange-600 text-white rounded-[1.5rem] shadow-lg shadow-orange-100 hover:shadow-xl hover:-translate-y-0.5 transition-all active:scale-95 flex items-center gap-2">
-                Verify on Live Reddit <ExternalLink size={18} />
+              <a href={selectedEntry.postUrl} target="_blank" rel="noreferrer" className="px-8 py-4 bg-black text-white rounded-[1.5rem] shadow-lg shadow-slate-100 hover:shadow-xl hover:-translate-y-0.5 transition-all active:scale-95 flex items-center gap-2">
+                Verify on Live X <ExternalLink size={18} />
               </a>
             </div>
           </div>
@@ -439,7 +439,7 @@ export const Analytics: React.FC = () => {
                 </div>
                 <h2 className="text-lg md:text-2xl font-black text-slate-900 tracking-tight break-all" title={selectedEntry.originalUrl}>{selectedEntry.originalUrl}</h2>
                 <div className="flex items-center gap-2 text-slate-500 font-bold mt-2">
-                  Targeted: <span className="text-orange-600">r/{selectedEntry.subreddit}</span>
+                  Targeted: <span className="text-black">#{selectedEntry.topic}</span>
                 </div>
               </div>
               <button onClick={() => setSelectedEntry(null)} className="p-3 hover:bg-slate-100 rounded-2xl text-slate-400 transition-colors mt-auto mb-auto bg-white border border-slate-100 shadow-sm active:scale-95">
@@ -505,7 +505,7 @@ export const Analytics: React.FC = () => {
                         <div className="space-y-2">
                           <div className="flex items-center flex-wrap gap-2">
                             <span className="font-black text-slate-900 text-sm whitespace-nowrap">{new Date(click.timestamp).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
-                            {idx === 0 && <span className="bg-orange-100 text-orange-600 px-2 py-0.5 rounded-md text-[10px] font-black uppercase">Latest</span>}
+                            {idx === 0 && <span className="bg-black-100 text-black px-2 py-0.5 rounded-md text-[10px] font-black uppercase">Latest</span>}
                             {click.isBot && <span className="bg-red-100 text-red-600 px-2 py-0.5 rounded-md text-[10px] font-black uppercase">Bot</span>}
                             {click.isSpam && <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md text-[10px] font-black uppercase">Spam</span>}
                           </div>
@@ -549,15 +549,15 @@ export const Analytics: React.FC = () => {
         <div className="space-y-1">
           <p className="text-slate-400 font-semibold text-sm">Welcome back, {user?.name?.split(' ')[0] || 'there'}</p>
           <div className="flex items-center gap-2">
-            <span className="w-1.5 h-7 bg-orange-600 rounded-full" />
+            <span className="w-1.5 h-7 bg-black rounded-full" />
             <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Analytics</h1>
           </div>
-          <p className="text-slate-400 font-medium text-sm pl-4">Real-time data for your Reddit ecosystem.</p>
+          <p className="text-slate-400 font-medium text-sm pl-4">Real-time data for your X ecosystem.</p>
         </div>
         <div className="flex flex-wrap items-center gap-4">
           <div className="relative">
             <button onClick={() => setShowFilterDropdown(!showFilterDropdown)} className="flex items-center gap-3 px-6 py-4 bg-white border border-slate-200/60 rounded-[1.5rem] shadow-sm hover:shadow-md transition-all font-bold text-slate-600 active:scale-95">
-              <Calendar size={20} className="text-orange-600" />
+              <Calendar size={20} className="text-black" />
               <span className="min-w-[100px] text-left">
                 {dateFilter === '24h' ? 'Past 24 Hours' :
                   dateFilter === '7d' ? 'Past 7 Days' :
@@ -573,13 +573,13 @@ export const Analytics: React.FC = () => {
                 <div className="fixed inset-0 z-10" onClick={() => setShowFilterDropdown(false)}></div>
                 <div className="absolute top-full right-0 mt-3 w-64 bg-white rounded-3xl shadow-2xl border border-slate-100 p-3 z-20 animate-in fade-in zoom-in-95 duration-200">
                   {['24h', '7d', '30d', 'all'].map((id) => (
-                    <button key={id} onClick={() => { setDateFilter(id as any); setShowFilterDropdown(false); }} className={`w-full flex items-center justify-between px-5 py-3.5 rounded-2xl text-sm font-bold transition-colors ${dateFilter === id ? 'bg-orange-50 text-orange-600' : 'text-slate-500 hover:bg-slate-50'}`}>
+                    <button key={id} onClick={() => { setDateFilter(id as any); setShowFilterDropdown(false); }} className={`w-full flex items-center justify-between px-5 py-3.5 rounded-2xl text-sm font-bold transition-colors ${dateFilter === id ? 'bg-slate-50 text-black' : 'text-slate-500 hover:bg-slate-50'}`}>
                       {id === '24h' ? 'Past 24 Hours' : id === '7d' ? 'Past 7 Days' : id === '30d' ? 'Past 30 Days' : 'All Time'}
                       {dateFilter === id && <Check size={16} />}
                     </button>
                   ))}
                   <div className="h-px bg-slate-100 my-2 mx-5"></div>
-                  <button onClick={() => { setShowDatePicker(true); setShowFilterDropdown(false); }} className={`w-full flex items-center justify-between px-5 py-3.5 rounded-2xl text-sm font-bold transition-colors ${dateFilter === 'custom' ? 'bg-orange-50 text-orange-600' : 'text-slate-500 hover:bg-slate-50'}`}>
+                  <button onClick={() => { setShowDatePicker(true); setShowFilterDropdown(false); }} className={`w-full flex items-center justify-between px-5 py-3.5 rounded-2xl text-sm font-bold transition-colors ${dateFilter === 'custom' ? 'bg-slate-50 text-black' : 'text-slate-500 hover:bg-slate-50'}`}>
                     Custom Range...
                     <ChevronRight size={16} />
                   </button>
@@ -592,7 +592,7 @@ export const Analytics: React.FC = () => {
             <Users size={18} className="text-blue-600" />
             <select value={selectedAccount} onChange={(e) => setSelectedAccount(e.target.value)} className="bg-transparent border-none text-sm font-bold text-slate-900 focus:outline-none min-w-[140px] cursor-pointer">
               <option value="all">All Accounts</option>
-              {redditStatus.accounts?.map(acc => <option key={acc.username} value={acc.username}>u/{acc.username}</option>)}
+              {XStatus.accounts?.map(acc => <option key={acc.username} value={acc.username}>u/{acc.username}</option>)}
             </select>
           </div>
         </div>
@@ -603,11 +603,11 @@ export const Analytics: React.FC = () => {
       <div className="w-full overflow-x-auto pb-4 -mb-4 custom-scrollbar lg:overflow-visible">
         <div className="flex p-1.5 bg-slate-100 rounded-[2rem] w-fit mx-auto lg:mx-0 min-w-max">
           <button onClick={() => setActiveTab('comments')} className={`flex items-center gap-2 px-6 lg:px-8 py-3.5 rounded-[1.5rem] text-sm font-black transition-all ${activeTab === 'comments' ? 'bg-white text-slate-900 shadow-xl shadow-slate-200' : 'text-slate-400 hover:text-slate-600'}`}>
-            <MessageSquare size={18} className={activeTab === 'comments' ? 'text-orange-600' : ''} />
+            <MessageSquare size={18} className={activeTab === 'comments' ? 'text-black' : ''} />
             COMMENTS
           </button>
           <button onClick={() => setActiveTab('posts')} className={`flex items-center gap-2 px-6 lg:px-8 py-3.5 rounded-[1.5rem] text-sm font-black transition-all ${activeTab === 'posts' ? 'bg-white text-slate-900 shadow-xl shadow-slate-200' : 'text-slate-400 hover:text-slate-600'}`}>
-            <PenTool size={18} className={activeTab === 'posts' ? 'text-orange-600' : ''} />
+            <PenTool size={18} className={activeTab === 'posts' ? 'text-black' : ''} />
             POSTS
           </button>
           <button onClick={() => setActiveTab('links')} className={`flex items-center gap-2 px-6 lg:px-8 py-3.5 rounded-[1.5rem] text-sm font-black transition-all ${activeTab === 'links' ? 'bg-white text-slate-900 shadow-xl shadow-slate-200' : 'text-slate-400 hover:text-slate-600'}`}>
@@ -619,15 +619,15 @@ export const Analytics: React.FC = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         <StatCard
-          label={activeTab === 'comments' ? "Total Upvotes" : (activeTab === 'posts' ? "Post Karma" : "Link Reach")}
+          label={activeTab === 'comments' ? "Total Likes" : (activeTab === 'posts' ? "Post Score" : "Link Reach")}
           value={activeTab === 'links' ? activeLinks.length : totalUpvotes.toLocaleString()}
           trend={activeTab === 'links' ? `${trackingLinks.length} Total` : "+12.5%"}
           icon={activeTab === 'links' ? BarChart3 : (activeTab === 'comments' ? MessageSquare : PenTool)}
-          color={activeTab === 'links' ? "bg-blue-600 text-white" : "bg-orange-600 text-white"}
+          color={activeTab === 'links' ? "bg-blue-600 text-white" : "bg-black text-white"}
         />
         <StatCard
           label={activeTab === 'links' ? "Avg Click Rate" : "Account Authority"}
-          value={activeTab === 'links' ? (trackingLinks.length > 0 ? (totalClicks / trackingLinks.length).toFixed(1) : "0.0") : (profile ? (activeTab === 'comments' ? profile.commentKarma.toLocaleString() : (profile.linkKarma || profile.totalKarma).toLocaleString()) : "---")}
+          value={activeTab === 'links' ? (trackingLinks.length > 0 ? (totalClicks / trackingLinks.length).toFixed(1) : "0.0") : (profile ? (activeTab === 'comments' ? profile.commentScore.toLocaleString() : (profile.linkScore || profile.totalScore).toLocaleString()) : "---")}
           trend="Live"
           icon={activeTab === 'links' ? TrendingUp : Users}
           color={activeTab === 'links' ? "bg-emerald-600 text-white" : "bg-blue-600 text-white"}
@@ -641,7 +641,7 @@ export const Analytics: React.FC = () => {
         />
         <StatCard
           label="Target Communities"
-          value={activeSubreddits}
+          value={activetopics}
           trend="Active"
           icon={ExternalLink}
           color="bg-slate-900 text-white"
@@ -690,11 +690,11 @@ export const Analytics: React.FC = () => {
             {topSubs.length > 0 ? topSubs.map((sub: any, i) => (
               <div key={sub.name} className="group cursor-default">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-black text-slate-900 group-hover:text-orange-600 transition-colors">r/{sub.name}</span>
+                  <span className="text-sm font-black text-slate-900 group-hover:text-black transition-colors">#{sub.name}</span>
                   <span className="text-xs font-bold text-slate-400">{sub.score} pts</span>
                 </div>
                 <div className="h-3 w-full bg-slate-50 rounded-full overflow-hidden">
-                  <div className={`h-full rounded-full transition-all duration-1000 ${i === 0 ? 'bg-orange-600' : i === 1 ? 'bg-blue-600' : 'bg-purple-600'}`} style={{ width: `${(sub.score / (topSubs[0]?.score || 1)) * 100}%` }}></div>
+                  <div className={`h-full rounded-full transition-all duration-1000 ${i === 0 ? 'bg-black' : i === 1 ? 'bg-blue-600' : 'bg-purple-600'}`} style={{ width: `${(sub.score / (topSubs[0]?.score || 1)) * 100}%` }}></div>
                 </div>
               </div>
             )) : (
@@ -710,7 +710,7 @@ export const Analytics: React.FC = () => {
           <div className="flex items-center justify-between mb-10">
             <h2 className="text-xl font-extrabold text-slate-900">Growth Velocity</h2>
             <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-orange-600"></span>
+              <span className="w-3 h-3 rounded-full bg-black"></span>
               <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Live Sync</span>
             </div>
           </div>
@@ -742,14 +742,14 @@ export const Analytics: React.FC = () => {
               </span>
             )}
           </div>
-          <button onClick={() => fetchData()} className="p-3 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-orange-600 transition-all active:scale-95 shadow-sm">
+          <button onClick={() => fetchData()} className="p-3 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-black transition-all active:scale-95 shadow-sm">
             <RefreshCw size={18} className={isLoading ? 'animate-spin' : ''} />
           </button>
         </div>
 
         <div className="overflow-x-auto">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center p-20 gap-4"><RefreshCw className="animate-spin text-orange-600" size={32} /></div>
+            <div className="flex flex-col items-center justify-center p-20 gap-4"><RefreshCw className="animate-spin text-black" size={32} /></div>
           ) : (activeTab === 'links' ? activeLinks : activeHistory).length === 0 ? (
             <div className="flex flex-col items-center justify-center p-20 gap-4">
               <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-200">
@@ -761,7 +761,7 @@ export const Analytics: React.FC = () => {
             <table className="w-full text-sm font-medium">
               <thead className="bg-slate-50/50 text-slate-400 text-[11px] font-extrabold uppercase tracking-widest border-b border-slate-100">
                 <tr>
-                  <th className="px-4 md:px-10 py-5 text-left">{activeTab === 'links' ? 'Target Subreddit' : 'Origin'}</th>
+                  <th className="px-4 md:px-10 py-5 text-left">{activeTab === 'links' ? 'Target topic' : 'Origin'}</th>
                   <th className="px-4 md:px-10 py-5 text-left">{activeTab === 'links' ? 'Original URL' : 'Content Preview'}</th>
                   <th className="px-4 md:px-10 py-5 text-left">{activeTab === 'links' ? 'Clicks' : 'Performance'}</th>
                   <th className="hidden md:table-cell px-10 py-5 text-left">Date Deployed</th>
@@ -772,7 +772,7 @@ export const Analytics: React.FC = () => {
                 {(activeTab === 'links' ? activeLinks : activeHistory).map((row) => (
                   <tr key={row.id} className="hover:bg-slate-50 group transition-all">
                     <td className="px-4 md:px-10 py-6">
-                      <span className={`font-black ${activeTab === 'links' ? 'text-blue-600' : 'text-slate-900'}`}>r/{row.subreddit}</span>
+                      <span className={`font-black ${activeTab === 'links' ? 'text-blue-600' : 'text-slate-900'}`}>#{row.topic}</span>
                     </td>
                     <td className="px-4 md:px-10 py-6">
                       <div className="flex flex-col gap-0.5 max-w-[150px] md:max-w-xs">
@@ -827,7 +827,7 @@ export const Analytics: React.FC = () => {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <button onClick={() => setShowDatePicker(false)} className="py-4 bg-slate-100 rounded-2xl font-black text-xs uppercase text-slate-500">Cancel</button>
-              <button onClick={() => { setDateFilter('custom'); setShowDatePicker(false); }} disabled={!customRange.start || !customRange.end} className="py-4 bg-orange-600 text-white rounded-2xl font-black text-xs uppercase shadow-lg shadow-orange-100">Apply Filter</button>
+              <button onClick={() => { setDateFilter('custom'); setShowDatePicker(false); }} disabled={!customRange.start || !customRange.end} className="py-4 bg-black text-white rounded-2xl font-black text-xs uppercase shadow-lg shadow-slate-100">Apply Filter</button>
             </div>
           </div>
         </div>

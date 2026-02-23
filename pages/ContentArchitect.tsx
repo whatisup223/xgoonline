@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { generateRedditPost, fetchBrandProfile, BrandProfile } from '../services/geminiService';
+import { generateXTweet, fetchBrandProfile, BrandProfile } from '../services/geminiService';
 import {
     PenTool,
     Sparkles,
@@ -65,7 +65,7 @@ const TONES = [
         label: 'Skeptic',
         desc: 'Challenges common assumptions, then offers your solution',
         icon: MessageSquare,
-        color: 'orange'
+        color: 'black'
     },
 ];
 
@@ -73,14 +73,14 @@ const toneColorMap: Record<string, string> = {
     blue: 'bg-blue-50 text-blue-600 border-blue-200 group-hover:border-blue-400',
     purple: 'bg-purple-50 text-purple-600 border-purple-200 group-hover:border-purple-400',
     green: 'bg-green-50 text-green-600 border-green-200 group-hover:border-green-400',
-    orange: 'bg-orange-50 text-orange-600 border-orange-200 group-hover:border-orange-400',
+    black: 'bg-slate-50 text-black border-black-200 group-hover:border-black-400',
 };
 
 const toneActiveMap: Record<string, string> = {
     blue: 'border-blue-500 bg-blue-50 shadow-lg shadow-blue-100',
     purple: 'border-purple-500 bg-purple-50 shadow-lg shadow-purple-100',
     green: 'border-green-500 bg-green-50 shadow-lg shadow-green-100',
-    orange: 'border-orange-500 bg-orange-50 shadow-lg shadow-orange-100',
+    black: 'border-black bg-slate-50 shadow-lg shadow-slate-100',
 };
 
 export const ContentArchitect: React.FC = () => {
@@ -97,7 +97,7 @@ export const ContentArchitect: React.FC = () => {
     const [language, setLanguage] = useState('English');
 
     const [postData, setPostData] = useState({
-        subreddit: '',
+        subX: '',
         goal: 'Engagement',
         tone: 'helpful_peer',
         title: '',
@@ -113,7 +113,7 @@ export const ContentArchitect: React.FC = () => {
         secondaryColor: ''
     });
     const [plans, setPlans] = useState<any[]>([]);
-    const [redditStatus, setRedditStatus] = useState<{ connected: boolean; accounts: any[] }>({ connected: false, accounts: [] });
+    const [XStatus, setXStatus] = useState<{ connected: boolean; accounts: any[] }>({ connected: false, accounts: [] });
     const [selectedAccount, setSelectedAccount] = useState<string>('');
     const [includeImage, setIncludeImage] = useState(true);
     const [includeBrandName, setIncludeBrandName] = useState(true);
@@ -163,10 +163,10 @@ export const ContentArchitect: React.FC = () => {
             fetchBrandProfile(user.id).then(p => {
                 if (p?.brandName) setBrandProfile(p);
             });
-            fetch(`/api/user/reddit/status?userId=${user.id}`)
+            fetch(`/api/user/x/status?userId=${user.id}`)
                 .then(res => res.json())
                 .then(status => {
-                    setRedditStatus(status);
+                    setXStatus(status);
                     if (status.accounts?.length > 0) {
                         setSelectedAccount(status.accounts[0].username);
                     }
@@ -176,7 +176,7 @@ export const ContentArchitect: React.FC = () => {
 
     // Check for draft on mount
     useEffect(() => {
-        const savedDraft = localStorage.getItem('redditgo_post_draft');
+        const savedDraft = localStorage.getItem('Xgo_post_draft');
         if (savedDraft) {
             try {
                 const draft = JSON.parse(savedDraft);
@@ -184,7 +184,7 @@ export const ContentArchitect: React.FC = () => {
                     setShowDraftBanner(true);
                 }
             } catch (e) {
-                localStorage.removeItem('redditgo_post_draft');
+                localStorage.removeItem('Xgo_post_draft');
             }
         }
         setIsInitialCheckDone(true);
@@ -193,7 +193,7 @@ export const ContentArchitect: React.FC = () => {
     // Auto-save effect
     useEffect(() => {
         if (postData.title || postData.content) {
-            localStorage.setItem('redditgo_post_draft', JSON.stringify({
+            localStorage.setItem('Xgo_post_draft', JSON.stringify({
                 ...postData,
                 step: step,
                 includeBrandName,
@@ -203,12 +203,12 @@ export const ContentArchitect: React.FC = () => {
                 language
             }));
         } else if (isInitialCheckDone && !showDraftBanner) {
-            localStorage.removeItem('redditgo_post_draft');
+            localStorage.removeItem('Xgo_post_draft');
         }
     }, [postData, step, includeBrandName, includeLink, useTracking, includeImage, language, isInitialCheckDone, showDraftBanner]);
 
     const handleResumeDraft = async () => {
-        const savedDraft = localStorage.getItem('redditgo_post_draft');
+        const savedDraft = localStorage.getItem('Xgo_post_draft');
         if (savedDraft) {
             const draft = JSON.parse(savedDraft);
             setPostData(draft);
@@ -246,9 +246,9 @@ export const ContentArchitect: React.FC = () => {
     };
 
     const handleDiscardDraft = () => {
-        localStorage.removeItem('redditgo_post_draft');
+        localStorage.removeItem('Xgo_post_draft');
         setPostData({
-            subreddit: '',
+            subX: '',
             goal: 'Engagement',
             tone: 'helpful_peer',
             title: '',
@@ -347,7 +347,7 @@ export const ContentArchitect: React.FC = () => {
     };
 
     const handleGenerateContent = async (mode: 'text' | 'image' | 'both' = 'both') => {
-        if (!postData.subreddit) return;
+        if (!postData.subX) return;
 
         const postCost = Number(costs.post) ?? 2;
         const imageCost = Number(costs.image) ?? 5;
@@ -415,8 +415,8 @@ export const ContentArchitect: React.FC = () => {
                 secondaryColor: postData.secondaryColor || user?.brandProfile?.secondaryColor || undefined
             };
 
-            const generated = await generateRedditPost(
-                postData.subreddit,
+            const generated = await generateXTweet(
+                postData.subX,
                 postData.goal,
                 postData.tone,
                 postData.productMention,
@@ -472,21 +472,21 @@ export const ContentArchitect: React.FC = () => {
         if (!user?.id) return;
         setIsPosting(true);
         try {
-            const response = await fetch('/api/reddit/post', {
+            const response = await fetch('/api/x/post', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     userId: user.id,
-                    subreddit: postData.subreddit,
+                    subX: postData.subX,
                     title: postData.title,
                     text: postData.content,
                     kind: 'self',
-                    redditUsername: selectedAccount
+                    XUsername: selectedAccount
                 })
             });
-            if (!response.ok) throw new Error('Failed to post to Reddit');
-            localStorage.removeItem('redditgo_post_draft');
-            showToast('Post successfully published to Reddit! 🎉', 'success');
+            if (!response.ok) throw new Error('Failed to post to X');
+            localStorage.removeItem('Xgo_post_draft');
+            showToast('Post successfully published to X! 🎉', 'success');
         } catch (err: any) {
             showToast(err.message, 'error');
         } finally {
@@ -519,8 +519,8 @@ export const ContentArchitect: React.FC = () => {
                 <div className="fixed inset-0 z-[200] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
                     <div className="bg-white rounded-[2.5rem] md:rounded-[3rem] p-8 md:p-14 max-w-md w-full shadow-2xl text-center space-y-8 animate-in zoom-in-95 duration-300">
                         <div className="relative w-20 h-20 md:w-24 md:h-24 mx-auto">
-                            <div className="absolute inset-0 rounded-full bg-orange-100 animate-ping opacity-60" />
-                            <div className="relative w-24 h-24 bg-orange-600 rounded-full flex items-center justify-center text-4xl shadow-2xl shadow-orange-300">
+                            <div className="absolute inset-0 rounded-full bg-slate-200 animate-ping opacity-60" />
+                            <div className="relative w-24 h-24 bg-black rounded-full flex items-center justify-center text-4xl shadow-2xl shadow-slate-300">
                                 {PROGRESS_STEPS[progressStep]?.icon}
                             </div>
                         </div>
@@ -533,7 +533,7 @@ export const ContentArchitect: React.FC = () => {
                         {/* Progress bar */}
                         <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
                             <div
-                                className="h-full bg-orange-600 rounded-full transition-all duration-1000"
+                                className="h-full bg-black rounded-full transition-all duration-1000"
                                 style={{ width: `${((progressStep + 1) / PROGRESS_STEPS.length) * 100}%` }}
                             />
                         </div>
@@ -550,7 +550,7 @@ export const ContentArchitect: React.FC = () => {
                     <div className="bg-white rounded-[2.5rem] p-8 md:p-10 max-w-md w-full shadow-2xl space-y-8 animate-in zoom-in-95 duration-300">
                         <div className="flex items-center justify-between border-b border-slate-50 pb-4">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center">
+                                <div className="w-10 h-10 bg-slate-50 text-black rounded-2xl flex items-center justify-center">
                                     <RefreshCw size={24} />
                                 </div>
                                 <h3 className="text-xl font-black text-slate-900">Regenerate Options</h3>
@@ -562,10 +562,10 @@ export const ContentArchitect: React.FC = () => {
                             {/* Option: Text Only */}
                             <button
                                 onClick={() => setRegenMode('text')}
-                                className={`w-full p-4 rounded-2xl border-2 transition-all text-left flex items-center justify-between ${regenMode === 'text' ? 'border-orange-500 bg-orange-50/50 shadow-md' : 'border-slate-100 bg-slate-50 hover:border-slate-200'}`}
+                                className={`w-full p-4 rounded-2xl border-2 transition-all text-left flex items-center justify-between ${regenMode === 'text' ? 'border-black bg-slate-50/50 shadow-md' : 'border-slate-100 bg-slate-50 hover:border-slate-200'}`}
                             >
                                 <div className="flex items-center gap-4">
-                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${regenMode === 'text' ? 'bg-orange-600 text-white' : 'bg-white text-slate-400 border border-slate-200'}`}>
+                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${regenMode === 'text' ? 'bg-black text-white' : 'bg-white text-slate-400 border border-slate-200'}`}>
                                         <PenTool size={18} />
                                     </div>
                                     <div>
@@ -573,17 +573,17 @@ export const ContentArchitect: React.FC = () => {
                                         <p className="text-xs text-slate-500 font-medium leading-relaxed">Refresh headline & body</p>
                                     </div>
                                 </div>
-                                <span className={`font-black text-xs ${regenMode === 'text' ? 'text-orange-600' : 'text-slate-400'}`}>{costs.post} PTS</span>
+                                <span className={`font-black text-xs ${regenMode === 'text' ? 'text-black' : 'text-slate-400'}`}>{costs.post} PTS</span>
                             </button>
 
                             {/* Option: Image Only */}
                             {canGenerateImages && (
                                 <button
                                     onClick={() => setRegenMode('image')}
-                                    className={`w-full p-4 rounded-2xl border-2 transition-all text-left flex items-center justify-between ${regenMode === 'image' ? 'border-orange-500 bg-orange-50/50 shadow-md' : 'border-slate-100 bg-slate-50 hover:border-slate-200'}`}
+                                    className={`w-full p-4 rounded-2xl border-2 transition-all text-left flex items-center justify-between ${regenMode === 'image' ? 'border-black bg-slate-50/50 shadow-md' : 'border-slate-100 bg-slate-50 hover:border-slate-200'}`}
                                 >
                                     <div className="flex items-center gap-4">
-                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${regenMode === 'image' ? 'bg-orange-600 text-white' : 'bg-white text-slate-400 border border-slate-200'}`}>
+                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${regenMode === 'image' ? 'bg-black text-white' : 'bg-white text-slate-400 border border-slate-200'}`}>
                                             <ImageIcon size={18} />
                                         </div>
                                         <div>
@@ -591,17 +591,17 @@ export const ContentArchitect: React.FC = () => {
                                             <p className="text-xs text-slate-500 font-medium leading-relaxed">New AI visual context</p>
                                         </div>
                                     </div>
-                                    <span className={`font-black text-xs ${regenMode === 'image' ? 'text-orange-600' : 'text-slate-400'}`}>{costs.image} PTS</span>
+                                    <span className={`font-black text-xs ${regenMode === 'image' ? 'text-black' : 'text-slate-400'}`}>{costs.image} PTS</span>
                                 </button>
                             )}
 
                             {/* Option: Both */}
                             <button
                                 onClick={() => setRegenMode(canGenerateImages ? 'both' : 'text')}
-                                className={`w-full p-4 rounded-2xl border-2 transition-all text-left flex items-center justify-between ${(regenMode === 'both' || (regenMode === 'text' && !canGenerateImages)) ? 'border-orange-500 bg-orange-50/50 shadow-md' : 'border-slate-100 bg-slate-50 hover:border-slate-200'}`}
+                                className={`w-full p-4 rounded-2xl border-2 transition-all text-left flex items-center justify-between ${(regenMode === 'both' || (regenMode === 'text' && !canGenerateImages)) ? 'border-black bg-slate-50/50 shadow-md' : 'border-slate-100 bg-slate-50 hover:border-slate-200'}`}
                             >
                                 <div className="flex items-center gap-4">
-                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${(regenMode === 'both' || (regenMode === 'text' && !canGenerateImages)) ? 'bg-orange-600 text-white' : 'bg-white text-slate-400 border border-slate-200'}`}>
+                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${(regenMode === 'both' || (regenMode === 'text' && !canGenerateImages)) ? 'bg-black text-white' : 'bg-white text-slate-400 border border-slate-200'}`}>
                                         {canGenerateImages ? <Sparkles size={18} /> : <PenTool size={18} />}
                                     </div>
                                     <div>
@@ -609,7 +609,7 @@ export const ContentArchitect: React.FC = () => {
                                         <p className="text-xs text-slate-500 font-medium leading-relaxed">{canGenerateImages ? 'New post + New image' : 'Refresh headline & body'}</p>
                                     </div>
                                 </div>
-                                <span className={`font-black text-xs ${(regenMode === 'both' || (regenMode === 'text' && !canGenerateImages)) ? 'text-orange-600' : 'text-slate-400'}`}>{canGenerateImages ? (Number(costs.post) + Number(costs.image)) : costs.post} PTS</span>
+                                <span className={`font-black text-xs ${(regenMode === 'both' || (regenMode === 'text' && !canGenerateImages)) ? 'text-black' : 'text-slate-400'}`}>{canGenerateImages ? (Number(costs.post) + Number(costs.image)) : costs.post} PTS</span>
                             </button>
                         </div>
 
@@ -625,7 +625,7 @@ export const ContentArchitect: React.FC = () => {
                                     setShowRegenConfirm(false);
                                     handleGenerateContent(regenMode);
                                 }}
-                                className="flex-1 py-4 bg-orange-600 text-white rounded-2xl font-black shadow-lg shadow-orange-100 hover:bg-orange-700 transition-all uppercase text-[10px] tracking-widest flex items-center justify-center gap-2"
+                                className="flex-1 py-4 bg-black text-white rounded-2xl font-black shadow-lg shadow-slate-100 hover:bg-black-700 transition-all uppercase text-[10px] tracking-widest flex items-center justify-center gap-2"
                             >
                                 <Check size={14} /> Confirm & Pay
                             </button>
@@ -644,7 +644,7 @@ export const ContentArchitect: React.FC = () => {
                         <div className="space-y-2">
                             <h3 className="text-xl font-black text-slate-900">Discard Current Draft?</h3>
                             <p className="text-slate-500 text-sm font-medium leading-relaxed">
-                                If you discard this, you will need to <span className="text-orange-600 font-bold">regenerate</span> which will cost more points. This action cannot be undone.
+                                If you discard this, you will need to <span className="text-black font-bold">regenerate</span> which will cost more points. This action cannot be undone.
                             </p>
                         </div>
                         <div className="flex flex-col gap-3 pt-2">
@@ -669,9 +669,9 @@ export const ContentArchitect: React.FC = () => {
             {showNoCreditsModal && (
                 <div className="fixed inset-0 z-[99999] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 font-['Outfit']">
                     <div className="bg-white rounded-[2.5rem] p-8 md:p-10 max-w-sm w-full shadow-2xl text-center space-y-6 animate-in zoom-in-95 duration-300 relative overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-orange-50 to-white -z-10" />
+                        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-black-50 to-white -z-10" />
 
-                        <div className="w-20 h-20 bg-orange-100 text-orange-600 rounded-[1.5rem] flex items-center justify-center mx-auto shadow-inner border border-orange-200">
+                        <div className="w-20 h-20 bg-slate-200 text-black rounded-[1.5rem] flex items-center justify-center mx-auto shadow-inner border border-black-200">
                             <Zap size={40} className="fill-current" />
                         </div>
 
@@ -696,7 +696,7 @@ export const ContentArchitect: React.FC = () => {
                         <div className="space-y-3 pt-2">
                             <Link
                                 to="/pricing"
-                                className="w-full py-4 bg-orange-600 text-white rounded-2xl font-black shadow-xl shadow-orange-200 hover:bg-orange-700 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 uppercase tracking-wide text-xs"
+                                className="w-full py-4 bg-black text-white rounded-2xl font-black shadow-xl shadow-slate-200 hover:bg-black-700 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 uppercase tracking-wide text-xs"
                             >
                                 Top Up Credits <ArrowRight size={16} />
                             </Link>
@@ -718,10 +718,10 @@ export const ContentArchitect: React.FC = () => {
                     <div className="space-y-1">
                         <p className="text-slate-400 font-semibold text-sm">Welcome back, {user?.name?.split(' ')[0] || 'there'}</p>
                         <div className="flex items-center gap-2">
-                            <span className="w-1.5 h-7 bg-orange-600 rounded-full" />
-                            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Post Agent</h1>
+                            <span className="w-1.5 h-7 bg-black rounded-full" />
+                            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Tweet Agent</h1>
                         </div>
-                        <p className="text-slate-400 font-medium text-sm pl-4">Design, generate &amp; publish viral Reddit threads in seconds.</p>
+                        <p className="text-slate-400 font-medium text-sm pl-4">Design, generate &amp; publish viral X threads in seconds.</p>
                     </div>
 
 
@@ -732,7 +732,7 @@ export const ContentArchitect: React.FC = () => {
                             <React.Fragment key={s.n}>
                                 <div className="flex flex-col items-center gap-1">
                                     <div className={`w-10 h-10 rounded-full border-4 border-white flex items-center justify-center text-[11px] font-black shadow-sm transition-all ${step > s.n ? 'bg-green-500 text-white' :
-                                        step === s.n ? 'bg-orange-600 text-white shadow-lg shadow-orange-200' :
+                                        step === s.n ? 'bg-black text-white shadow-lg shadow-slate-200' :
                                             'bg-slate-100 text-slate-400'
                                         }`}>
                                         {step > s.n ? <Check size={14} /> : s.n}
@@ -749,10 +749,10 @@ export const ContentArchitect: React.FC = () => {
                 {showDraftBanner && (
                     <div className="bg-slate-900 rounded-[2.5rem] p-6 md:p-8 shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6 animate-in slide-in-from-top-4 duration-500 group border border-slate-800">
                         {/* Background Decor */}
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-orange-600/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-black/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
 
                         <div className="relative z-10 flex items-center gap-5 w-full md:w-auto">
-                            <div className="w-14 h-14 bg-white/10 rounded-2xl backdrop-blur-md flex items-center justify-center border border-white/5 text-orange-500 group-hover:scale-110 transition-transform duration-500">
+                            <div className="w-14 h-14 bg-white/10 rounded-2xl backdrop-blur-md flex items-center justify-center border border-white/5 text-black group-hover:scale-110 transition-transform duration-500">
                                 <PenTool size={28} />
                             </div>
                             <div className="space-y-1">
@@ -772,7 +772,7 @@ export const ContentArchitect: React.FC = () => {
                             </button>
                             <button
                                 onClick={handleResumeDraft}
-                                className="px-8 py-3 bg-gradient-to-r from-orange-600 to-orange-500 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-orange-900/40 hover:shadow-orange-600/20 hover:-translate-y-0.5 transition-all flex items-center gap-2"
+                                className="px-8 py-3 bg-gradient-to-r from-black-600 to-black-500 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-black-900/40 hover:shadow-black-600/20 hover:-translate-y-0.5 transition-all flex items-center gap-2"
                             >
                                 Resume Draft <ArrowRight size={14} />
                             </button>
@@ -801,25 +801,25 @@ export const ContentArchitect: React.FC = () => {
                                         <h2 className="text-xl font-extrabold text-slate-900">Campaign Foundation</h2>
                                     </div>
 
-                                    {/* Subreddit + Goal */}
+                                    {/* SubX + Goal */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div className="space-y-2">
                                             <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Target Community</label>
                                             <div className="relative">
-                                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-black">r/</span>
+                                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-black">#</span>
                                                 <input
                                                     type="text"
                                                     placeholder="saas, marketing, tech..."
-                                                    className="w-full pl-9 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-orange-500 font-bold transition-all"
-                                                    value={postData.subreddit}
-                                                    onChange={(e) => setPostData({ ...postData, subreddit: e.target.value })}
+                                                    className="w-full pl-9 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-black font-bold transition-all"
+                                                    value={postData.subX}
+                                                    onChange={(e) => setPostData({ ...postData, subX: e.target.value })}
                                                 />
                                             </div>
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Content Goal</label>
                                             <select
-                                                className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-orange-500 font-bold appearance-none"
+                                                className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-black font-bold appearance-none"
                                                 value={postData.goal}
                                                 onChange={(e) => setPostData({ ...postData, goal: e.target.value })}
                                             >
@@ -847,7 +847,7 @@ export const ContentArchitect: React.FC = () => {
                                                 </div>
                                                 <button
                                                     onClick={() => setShowBrandOverride(v => !v)}
-                                                    className="flex items-center gap-1.5 text-[11px] font-black text-slate-400 hover:text-orange-600 transition-colors"
+                                                    className="flex items-center gap-1.5 text-[11px] font-black text-slate-400 hover:text-black transition-colors"
                                                 >
                                                     {showBrandOverride ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                                                     {showBrandOverride ? 'Hide override' : 'Override for this post'}
@@ -866,7 +866,7 @@ export const ContentArchitect: React.FC = () => {
                                                             <input
                                                                 type="text"
                                                                 placeholder={`Default: ${brandProfile.brandName}`}
-                                                                className="w-full p-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-orange-500 font-bold transition-all text-sm"
+                                                                className="w-full p-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-black font-bold transition-all text-sm"
                                                                 value={postData.productMention}
                                                                 onChange={(e) => setPostData({ ...postData, productMention: e.target.value })}
                                                             />
@@ -878,7 +878,7 @@ export const ContentArchitect: React.FC = () => {
                                                             <input
                                                                 type="text"
                                                                 placeholder={`Default: ${brandProfile.website || 'Not set'}`}
-                                                                className="w-full p-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-orange-500 font-bold transition-all text-sm"
+                                                                className="w-full p-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-black font-bold transition-all text-sm"
                                                                 value={postData.productUrl}
                                                                 onChange={(e) => setPostData({ ...postData, productUrl: e.target.value })}
                                                             />
@@ -889,7 +889,7 @@ export const ContentArchitect: React.FC = () => {
                                                         <textarea
                                                             rows={2}
                                                             placeholder={`Default: ${brandProfile.description || 'From your Brand Profile'}`}
-                                                            className="w-full p-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-orange-500 font-medium text-sm resize-none transition-all"
+                                                            className="w-full p-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-black font-medium text-sm resize-none transition-all"
                                                             value={postData.description}
                                                             onChange={(e) => setPostData({ ...postData, description: e.target.value })}
                                                         />
@@ -899,7 +899,7 @@ export const ContentArchitect: React.FC = () => {
                                                         <input
                                                             type="text"
                                                             placeholder={`Default: ${brandProfile.targetAudience || 'From your Brand Profile'}`}
-                                                            className="w-full p-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-orange-500 font-bold transition-all text-sm"
+                                                            className="w-full p-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-black font-bold transition-all text-sm"
                                                             value={postData.targetAudience}
                                                             onChange={(e) => setPostData({ ...postData, targetAudience: e.target.value })}
                                                         />
@@ -909,7 +909,7 @@ export const ContentArchitect: React.FC = () => {
                                                         <input
                                                             type="text"
                                                             placeholder={`Default: ${brandProfile.problem || 'From your Brand Profile'}`}
-                                                            className="w-full p-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-orange-500 font-bold transition-all text-sm"
+                                                            className="w-full p-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-black font-bold transition-all text-sm"
                                                             value={postData.problemSolved}
                                                             onChange={(e) => setPostData({ ...postData, problemSolved: e.target.value })}
                                                         />
@@ -946,22 +946,22 @@ export const ContentArchitect: React.FC = () => {
                                         </div>
                                     ) : (
                                         /* No Brand Profile — Quick Override with full fields */
-                                        <div className="rounded-3xl border-2 border-orange-100 overflow-hidden">
-                                            <div className="flex items-center justify-between px-5 py-4 bg-orange-50">
+                                        <div className="rounded-3xl border-2 border-black-100 overflow-hidden">
+                                            <div className="flex items-center justify-between px-5 py-4 bg-slate-50">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 bg-orange-500 rounded-xl flex items-center justify-center">
+                                                    <div className="w-8 h-8 bg-slate-500 rounded-xl flex items-center justify-center">
                                                         <Building2 size={14} className="text-white" />
                                                     </div>
                                                     <div>
-                                                        <p className="text-[10px] font-black text-orange-600 uppercase tracking-widest">Quick Brand Override</p>
+                                                        <p className="text-[10px] font-black text-black uppercase tracking-widest">Quick Brand Override</p>
                                                         <p className="text-[11px] text-slate-500 font-medium">Fill in for richer, more personalized AI output</p>
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center gap-3">
-                                                    <Link to="/settings" className="text-[10px] font-black text-slate-400 hover:text-orange-600 transition-colors">Save permanently →</Link>
+                                                    <Link to="/settings" className="text-[10px] font-black text-slate-400 hover:text-black transition-colors">Save permanently →</Link>
                                                     <button
                                                         onClick={() => setShowBrandOverride(v => !v)}
-                                                        className="flex items-center gap-1.5 text-[11px] font-black text-slate-400 hover:text-orange-600 transition-colors"
+                                                        className="flex items-center gap-1.5 text-[11px] font-black text-slate-400 hover:text-black transition-colors"
                                                     >
                                                         {showBrandOverride ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                                                         {showBrandOverride ? 'Hide' : 'Fill in'}
@@ -969,14 +969,14 @@ export const ContentArchitect: React.FC = () => {
                                                 </div>
                                             </div>
                                             {showBrandOverride && (
-                                                <div className="p-5 bg-white border-t border-orange-100 space-y-4">
+                                                <div className="p-5 bg-white border-t border-black-100 space-y-4">
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                         <div className="space-y-1.5">
                                                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Brand / Product Name</label>
                                                             <input
                                                                 type="text"
                                                                 placeholder="e.g. Redigo"
-                                                                className="w-full p-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-orange-500 font-bold transition-all text-sm"
+                                                                className="w-full p-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-black font-bold transition-all text-sm"
                                                                 value={postData.productMention}
                                                                 onChange={(e) => setPostData({ ...postData, productMention: e.target.value })}
                                                             />
@@ -988,7 +988,7 @@ export const ContentArchitect: React.FC = () => {
                                                             <input
                                                                 type="text"
                                                                 placeholder="https://yoursite.com"
-                                                                className="w-full p-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-orange-500 font-bold transition-all text-sm"
+                                                                className="w-full p-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-black font-bold transition-all text-sm"
                                                                 value={postData.productUrl}
                                                                 onChange={(e) => setPostData({ ...postData, productUrl: e.target.value })}
                                                             />
@@ -998,8 +998,8 @@ export const ContentArchitect: React.FC = () => {
                                                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">What does it do?</label>
                                                         <textarea
                                                             rows={2}
-                                                            placeholder="e.g. AI-powered Reddit outreach tool that helps SaaS founders find and engage their audience authentically."
-                                                            className="w-full p-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-orange-500 font-medium text-sm resize-none transition-all"
+                                                            placeholder="e.g. AI-powered X outreach tool that helps SaaS founders find and engage their audience authentically."
+                                                            className="w-full p-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-black font-medium text-sm resize-none transition-all"
                                                             value={postData.description}
                                                             onChange={(e) => setPostData({ ...postData, description: e.target.value })}
                                                         />
@@ -1009,7 +1009,7 @@ export const ContentArchitect: React.FC = () => {
                                                         <input
                                                             type="text"
                                                             placeholder="e.g. SaaS founders, indie hackers, B2B marketers"
-                                                            className="w-full p-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-orange-500 font-bold transition-all text-sm"
+                                                            className="w-full p-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-black font-bold transition-all text-sm"
                                                             value={postData.targetAudience}
                                                             onChange={(e) => setPostData({ ...postData, targetAudience: e.target.value })}
                                                         />
@@ -1018,8 +1018,8 @@ export const ContentArchitect: React.FC = () => {
                                                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Problem it solves</label>
                                                         <input
                                                             type="text"
-                                                            placeholder="e.g. Difficulty finding relevant Reddit conversations"
-                                                            className="w-full p-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-orange-500 font-bold transition-all text-sm"
+                                                            placeholder="e.g. Difficulty finding relevant X conversations"
+                                                            className="w-full p-3.5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:border-black font-bold transition-all text-sm"
                                                             value={postData.problemSolved}
                                                             onChange={(e) => setPostData({ ...postData, problemSolved: e.target.value })}
                                                         />
@@ -1102,7 +1102,7 @@ export const ContentArchitect: React.FC = () => {
                                         <select
                                             value={language}
                                             onChange={(e) => setLanguage(e.target.value)}
-                                            className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm text-slate-700 focus:outline-none focus:border-orange-500 cursor-pointer shadow-sm"
+                                            className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm text-slate-700 focus:outline-none focus:border-black cursor-pointer shadow-sm"
                                         >
                                             <option value="English">🇺🇸 English</option>
                                             <option value="Arabic">🇸🇦 Arabic (العربية)</option>
@@ -1123,15 +1123,15 @@ export const ContentArchitect: React.FC = () => {
 
                                     {/* Action Buttons */}
                                     <div className="flex flex-col gap-4 mt-8">
-                                        <div className="flex items-center justify-between p-4 bg-orange-50/50 rounded-2xl border border-orange-100">
+                                        <div className="flex items-center justify-between p-4 bg-slate-50/50 rounded-2xl border border-black-100">
                                             <div className="flex items-center gap-3">
-                                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-sm ${!canGenerateImages ? 'bg-slate-100 text-slate-400' : 'bg-white text-orange-600'}`}>
+                                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-sm ${!canGenerateImages ? 'bg-slate-100 text-slate-400' : 'bg-white text-black'}`}>
                                                     {!canGenerateImages ? <Crown size={18} /> : <ImageIcon size={20} />}
                                                 </div>
                                                 <div>
                                                     <div className="flex items-center gap-2">
                                                         <p className="text-sm font-bold text-slate-900">Include Base Image</p>
-                                                        {!canGenerateImages && <span className="bg-orange-100 text-orange-600 text-[8px] font-black px-1.5 py-0.5 rounded-md uppercase tracking-tighter">Pro Feature</span>}
+                                                        {!canGenerateImages && <span className="bg-slate-200 text-black text-[8px] font-black px-1.5 py-0.5 rounded-md uppercase tracking-tighter">Pro Feature</span>}
                                                     </div>
                                                     <div className="flex items-center gap-2">
                                                         <p className="text-[10px] text-slate-500 font-medium">
@@ -1149,7 +1149,7 @@ export const ContentArchitect: React.FC = () => {
                                             <div className="relative">
                                                 <button
                                                     onClick={() => canGenerateImages ? setIncludeImage(!includeImage) : window.location.href = '/pricing'}
-                                                    className={`w-12 h-7 rounded-full transition-all relative ${includeImage && canGenerateImages ? 'bg-orange-600' : 'bg-slate-300'} ${!canGenerateImages ? 'cursor-pointer hover:bg-slate-400' : ''}`}
+                                                    className={`w-12 h-7 rounded-full transition-all relative ${includeImage && canGenerateImages ? 'bg-black' : 'bg-slate-300'} ${!canGenerateImages ? 'cursor-pointer hover:bg-slate-400' : ''}`}
                                                 >
                                                     <div className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${includeImage && canGenerateImages ? 'translate-x-5' : 'translate-x-0'} flex items-center justify-center`}>
                                                         {!canGenerateImages && <AlertCircle size={10} className="text-slate-400" />}
@@ -1244,8 +1244,8 @@ export const ContentArchitect: React.FC = () => {
                                                     }
                                                     handleGenerateContent();
                                                 }}
-                                                disabled={!postData.subreddit || isGenerating}
-                                                className={`py-5 bg-slate-900 text-white rounded-[2rem] font-black hover:bg-orange-600 transition-all shadow-2xl flex items-center justify-center gap-2 group disabled:opacity-50 ${postData.title && postData.content ? 'px-8' : 'w-full'}`}
+                                                disabled={!postData.subX || isGenerating}
+                                                className={`py-5 bg-slate-900 text-white rounded-[2rem] font-black hover:bg-black transition-all shadow-2xl flex items-center justify-center gap-2 group disabled:opacity-50 ${postData.title && postData.content ? 'px-8' : 'w-full'}`}
                                             >
                                                 <Sparkles size={20} />
                                                 {isGenerating ? 'ORCHESTRATING...' : postData.title ? `RE-GENERATE (${(includeImage && canGenerateImages) ? (Number(costs.post) + Number(costs.image)) : Number(costs.post)} pts)` : `GENERATE POST (${(includeImage && canGenerateImages) ? (Number(costs.post) + Number(costs.image)) : Number(costs.post)} PTS)`}
@@ -1262,7 +1262,7 @@ export const ContentArchitect: React.FC = () => {
                             <div className="bg-white p-10 rounded-[3rem] border border-slate-200/60 shadow-xl space-y-8">
                                 <div className="flex items-center justify-between border-b border-slate-100 pb-6">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center">
+                                        <div className="w-10 h-10 bg-slate-50 text-black rounded-2xl flex items-center justify-center">
                                             <PenTool size={20} />
                                         </div>
                                         <h2 className="text-xl font-extrabold text-slate-900">Content Editor</h2>
@@ -1277,7 +1277,7 @@ export const ContentArchitect: React.FC = () => {
                                             type="text"
                                             value={postData.title}
                                             onChange={(e) => setPostData({ ...postData, title: e.target.value })}
-                                            className="w-full p-5 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-lg text-slate-900 focus:outline-none focus:border-orange-500"
+                                            className="w-full p-5 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-lg text-slate-900 focus:outline-none focus:border-black"
                                         />
                                     </div>
 
@@ -1287,7 +1287,7 @@ export const ContentArchitect: React.FC = () => {
                                             rows={9}
                                             value={postData.content}
                                             onChange={(e) => setPostData({ ...postData, content: e.target.value })}
-                                            className="w-full p-6 bg-slate-50 border border-slate-100 rounded-3xl font-medium text-slate-700 focus:outline-none focus:border-orange-500 resize-none leading-relaxed"
+                                            className="w-full p-6 bg-slate-50 border border-slate-100 rounded-3xl font-medium text-slate-700 focus:outline-none focus:border-black resize-none leading-relaxed"
                                         />
                                     </div>
 
@@ -1298,7 +1298,7 @@ export const ContentArchitect: React.FC = () => {
                                                     <ImageIcon size={12} />
                                                     AI Brand Visual
                                                     {isGeneratingImage && (
-                                                        <span className="text-orange-500 flex items-center gap-1">
+                                                        <span className="text-black flex items-center gap-1">
                                                             <RefreshCw size={10} className="animate-spin" />
                                                             Generating...
                                                         </span>
@@ -1310,7 +1310,7 @@ export const ContentArchitect: React.FC = () => {
                                                             setRegenMode('image');
                                                             setShowRegenConfirm(true);
                                                         }}
-                                                        className="text-[10px] font-black text-slate-400 hover:text-orange-600 flex items-center gap-1 transition-colors"
+                                                        className="text-[10px] font-black text-slate-400 hover:text-black flex items-center gap-1 transition-colors"
                                                     >
                                                         <RefreshCw size={10} /> Regenerate
                                                     </button>
@@ -1321,7 +1321,7 @@ export const ContentArchitect: React.FC = () => {
                                                 {(isGeneratingImage || !imageLoaded) && postData.imageUrl === '' && (
                                                     <div className="absolute inset-0 bg-gradient-to-r from-slate-100 via-slate-50 to-slate-100 animate-pulse flex items-center justify-center">
                                                         <div className="flex flex-col items-center gap-3">
-                                                            <Sparkles size={28} className="text-orange-300 animate-pulse" />
+                                                            <Sparkles size={28} className="text-black-300 animate-pulse" />
                                                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                                                                 {isGeneratingImage ? 'Crafting your brand visual...' : 'Visual will appear here'}
                                                             </p>
@@ -1350,7 +1350,7 @@ export const ContentArchitect: React.FC = () => {
                                 <div className="flex gap-4">
                                     <button
                                         onClick={() => setStep(3)}
-                                        className="flex-1 py-5 bg-slate-900 text-white rounded-[2rem] font-black hover:bg-orange-600 transition-all flex items-center justify-center gap-2 group"
+                                        className="flex-1 py-5 bg-slate-900 text-white rounded-[2rem] font-black hover:bg-black transition-all flex items-center justify-center gap-2 group"
                                     >
                                         REVIEW & PUBLISH <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                                     </button>
@@ -1360,7 +1360,7 @@ export const ContentArchitect: React.FC = () => {
                                             setShowRegenConfirm(true);
                                         }}
                                         disabled={isGenerating}
-                                        className="p-5 bg-slate-50 text-slate-400 rounded-[2rem] hover:text-orange-600 hover:bg-orange-50 transition-all"
+                                        className="p-5 bg-slate-50 text-slate-400 rounded-[2rem] hover:text-black hover:bg-slate-50 transition-all"
                                         title="Regenerate all content"
                                     >
                                         <RefreshCw size={24} className={isGenerating ? 'animate-spin' : ''} />
@@ -1380,7 +1380,7 @@ export const ContentArchitect: React.FC = () => {
                                         <h2 className="text-xl font-extrabold text-slate-900">Final Review</h2>
                                     </div>
                                     <div className="flex items-center gap-4">
-                                        <button onClick={() => setStep(1)} className="text-[10px] font-black text-slate-400 hover:text-orange-600 uppercase tracking-widest transition-colors flex items-center gap-1">
+                                        <button onClick={() => setStep(1)} className="text-[10px] font-black text-slate-400 hover:text-black uppercase tracking-widest transition-colors flex items-center gap-1">
                                             <Settings size={12} /> Settings
                                         </button>
                                         <div className="w-[1px] h-3 bg-slate-200" />
@@ -1393,10 +1393,10 @@ export const ContentArchitect: React.FC = () => {
                                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Publishing Identity</p>
                                         <div className="flex items-center gap-3 bg-white p-3 rounded-xl border border-slate-100">
                                             <div className="w-10 h-10 rounded-xl overflow-hidden border border-slate-200">
-                                                {(redditStatus.accounts || []).find(a => a.username === selectedAccount)?.icon ? (
-                                                    <img src={(redditStatus.accounts || []).find(a => a.username === selectedAccount)?.icon} className="w-full h-full object-cover" />
+                                                {(XStatus.accounts || []).find(a => a.username === selectedAccount)?.icon ? (
+                                                    <img src={(XStatus.accounts || []).find(a => a.username === selectedAccount)?.icon} className="w-full h-full object-cover" />
                                                 ) : (
-                                                    <div className="w-full h-full bg-orange-600 flex items-center justify-center text-white font-black">R</div>
+                                                    <div className="w-full h-full bg-black flex items-center justify-center text-white font-black">R</div>
                                                 )}
                                             </div>
                                             <div className="flex-1">
@@ -1405,21 +1405,21 @@ export const ContentArchitect: React.FC = () => {
                                                     onChange={(e) => setSelectedAccount(e.target.value)}
                                                     className="w-full bg-transparent border-none text-sm font-bold text-slate-900 focus:outline-none"
                                                 >
-                                                    {(redditStatus.accounts || []).length > 0 ? (
-                                                        (redditStatus.accounts || []).map(acc => (
+                                                    {(XStatus.accounts || []).length > 0 ? (
+                                                        (XStatus.accounts || []).map(acc => (
                                                             <option key={acc.username} value={acc.username}>u/{acc.username}</option>
                                                         ))
                                                     ) : (
                                                         <option value="">No accounts connected</option>
                                                     )}
                                                 </select>
-                                                {(redditStatus.accounts || []).length === 0 && <p className="text-[10px] text-red-500 font-bold mt-1">Please link an account in settings</p>}
+                                                {(XStatus.accounts || []).length === 0 && <p className="text-[10px] text-red-500 font-bold mt-1">Please link an account in settings</p>}
                                             </div>
                                         </div>
                                     </div>
                                     <div className="p-5 bg-slate-50 rounded-2xl space-y-1">
                                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Posting to</p>
-                                        <p className="font-extrabold text-slate-900 text-lg">r/{postData.subreddit}</p>
+                                        <p className="font-extrabold text-slate-900 text-lg">#{postData.subX}</p>
                                     </div>
                                     <div className="p-5 bg-slate-50 rounded-2xl space-y-1">
                                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Headline</p>
@@ -1438,11 +1438,11 @@ export const ContentArchitect: React.FC = () => {
                                 <button
                                     onClick={handlePost}
                                     disabled={isPosting}
-                                    className="w-full py-6 bg-orange-600 text-white rounded-[2.5rem] font-black hover:bg-orange-500 transition-all shadow-2xl shadow-orange-200 flex items-center justify-center gap-3 text-lg group"
+                                    className="w-full py-6 bg-black text-white rounded-[2.5rem] font-black hover:bg-slate-500 transition-all shadow-2xl shadow-slate-200 flex items-center justify-center gap-3 text-lg group"
                                 >
                                     {isPosting
                                         ? <><RefreshCw className="animate-spin" size={24} /> Publishing...</>
-                                        : <><Send size={24} className="group-hover:translate-x-1 transition-transform" /> PUBLISH TO REDDIT</>
+                                        : <><Send size={24} className="group-hover:translate-x-1 transition-transform" /> PUBLISH TO X</>
                                     }
                                 </button>
                             </div>
@@ -1452,16 +1452,16 @@ export const ContentArchitect: React.FC = () => {
                     {/* Right: Live Preview */}
                     <div className="lg:col-span-5">
                         <div className="sticky top-10 space-y-6">
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Reddit Live Preview</p>
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">X Live Preview</p>
 
                             <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden hover:shadow-xl transition-shadow">
                                 <div className="p-8 space-y-5">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center text-white font-black text-sm">
-                                            {postData.subreddit ? postData.subreddit[0].toUpperCase() : 'R'}
+                                        <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center text-white font-black text-sm">
+                                            {postData.subX ? postData.subX[0].toUpperCase() : 'R'}
                                         </div>
                                         <div>
-                                            <p className="text-xs font-black text-slate-900">r/{postData.subreddit || 'subreddit'}</p>
+                                            <p className="text-xs font-black text-slate-900">#{postData.subX || 'subX'}</p>
                                             <p className="text-[10px] text-slate-400 font-medium">Posted by u/you • just now</p>
                                         </div>
                                     </div>
@@ -1472,8 +1472,8 @@ export const ContentArchitect: React.FC = () => {
 
                                     {/* Image in preview with skeleton */}
                                     {isGeneratingImage && (
-                                        <div className="w-full h-36 bg-gradient-to-br from-orange-50 via-slate-50 to-orange-50 rounded-2xl animate-pulse flex items-center justify-center">
-                                            <Sparkles size={20} className="text-orange-300 animate-pulse" />
+                                        <div className="w-full h-36 bg-gradient-to-br from-black-50 via-slate-50 to-black-50 rounded-2xl animate-pulse flex items-center justify-center">
+                                            <Sparkles size={20} className="text-black-300 animate-pulse" />
                                         </div>
                                     )}
 
@@ -1541,7 +1541,7 @@ export const ContentArchitect: React.FC = () => {
                         <div className="space-y-2">
                             <h3 className="text-2xl font-black text-slate-900 leading-tight">Daily Limit Reached! 🕒</h3>
                             <p className="text-slate-500 text-sm font-medium leading-relaxed">
-                                You've reached your allowed quota of <span className="text-orange-600 font-bold">
+                                You've reached your allowed quota of <span className="text-black font-bold">
                                     {(() => {
                                         const plan = plans.find(p => (p.name || '').toLowerCase() === (user?.plan || '').toLowerCase() || (p.id || '').toLowerCase() === (user?.plan || '').toLowerCase());
                                         const planLimit = user?.billingCycle === 'yearly' ? plan?.dailyLimitYearly : plan?.dailyLimitMonthly;
@@ -1560,7 +1560,7 @@ export const ContentArchitect: React.FC = () => {
                             </Link>
                             <Link
                                 to="/pricing"
-                                className="w-full py-4 bg-orange-600 text-white rounded-2xl font-black shadow-xl shadow-orange-100 hover:bg-orange-700 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 uppercase tracking-wide text-xs"
+                                className="w-full py-4 bg-black text-white rounded-2xl font-black shadow-xl shadow-slate-100 hover:bg-black-700 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 uppercase tracking-wide text-xs"
                             >
                                 Upgrade Plan <Crown size={18} />
                             </Link>

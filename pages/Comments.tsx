@@ -34,8 +34,8 @@ import {
   MessageSquare
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { RedditPost, GeneratedReply } from '../types';
-import { generateRedditReply, fetchBrandProfile, BrandProfile } from '../services/geminiService';
+import { XTweet, GeneratedReply } from '../types';
+import { generateXReply, fetchBrandProfile, BrandProfile } from '../services/geminiService';
 import { useAuth } from '../context/AuthContext';
 import CreditsBanner from '../components/CreditsBanner';
 
@@ -47,27 +47,27 @@ const PROGRESS_STEPS = [
   { message: 'Finalizing your reply...', icon: '✨', duration: 800 },
 ];
 
-const MOCK_POSTS: RedditPost[] = [
+const MOCK_POSTS: XTweet[] = [
   {
     id: '1',
-    title: 'Looking for a tool to automate my Reddit outreach',
+    title: 'Looking for a tool to automate my X outreach',
     author: 'startup_founder_99',
-    subreddit: 'saas',
+    subX: 'saas',
     ups: 154,
     num_comments: 42,
-    selftext: 'I spend 4 hours a day on Reddit trying to find leads. Is there any AI tool that can help me find relevant posts and draft replies?',
-    url: 'https://reddit.com/r/saas/1',
+    selftext: 'I spend 4 hours a day on X trying to find leads. Is there any AI tool that can help me find relevant posts and draft replies?',
+    url: 'https://X.com/#saas/1',
     created_utc: Date.now() / 1000 - 3600
   },
   {
     id: '2',
     title: 'How do you handle growth marketing on a budget?',
     author: 'indie_maker_x',
-    subreddit: 'marketing',
+    subX: 'marketing',
     ups: 89,
     num_comments: 15,
     selftext: 'I have $0 for ads. Currently trying to use community engagement but it is slow.',
-    url: 'https://reddit.com/r/marketing/2',
+    url: 'https://X.com/#marketing/2',
     created_utc: Date.now() / 1000 - 7200
   }
 ];
@@ -75,11 +75,11 @@ const MOCK_POSTS: RedditPost[] = [
 export const Comments: React.FC = () => {
   const { user, updateUser, syncUser } = useAuth();
   const replyCardRef = useRef<HTMLDivElement>(null);
-  const [posts, setPosts] = useState<RedditPost[]>([]);
-  const [selectedPost, setSelectedPost] = useState<RedditPost | null>(null);
+  const [posts, setPosts] = useState<XTweet[]>([]);
+  const [selectedPost, setSelectedPost] = useState<XTweet | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
-  const [targetSubreddit, setTargetSubreddit] = useState('saas');
+  const [targetSubX, setTargetSubX] = useState('saas');
   const [searchKeywords, setSearchKeywords] = useState('');
   const [generatedReply, setGeneratedReply] = useState<GeneratedReply | null>(null);
   const [editedComment, setEditedComment] = useState('');
@@ -87,7 +87,7 @@ export const Comments: React.FC = () => {
   const [toast, setToast] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
 
   const [progressStep, setProgressStep] = useState(0);
-  const [redditStatus, setRedditStatus] = useState<{ connected: boolean; accounts: any[] }>({ connected: false, accounts: [] });
+  const [XStatus, setXStatus] = useState<{ connected: boolean; accounts: any[] }>({ connected: false, accounts: [] });
   const [selectedAccount, setSelectedAccount] = useState<string>('');
 
   // Wizard & Modal State
@@ -140,13 +140,13 @@ export const Comments: React.FC = () => {
       .catch(console.error);
   }, []);
 
-  // Load reddit status on mount/user change
+  // Load X status on mount/user change
   useEffect(() => {
     if (user?.id) {
-      fetch(`/api/user/reddit/status?userId=${user.id}`)
+      fetch(`/api/user/x/status?userId=${user.id}`)
         .then(res => res.json())
         .then(status => {
-          setRedditStatus(status);
+          setXStatus(status);
           if (status.accounts?.length > 0 && !selectedAccount) {
             setSelectedAccount(status.accounts[0].username);
           }
@@ -157,7 +157,7 @@ export const Comments: React.FC = () => {
 
   // Check for draft on mount
   useEffect(() => {
-    const savedDraft = localStorage.getItem('redditgo_comment_draft');
+    const savedDraft = localStorage.getItem('Xgo_comment_draft');
     if (savedDraft) {
       try {
         const draft = JSON.parse(savedDraft);
@@ -165,7 +165,7 @@ export const Comments: React.FC = () => {
           setShowDraftBanner(true);
         }
       } catch (e) {
-        localStorage.removeItem('redditgo_comment_draft');
+        localStorage.removeItem('Xgo_comment_draft');
       }
     }
     setIsInitialCheckDone(true);
@@ -190,16 +190,16 @@ export const Comments: React.FC = () => {
         includeLink,
         useTracking
       };
-      localStorage.setItem('redditgo_comment_draft', JSON.stringify(draft));
+      localStorage.setItem('Xgo_comment_draft', JSON.stringify(draft));
     } else if (isInitialCheckDone && !showDraftBanner) {
       // ONLY remove if it's explicitly empty and we're not currently showing a draft banner
-      localStorage.removeItem('redditgo_comment_draft');
+      localStorage.removeItem('Xgo_comment_draft');
     }
   }, [selectedPost, generatedReply, editedComment, wizardData, selectedAccount, brandProfile, activeTone, language, showDraftBanner, isInitialCheckDone, includeBrandName, includeLink, useTracking]);
 
   const handleResumeDraft = () => {
     setShowDraftBanner(false);
-    const savedDraft = localStorage.getItem('redditgo_comment_draft');
+    const savedDraft = localStorage.getItem('Xgo_comment_draft');
     if (savedDraft) {
       const draft = JSON.parse(savedDraft);
       setSelectedPost(draft.selectedPost);
@@ -229,7 +229,7 @@ export const Comments: React.FC = () => {
   };
 
   const handleDiscardDraft = () => {
-    localStorage.removeItem('redditgo_comment_draft');
+    localStorage.removeItem('Xgo_comment_draft');
     setSelectedPost(null);
     setGeneratedReply(null);
     setEditedComment('');
@@ -266,7 +266,7 @@ export const Comments: React.FC = () => {
     setTimeout(cycle, PROGRESS_STEPS[0].duration);
   }, [isGenerating]);
 
-  const handleGenerate = async (post: RedditPost, customSettings?: any) => {
+  const handleGenerate = async (post: XTweet, customSettings?: any) => {
     const cost = costs.comment;
 
     // Proactive Daily Limit Pre-check
@@ -308,7 +308,7 @@ export const Comments: React.FC = () => {
       };
 
       const context = `Tone: ${tone}, Goal: ${goal}`;
-      const reply = await generateRedditReply(post, post.subreddit, tone, context, user?.id, overrideProfile, language, includeBrandName, includeLink, useTracking);
+      const reply = await generateXReply(post, post.subX, tone, context, user?.id, overrideProfile, language, includeBrandName, includeLink, useTracking);
 
       setGeneratedReply(reply);
       setEditedComment(reply.comment);
@@ -366,7 +366,7 @@ export const Comments: React.FC = () => {
 
     setIsGenerating(true);
     try {
-      const reply = await generateRedditReply(selectedPost, selectedPost.subreddit, instruction, `Refine this reply: "${editedComment}". Instruction: ${instruction}`, user?.id);
+      const reply = await generateXReply(selectedPost, selectedPost.subX, instruction, `Refine this reply: "${editedComment}". Instruction: ${instruction}`, user?.id);
       setGeneratedReply(reply);
       setEditedComment(reply.comment);
       if (reply.credits !== undefined) {
@@ -393,7 +393,7 @@ export const Comments: React.FC = () => {
 
     setIsPosting(true);
     try {
-      const response = await fetch('/api/reddit/reply', {
+      const response = await fetch('/api/x/reply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -403,15 +403,15 @@ export const Comments: React.FC = () => {
           postTitle: selectedPost.title,
           postUrl: selectedPost.url,
           postContent: selectedPost.selftext,
-          subreddit: selectedPost.subreddit,
+          subX: selectedPost.subX,
           productMention: wizardData.productMention,
-          redditUsername: selectedAccount
+          XUsername: selectedAccount
         })
       });
 
       if (!response.ok) throw new Error('Failed to post reply');
 
-      showToast('Successfully deployed to Reddit!', 'success');
+      showToast('Successfully deployed to X!', 'success');
 
       // Clear all states after successful deploy
       setGeneratedReply(null);
@@ -426,7 +426,7 @@ export const Comments: React.FC = () => {
         targetAudience: '',
         problemSolved: ''
       });
-      localStorage.removeItem('redditgo_comment_draft');
+      localStorage.removeItem('Xgo_comment_draft');
     } catch (err: any) {
       showToast(err.message, 'error');
     } finally {
@@ -434,9 +434,9 @@ export const Comments: React.FC = () => {
     }
   };
 
-  const handleRedditAuth = async () => {
+  const handleXAuth = async () => {
     try {
-      const response = await fetch('/api/auth/reddit/url');
+      const response = await fetch('/api/auth/x/url');
       const data = await response.json();
       if (data.url) window.location.href = data.url;
     } catch (err) {
@@ -448,7 +448,7 @@ export const Comments: React.FC = () => {
     if (!user?.id) return;
     setIsFetching(true);
     try {
-      const response = await fetch(`/api/reddit/posts?subreddit=${targetSubreddit}&keywords=${searchKeywords}&userId=${user.id}`);
+      const response = await fetch(`/api/x/posts?subX=${targetSubX}&keywords=${searchKeywords}&userId=${user.id}`);
       if (!response.ok) throw new Error('Fetch failed');
       const data = await response.json();
 
@@ -462,13 +462,13 @@ export const Comments: React.FC = () => {
       });
 
       // Avoid default selection if we have a draft pending or already a post selected
-      const hasDraft = localStorage.getItem('redditgo_comment_draft');
+      const hasDraft = localStorage.getItem('Xgo_comment_draft');
       if (data.length > 0 && !selectedPost && !hasDraft) {
         setSelectedPost(data[0]);
       }
     } catch (err: any) {
       setPosts(MOCK_POSTS);
-      const hasDraft = localStorage.getItem('redditgo_comment_draft');
+      const hasDraft = localStorage.getItem('Xgo_comment_draft');
       if (MOCK_POSTS.length > 0 && !selectedPost && !hasDraft) {
         setSelectedPost(MOCK_POSTS[0]);
       }
@@ -481,10 +481,10 @@ export const Comments: React.FC = () => {
     if (!user?.id) return;
     fetchPosts();
     fetchBrandProfile(user.id).then(p => { if (p?.brandName) setBrandProfile(p); });
-    fetch(`/api/user/reddit/status?userId=${user.id}`)
+    fetch(`/api/user/x/status?userId=${user.id}`)
       .then(res => res.json())
       .then(status => {
-        setRedditStatus(status);
+        setXStatus(status);
         if (status.accounts?.length > 0) setSelectedAccount(status.accounts[0].username);
       });
   }, [user]);
@@ -517,7 +517,7 @@ export const Comments: React.FC = () => {
             <div className="space-y-2">
               <h3 className="text-xl font-black text-slate-900">Discard Comment Draft?</h3>
               <p className="text-slate-500 text-sm font-medium leading-relaxed">
-                If you discard this, you will need to <span className="text-orange-600 font-bold">re-generate</span> which will cost {costs.comment} points.
+                If you discard this, you will need to <span className="text-black font-bold">re-generate</span> which will cost {costs.comment} points.
               </p>
             </div>
             <div className="flex flex-col gap-3 pt-2">
@@ -544,7 +544,7 @@ export const Comments: React.FC = () => {
           <div className="bg-white rounded-[2.5rem] p-8 md:p-10 max-w-md w-full shadow-2xl space-y-8 animate-in zoom-in-95 duration-300">
             <div className="flex items-center justify-between border-b border-slate-50 pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center">
+                <div className="w-10 h-10 bg-slate-50 text-black rounded-2xl flex items-center justify-center">
                   <RefreshCw size={24} />
                 </div>
                 <h3 className="text-xl font-black text-slate-900">
@@ -562,9 +562,9 @@ export const Comments: React.FC = () => {
                 }
               </p>
 
-              <div className="bg-orange-50 p-4 rounded-2xl flex items-center justify-between">
-                <span className="text-[10px] font-black text-orange-600 uppercase tracking-widest">Confirmation Cost</span>
-                <span className="font-black text-orange-600">{costs.comment} PTS</span>
+              <div className="bg-slate-50 p-4 rounded-2xl flex items-center justify-between">
+                <span className="text-[10px] font-black text-black uppercase tracking-widest">Confirmation Cost</span>
+                <span className="font-black text-black">{costs.comment} PTS</span>
               </div>
             </div>
 
@@ -584,7 +584,7 @@ export const Comments: React.FC = () => {
                     handleRefine(refinePrompt);
                   }
                 }}
-                className="flex-1 py-4 bg-orange-600 text-white rounded-2xl font-black shadow-lg shadow-orange-100 hover:bg-orange-700 transition-all uppercase text-[10px] tracking-widest flex items-center justify-center gap-2"
+                className="flex-1 py-4 bg-black text-white rounded-2xl font-black shadow-lg shadow-slate-100 hover:bg-black-700 transition-all uppercase text-[10px] tracking-widest flex items-center justify-center gap-2"
               >
                 <Check size={14} /> Confirm & Pay
               </button>
@@ -597,9 +597,9 @@ export const Comments: React.FC = () => {
       {showNoCreditsModal && (
         <div className="fixed inset-0 z-[99999] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 font-['Outfit']">
           <div className="bg-white rounded-[2.5rem] p-8 md:p-10 max-w-sm w-full shadow-2xl text-center space-y-6 animate-in zoom-in-95 duration-300 relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-orange-50 to-white -z-10" />
+            <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-black-50 to-white -z-10" />
 
-            <div className="w-20 h-20 bg-orange-100 text-orange-600 rounded-[1.5rem] flex items-center justify-center mx-auto shadow-inner border border-orange-200">
+            <div className="w-20 h-20 bg-slate-200 text-black rounded-[1.5rem] flex items-center justify-center mx-auto shadow-inner border border-black-200">
               <Zap size={40} className="fill-current" />
             </div>
 
@@ -624,7 +624,7 @@ export const Comments: React.FC = () => {
             <div className="space-y-3 pt-2">
               <Link
                 to="/pricing"
-                className="w-full py-4 bg-orange-600 text-white rounded-2xl font-black shadow-xl shadow-orange-200 hover:bg-orange-700 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 uppercase tracking-wide text-xs"
+                className="w-full py-4 bg-black text-white rounded-2xl font-black shadow-xl shadow-slate-200 hover:bg-black-700 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 uppercase tracking-wide text-xs"
               >
                 Top Up Credits <ArrowRight size={16} />
               </Link>
@@ -644,8 +644,8 @@ export const Comments: React.FC = () => {
         <div className="fixed inset-0 z-[1100] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
           <div className="bg-white rounded-[2.5rem] p-8 md:p-14 max-w-md w-full shadow-2xl text-center space-y-8 animate-in zoom-in-95 duration-300">
             <div className="relative w-24 h-24 mx-auto">
-              <div className="absolute inset-0 rounded-full bg-orange-100 animate-ping opacity-60" />
-              <div className="relative w-24 h-24 bg-orange-600 rounded-full flex items-center justify-center text-4xl shadow-2xl shadow-orange-300">
+              <div className="absolute inset-0 rounded-full bg-slate-200 animate-ping opacity-60" />
+              <div className="relative w-24 h-24 bg-black rounded-full flex items-center justify-center text-4xl shadow-2xl shadow-slate-300">
                 {PROGRESS_STEPS[progressStep]?.icon}
               </div>
             </div>
@@ -655,7 +655,7 @@ export const Comments: React.FC = () => {
             </div>
             <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
               <div
-                className="h-full bg-orange-600 rounded-full transition-all duration-1000"
+                className="h-full bg-black rounded-full transition-all duration-1000"
                 style={{ width: `${((progressStep + 1) / PROGRESS_STEPS.length) * 100}%` }}
               />
             </div>
@@ -668,10 +668,10 @@ export const Comments: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2 border-b border-slate-100">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="w-1.5 h-7 bg-orange-600 rounded-full" />
+              <span className="w-1.5 h-7 bg-black rounded-full" />
               <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Comment Agent</h1>
             </div>
-            <p className="text-slate-400 font-medium text-sm pl-4">Find & join relevant Reddit discussions automatically.</p>
+            <p className="text-slate-400 font-medium text-sm pl-4">Find & join relevant X discussions automatically.</p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
@@ -679,9 +679,9 @@ export const Comments: React.FC = () => {
               <Target size={14} className="text-slate-400" />
               <input
                 type="text"
-                value={targetSubreddit}
-                onChange={(e) => setTargetSubreddit(e.target.value)}
-                placeholder="subreddit"
+                value={targetSubX}
+                onChange={(e) => setTargetSubX(e.target.value)}
+                placeholder="subX"
                 className="p-2.5 bg-transparent focus:outline-none font-bold text-xs w-24"
               />
               <div className="w-[1px] h-4 bg-slate-200 mx-2" />
@@ -697,7 +697,7 @@ export const Comments: React.FC = () => {
             <button
               onClick={fetchPosts}
               disabled={isFetching}
-              className="bg-slate-900 text-white px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-orange-600 transition-all flex items-center justify-center gap-2"
+              className="bg-slate-900 text-white px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-black transition-all flex items-center justify-center gap-2"
             >
               <RefreshCw size={14} className={isFetching ? 'animate-spin' : ''} />
               Reload Feed
@@ -709,10 +709,10 @@ export const Comments: React.FC = () => {
         {showDraftBanner && (
           <div className="bg-slate-900 rounded-[2.5rem] p-6 md:p-8 shadow-2xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6 animate-in slide-in-from-top-4 duration-500 group border border-slate-800">
             {/* Background Decor */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-orange-600/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-black/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
 
             <div className="relative z-10 flex items-center gap-5 w-full md:w-auto">
-              <div className="w-14 h-14 bg-white/10 rounded-2xl backdrop-blur-md flex items-center justify-center border border-white/5 text-orange-500 group-hover:scale-110 transition-transform duration-500">
+              <div className="w-14 h-14 bg-white/10 rounded-2xl backdrop-blur-md flex items-center justify-center border border-white/5 text-black group-hover:scale-110 transition-transform duration-500">
                 <Clock size={28} />
               </div>
               <div className="space-y-1">
@@ -732,7 +732,7 @@ export const Comments: React.FC = () => {
               </button>
               <button
                 onClick={handleResumeDraft}
-                className="px-8 py-3 bg-gradient-to-r from-orange-600 to-orange-500 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-orange-900/40 hover:shadow-orange-600/20 hover:-translate-y-0.5 transition-all flex items-center gap-2"
+                className="px-8 py-3 bg-gradient-to-r from-black-600 to-black-500 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-black-900/40 hover:shadow-black-600/20 hover:-translate-y-0.5 transition-all flex items-center gap-2"
               >
                 Resume Work <ArrowRight size={14} />
               </button>
@@ -750,15 +750,15 @@ export const Comments: React.FC = () => {
               <div
                 key={post.id}
                 onClick={() => setSelectedPost(post)}
-                className={`p-7 rounded-[2.5rem] transition-all duration-500 border-2 relative group overflow-hidden cursor-pointer ${selectedPost?.id === post.id ? 'border-orange-500 bg-orange-50/10 shadow-xl' : 'border-slate-100 bg-white hover:border-slate-200'}`}
+                className={`p-7 rounded-[2.5rem] transition-all duration-500 border-2 relative group overflow-hidden cursor-pointer ${selectedPost?.id === post.id ? 'border-black bg-slate-50/10 shadow-xl' : 'border-slate-100 bg-white hover:border-slate-200'}`}
               >
                 <div className="flex flex-col md:flex-row items-start justify-between gap-6">
                   <div className="flex-1 space-y-4">
                     <div className="flex items-center gap-2">
-                      <span className="px-3 py-1 bg-orange-100 text-orange-600 rounded-full text-[10px] font-black uppercase tracking-widest">r/{post.subreddit}</span>
+                      <span className="px-3 py-1 bg-slate-200 text-black rounded-full text-[10px] font-black uppercase tracking-widest">#{post.subX}</span>
                       <span className="text-[10px] font-bold text-slate-400">u/{post.author}</span>
                     </div>
-                    <h3 className="text-xl font-bold text-slate-900 leading-snug group-hover:text-orange-600 transition-colors">{post.title}</h3>
+                    <h3 className="text-xl font-bold text-slate-900 leading-snug group-hover:text-black transition-colors">{post.title}</h3>
                     <p className="text-slate-500 text-sm line-clamp-2 leading-relaxed font-medium">{post.selftext}</p>
                     <div className="flex items-center gap-5">
                       <div className="flex items-center gap-1.5 text-slate-400 text-xs font-bold"><ThumbsUp size={14} /> {post.ups}</div>
@@ -767,13 +767,13 @@ export const Comments: React.FC = () => {
                   </div>
                   <button
                     onClick={(e) => { e.stopPropagation(); setSelectedPost(post); setIsWizardOpen(true); }}
-                    className="w-full md:w-auto bg-slate-900 text-white px-8 py-4 rounded-2xl text-sm font-black hover:bg-orange-600 transition-all flex flex-col items-center justify-center shadow-lg active:scale-95 group"
+                    className="w-full md:w-auto bg-slate-900 text-white px-8 py-4 rounded-2xl text-sm font-black hover:bg-black transition-all flex flex-col items-center justify-center shadow-lg active:scale-95 group"
                   >
                     <div className="flex items-center gap-2">
                       <Wand2 size={18} />
                       <span>Wizard Reply</span>
                     </div>
-                    <span className="text-[9px] text-orange-400 font-black uppercase tracking-[0.2em] mt-0.5 group-hover:text-white transition-colors">{costs.comment} PTS REQUIRED</span>
+                    <span className="text-[9px] text-slate-400 font-black uppercase tracking-[0.2em] mt-0.5 group-hover:text-white transition-colors">{costs.comment} PTS REQUIRED</span>
                   </button>
                 </div>
               </div>
@@ -790,7 +790,7 @@ export const Comments: React.FC = () => {
                   </div>
                   <h2 className="font-black text-slate-900">Reply Assistant</h2>
                 </div>
-                <span className="text-[10px] font-black text-orange-600 uppercase tracking-widest px-2 py-0.5 bg-orange-50 border border-orange-100 rounded-lg">AI-Active</span>
+                <span className="text-[10px] font-black text-black uppercase tracking-widest px-2 py-0.5 bg-slate-50 border border-black-100 rounded-lg">AI-Active</span>
               </div>
 
               <div className="p-8 flex-1 flex flex-col">
@@ -804,20 +804,20 @@ export const Comments: React.FC = () => {
                 ) : (
                   <div className="flex-1 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <div className="space-y-2">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest underline decoration-orange-200">Writing For:</p>
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest underline decoration-black-200">Writing For:</p>
                       <p className="text-sm font-bold text-slate-900 leading-tight line-clamp-2">{selectedPost.title}</p>
                     </div>
 
                     {!generatedReply && !isGenerating ? (
                       <div className="flex-1 border-2 border-dashed border-slate-100 rounded-[2rem] bg-slate-50/50 flex flex-col items-center justify-center p-8 text-center space-y-6">
-                        <Wand2 size={48} className="text-orange-600" />
+                        <Wand2 size={48} className="text-black" />
                         <div className="space-y-2">
                           <p className="text-lg font-black text-slate-900">Reply Wizard</p>
                           <p className="text-xs text-slate-500 font-medium">Configure tone and goals for the best response quality.</p>
                         </div>
                         <button
                           onClick={() => setIsWizardOpen(true)}
-                          className="bg-slate-900 text-white w-full py-4 rounded-2xl font-black hover:bg-orange-600 transition-all shadow-lg text-xs tracking-widest uppercase flex items-center justify-center gap-2 group"
+                          className="bg-slate-900 text-white w-full py-4 rounded-2xl font-black hover:bg-black transition-all shadow-lg text-xs tracking-widest uppercase flex items-center justify-center gap-2 group"
                         >
                           Launch Settings
                           <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
@@ -828,11 +828,11 @@ export const Comments: React.FC = () => {
                         {/* Preview */}
                         <div className="bg-slate-50 rounded-[2rem] p-6 border border-slate-100 space-y-4">
                           <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-orange-600 flex items-center justify-center text-white text-[10px] font-black">YU</div>
+                            <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center text-white text-[10px] font-black">YU</div>
                             <span className="text-[10px] font-black text-slate-900">u/{selectedAccount || 'Profile'}</span>
                             <span className="text-[10px] text-slate-400">• typing...</span>
                           </div>
-                          <div className="text-sm text-slate-700 leading-relaxed italic border-l-4 border-orange-200 pl-4">{editedComment}</div>
+                          <div className="text-sm text-slate-700 leading-relaxed italic border-l-4 border-black-200 pl-4">{editedComment}</div>
                         </div>
 
                         {/* Editor */}
@@ -842,7 +842,7 @@ export const Comments: React.FC = () => {
                               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Final Polish</label>
                               <button
                                 onClick={() => { setGeneratedReply(null); setIsWizardOpen(true); }}
-                                className="text-[10px] font-black text-orange-600 hover:text-orange-700 uppercase tracking-widest flex items-center gap-1 transition-colors"
+                                className="text-[10px] font-black text-black hover:text-black-700 uppercase tracking-widest flex items-center gap-1 transition-colors"
                               >
                                 <ChevronRight size={10} className="rotate-180" /> Back to Wizard
                               </button>
@@ -852,7 +852,7 @@ export const Comments: React.FC = () => {
                           <textarea
                             value={editedComment}
                             onChange={(e) => setEditedComment(e.target.value)}
-                            className="w-full min-h-[160px] p-5 bg-white border border-slate-200 rounded-[1.75rem] text-sm text-slate-700 font-medium focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all resize-none shadow-sm"
+                            className="w-full min-h-[160px] p-5 bg-white border border-slate-200 rounded-[1.75rem] text-sm text-slate-700 font-medium focus:ring-2 focus:ring-black-500/20 focus:border-black outline-none transition-all resize-none shadow-sm"
                           />
                         </div>
 
@@ -860,13 +860,13 @@ export const Comments: React.FC = () => {
                         <div className="flex gap-2">
                           <button
                             onClick={() => { setRegenType('full'); setShowRegenConfirm(true); }}
-                            className="flex-1 py-3 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase text-slate-500 hover:border-orange-200 hover:text-orange-600 transition-all"
+                            className="flex-1 py-3 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase text-slate-500 hover:border-black-200 hover:text-black transition-all"
                           >
                             Regenerate
                           </button>
                           <button
                             onClick={() => { setRegenType('refine'); setRefinePrompt('Make it shorter and more punchy'); setShowRegenConfirm(true); }}
-                            className="flex-1 py-3 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase text-slate-500 hover:border-orange-200 hover:text-orange-600 transition-all font-['Outfit']"
+                            className="flex-1 py-3 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase text-slate-500 hover:border-black-200 hover:text-black transition-all font-['Outfit']"
                           >
                             Make Shorter
                           </button>
@@ -880,14 +880,14 @@ export const Comments: React.FC = () => {
                         {/* Account Selector */}
                         <div className="pt-4 border-t border-slate-100 space-y-3">
                           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1 flex items-center gap-2">
-                            <ShieldCheck size={12} className="text-orange-600" /> Deploying as
+                            <ShieldCheck size={12} className="text-black" /> Deploying as
                           </label>
                           <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-100">
                             <div className="w-9 h-9 rounded-xl overflow-hidden border border-slate-200 bg-white shadow-sm">
-                              {redditStatus.accounts.find(a => a.username === selectedAccount)?.icon ? (
-                                <img src={redditStatus.accounts.find(a => a.username === selectedAccount)?.icon} className="w-full h-full object-cover" />
+                              {XStatus.accounts.find(a => a.username === selectedAccount)?.icon ? (
+                                <img src={XStatus.accounts.find(a => a.username === selectedAccount)?.icon} className="w-full h-full object-cover" />
                               ) : (
-                                <div className="w-full h-full bg-orange-600 flex items-center justify-center text-white font-black text-xs">R</div>
+                                <div className="w-full h-full bg-black flex items-center justify-center text-white font-black text-xs">R</div>
                               )}
                             </div>
                             <div className="flex-1">
@@ -896,15 +896,15 @@ export const Comments: React.FC = () => {
                                 onChange={(e) => setSelectedAccount(e.target.value)}
                                 className="w-full bg-transparent border-none text-sm font-bold text-slate-900 focus:outline-none cursor-pointer"
                               >
-                                {redditStatus.accounts.length > 0 ? (
-                                  redditStatus.accounts.map(acc => (
+                                {XStatus.accounts.length > 0 ? (
+                                  XStatus.accounts.map(acc => (
                                     <option key={acc.username} value={acc.username}>u/{acc.username}</option>
                                   ))
                                 ) : (
                                   <option value="">No accounts linked</option>
                                 )}
                               </select>
-                              {redditStatus.accounts.length === 0 && <p className="text-[9px] text-red-500 font-bold">Link an account in settings</p>}
+                              {XStatus.accounts.length === 0 && <p className="text-[9px] text-red-500 font-bold">Link an account in settings</p>}
                             </div>
                           </div>
                         </div>
@@ -914,12 +914,12 @@ export const Comments: React.FC = () => {
                           <button
                             onClick={handlePost}
                             disabled={isPosting || !selectedAccount}
-                            className="w-full bg-slate-900 text-white py-4 rounded-[1.5rem] font-black text-sm uppercase tracking-widest hover:bg-orange-600 transition-all shadow-xl shadow-slate-100 flex items-center justify-center gap-3 disabled:opacity-50 group"
+                            className="w-full bg-slate-900 text-white py-4 rounded-[1.5rem] font-black text-sm uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-slate-100 flex items-center justify-center gap-3 disabled:opacity-50 group"
                           >
                             {isPosting ? <RefreshCw className="animate-spin" size={18} /> : (
                               <>
                                 <Send size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                                Deploy To Reddit
+                                Deploy To X
                               </>
                             )}
                           </button>
@@ -941,7 +941,7 @@ export const Comments: React.FC = () => {
             <div className="bg-white w-full max-w-lg rounded-[3rem] shadow-2xl overflow-hidden border border-slate-100 animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
               <div className="p-6 md:p-10 bg-slate-50/50 border-b border-slate-100 flex items-center justify-between flex-shrink-0">
                 <div className="space-y-1">
-                  <p className="text-[10px] font-black text-orange-600 uppercase tracking-widest">Discussion Wizard</p>
+                  <p className="text-[10px] font-black text-black uppercase tracking-widest">Discussion Wizard</p>
                   <h3 className="text-2xl font-black text-slate-900 tracking-tight">Step {wizardStep} of 2</h3>
                 </div>
                 <button onClick={() => setIsWizardOpen(false)} className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-slate-400 hover:text-slate-900 transition-all shadow-sm border border-slate-100">
@@ -960,7 +960,7 @@ export const Comments: React.FC = () => {
                       <select
                         value={language}
                         onChange={(e) => setLanguage(e.target.value)}
-                        className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm text-slate-700 focus:outline-none focus:border-orange-500 cursor-pointer shadow-sm"
+                        className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm text-slate-700 focus:outline-none focus:border-black cursor-pointer shadow-sm"
                       >
                         <option value="English">🇺🇸 English</option>
                         <option value="Arabic">🇸🇦 Arabic (العربية)</option>
@@ -989,16 +989,16 @@ export const Comments: React.FC = () => {
                           <button
                             key={t.id}
                             onClick={() => setWizardData({ ...wizardData, tone: t.id })}
-                            className={`p-5 rounded-3xl border-2 text-left transition-all ${wizardData.tone === t.id ? 'border-orange-500 bg-orange-50/20' : 'border-slate-50 bg-white hover:border-slate-200'}`}
+                            className={`p-5 rounded-3xl border-2 text-left transition-all ${wizardData.tone === t.id ? 'border-black bg-slate-50/20' : 'border-slate-50 bg-white hover:border-slate-200'}`}
                           >
-                            <t.icon size={22} className={wizardData.tone === t.id ? 'text-orange-600' : 'text-slate-300'} />
+                            <t.icon size={22} className={wizardData.tone === t.id ? 'text-black' : 'text-slate-300'} />
                             <p className="font-black text-slate-900 mt-3 text-sm">{t.label}</p>
                             <p className="text-[10px] text-slate-500 font-bold mt-1 line-clamp-1">{t.desc}</p>
                           </button>
                         ))}
                       </div>
                     </div>
-                    <button onClick={() => setWizardStep(2)} className="w-full py-5 bg-slate-900 text-white rounded-[2rem] font-black text-sm uppercase tracking-widest hover:bg-orange-600 transition-all flex items-center justify-center gap-3">Next Step <ChevronRight size={20} /></button>
+                    <button onClick={() => setWizardStep(2)} className="w-full py-5 bg-slate-900 text-white rounded-[2rem] font-black text-sm uppercase tracking-widest hover:bg-black transition-all flex items-center justify-center gap-3">Next Step <ChevronRight size={20} /></button>
                   </div>
                 ) : (
                   <div className="space-y-8">
@@ -1009,7 +1009,7 @@ export const Comments: React.FC = () => {
                           <button
                             key={g}
                             onClick={() => setWizardData({ ...wizardData, goal: g })}
-                            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${wizardData.goal === g ? 'bg-white text-orange-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                            className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${wizardData.goal === g ? 'bg-white text-black shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
                           >
                             {g}
                           </button>
@@ -1037,7 +1037,7 @@ export const Comments: React.FC = () => {
                             </div>
                             <button
                               onClick={() => setShowBrandOverride(v => !v)}
-                              className="flex items-center gap-1 text-[10px] font-black text-slate-400 hover:text-orange-600 transition-colors"
+                              className="flex items-center gap-1 text-[10px] font-black text-slate-400 hover:text-black transition-colors"
                             >
                               <ChevronDown size={12} className={`transition-transform ${showBrandOverride ? 'rotate-180' : ''}`} />
                               {showBrandOverride ? 'Hide' : 'Override'}
@@ -1053,7 +1053,7 @@ export const Comments: React.FC = () => {
                                     type="text"
                                     value={wizardData.productMention}
                                     onChange={(e) => setWizardData({ ...wizardData, productMention: e.target.value })}
-                                    className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:border-orange-500 font-bold text-sm"
+                                    className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:border-black font-bold text-sm"
                                     placeholder={brandProfile.brandName || 'Product Name'}
                                   />
                                 </div>
@@ -1063,7 +1063,7 @@ export const Comments: React.FC = () => {
                                     type="url"
                                     value={wizardData.productLink}
                                     onChange={(e) => setWizardData({ ...wizardData, productLink: e.target.value })}
-                                    className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:border-orange-500 font-bold text-sm"
+                                    className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:border-black font-bold text-sm"
                                     placeholder={brandProfile.website || 'https://...'}
                                   />
                                 </div>
@@ -1074,7 +1074,7 @@ export const Comments: React.FC = () => {
                                   rows={2}
                                   value={wizardData.description}
                                   onChange={(e) => setWizardData({ ...wizardData, description: e.target.value })}
-                                  className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:border-orange-500 font-medium text-sm resize-none"
+                                  className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:border-black font-medium text-sm resize-none"
                                   placeholder={brandProfile.description || 'What does it do?'}
                                 />
                               </div>
@@ -1084,7 +1084,7 @@ export const Comments: React.FC = () => {
                                   type="text"
                                   value={wizardData.targetAudience}
                                   onChange={(e) => setWizardData({ ...wizardData, targetAudience: e.target.value })}
-                                  className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:border-orange-500 font-bold text-sm"
+                                  className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:border-black font-bold text-sm"
                                   placeholder={brandProfile.targetAudience || 'e.g. SaaS founders'}
                                 />
                               </div>
@@ -1094,7 +1094,7 @@ export const Comments: React.FC = () => {
                                   type="text"
                                   value={wizardData.problemSolved}
                                   onChange={(e) => setWizardData({ ...wizardData, problemSolved: e.target.value })}
-                                  className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:border-orange-500 font-bold text-sm"
+                                  className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:border-black font-bold text-sm"
                                   placeholder={brandProfile.problem || 'e.g. Difficulty finding leads'}
                                 />
                               </div>
@@ -1102,40 +1102,40 @@ export const Comments: React.FC = () => {
                           )}
                         </div>
                       ) : (
-                        <div className="rounded-2xl border-2 border-orange-100 overflow-hidden">
-                          <div className="flex items-center justify-between px-4 py-3 bg-orange-50">
+                        <div className="rounded-2xl border-2 border-black-100 overflow-hidden">
+                          <div className="flex items-center justify-between px-4 py-3 bg-slate-50">
                             <div className="flex items-center gap-2.5">
-                              <div className="w-7 h-7 bg-orange-500 rounded-xl flex items-center justify-center">
+                              <div className="w-7 h-7 bg-slate-500 rounded-xl flex items-center justify-center">
                                 <Building2 size={13} className="text-white" />
                               </div>
                               <div>
-                                <p className="text-[9px] font-black text-orange-600 uppercase tracking-widest">Quick Brand Context</p>
+                                <p className="text-[9px] font-black text-black uppercase tracking-widest">Quick Brand Context</p>
                                 <p className="text-[10px] text-slate-500 font-medium">For better AI personalization</p>
                               </div>
                             </div>
                             <button
                               onClick={() => setShowBrandOverride(v => !v)}
-                              className="flex items-center gap-1 text-[10px] font-black text-slate-400 hover:text-orange-600 transition-colors"
+                              className="flex items-center gap-1 text-[10px] font-black text-slate-400 hover:text-black transition-colors"
                             >
                               <ChevronDown size={12} className={`transition-transform ${showBrandOverride ? 'rotate-180' : ''}`} />
                               {showBrandOverride ? 'Hide' : 'Fill in'}
                             </button>
                           </div>
                           {showBrandOverride && (
-                            <div className="p-4 bg-white border-t border-orange-100 space-y-3">
+                            <div className="p-4 bg-white border-t border-black-100 space-y-3">
                               <div className="grid grid-cols-2 gap-3">
                                 <input
                                   type="text"
                                   value={wizardData.productMention}
                                   onChange={(e) => setWizardData({ ...wizardData, productMention: e.target.value })}
-                                  className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:border-orange-500 font-bold text-sm"
+                                  className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:border-black font-bold text-sm"
                                   placeholder="Product Name"
                                 />
                                 <input
                                   type="url"
                                   value={wizardData.productLink}
                                   onChange={(e) => setWizardData({ ...wizardData, productLink: e.target.value })}
-                                  className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:border-orange-500 font-bold text-sm"
+                                  className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:border-black font-bold text-sm"
                                   placeholder="Website URL"
                                 />
                               </div>
@@ -1143,21 +1143,21 @@ export const Comments: React.FC = () => {
                                 rows={2}
                                 value={wizardData.description}
                                 onChange={(e) => setWizardData({ ...wizardData, description: e.target.value })}
-                                className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:border-orange-500 font-medium text-sm resize-none"
+                                className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:border-black font-medium text-sm resize-none"
                                 placeholder="Product description..."
                               />
                               <input
                                 type="text"
                                 value={wizardData.targetAudience}
                                 onChange={(e) => setWizardData({ ...wizardData, targetAudience: e.target.value })}
-                                className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:border-orange-500 font-bold text-sm"
+                                className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:border-black font-bold text-sm"
                                 placeholder="Target Audience"
                               />
                               <input
                                 type="text"
                                 value={wizardData.problemSolved}
                                 onChange={(e) => setWizardData({ ...wizardData, problemSolved: e.target.value })}
-                                className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:border-orange-500 font-bold text-sm"
+                                className="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:border-black font-bold text-sm"
                                 placeholder="Problem it solves"
                               />
                             </div>
@@ -1233,13 +1233,13 @@ export const Comments: React.FC = () => {
                       <button onClick={() => setWizardStep(1)} className="px-8 py-5 bg-slate-50 text-slate-400 rounded-[2rem] font-black text-xs uppercase tracking-widest hover:bg-slate-100 transition-all">Back</button>
                       <button
                         onClick={() => handleGenerate(selectedPost!)}
-                        className="flex-1 py-5 bg-orange-600 text-white rounded-[2rem] font-black text-xs uppercase tracking-widest shadow-xl shadow-orange-100 hover:bg-orange-700 transition-all flex flex-col items-center justify-center animate-pulse-slow"
+                        className="flex-1 py-5 bg-black text-white rounded-[2rem] font-black text-xs uppercase tracking-widest shadow-xl shadow-slate-100 hover:bg-black-700 transition-all flex flex-col items-center justify-center animate-pulse-slow"
                       >
                         <div className="flex items-center gap-2">
                           <span>Generate Reply</span>
                           <Sparkles size={16} />
                         </div>
-                        <span className="text-[9px] text-orange-200 font-black uppercase tracking-[0.2em] mt-0.5">Will cost {costs.comment} PTS</span>
+                        <span className="text-[9px] text-black-200 font-black uppercase tracking-[0.2em] mt-0.5">Will cost {costs.comment} PTS</span>
                       </button>
                     </div>
                   </div>
@@ -1263,7 +1263,7 @@ export const Comments: React.FC = () => {
               <div className="space-y-2">
                 <h3 className="text-2xl font-black text-slate-900 leading-tight">Daily Limit Reached! 🕒</h3>
                 <p className="text-slate-500 text-sm font-medium leading-relaxed">
-                  You've reached your allowed quota of <span className="text-orange-600 font-bold">
+                  You've reached your allowed quota of <span className="text-black font-bold">
                     {(() => {
                       const plan = plans.find(p => (p.name || '').toLowerCase() === (user?.plan || '').toLowerCase() || (p.id || '').toLowerCase() === (user?.plan || '').toLowerCase());
                       const planLimit = user?.billingCycle === 'yearly' ? plan?.dailyLimitYearly : plan?.dailyLimitMonthly;
@@ -1282,7 +1282,7 @@ export const Comments: React.FC = () => {
                 </Link>
                 <Link
                   to="/pricing"
-                  className="w-full py-4 bg-orange-600 text-white rounded-2xl font-black shadow-xl shadow-orange-100 hover:bg-orange-700 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 uppercase tracking-wide text-xs"
+                  className="w-full py-4 bg-black text-white rounded-2xl font-black shadow-xl shadow-slate-100 hover:bg-black-700 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 uppercase tracking-wide text-xs"
                 >
                   Upgrade Plan <Crown size={18} />
                 </Link>

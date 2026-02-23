@@ -117,12 +117,12 @@ export const PricingPage: React.FC = () => {
     return (
         <div className="max-w-6xl mx-auto py-10 px-4">
             <div className="text-center mb-16 space-y-4">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-100 text-orange-700 text-xs font-bold uppercase tracking-wide">
-                    <Crown size={14} className="fill-orange-700" />
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-200 text-black text-xs font-bold uppercase tracking-wide">
+                    <Crown size={14} className="fill-black" />
                     Upgrade Your Plan
                 </span>
                 <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">
-                    Scale your growth with <span className="text-orange-600">Pro Power.</span>
+                    Scale your growth with <span className="text-black">Pro Power.</span>
                 </h1>
                 <p className="text-slate-500 text-lg max-w-2xl mx-auto">
                     Unlock the full potential of your AI agent. Cancel anytime.
@@ -132,7 +132,7 @@ export const PricingPage: React.FC = () => {
                     <span className={`text-sm font-bold ${billingCycle === 'monthly' ? 'text-slate-900' : 'text-slate-500'}`}>Monthly</span>
                     <button
                         onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'yearly' : 'monthly')}
-                        className={`w-14 h-8 rounded-full p-1 transition-colors duration-300 relative ${billingCycle === 'monthly' ? 'bg-slate-200' : 'bg-orange-600'}`}
+                        className={`w-14 h-8 rounded-full p-1 transition-colors duration-300 relative ${billingCycle === 'monthly' ? 'bg-slate-200' : 'bg-black'}`}
                     >
                         <div className={`w-6 h-6 bg-white rounded-full shadow-sm transition-transform duration-300 ${billingCycle === 'monthly' ? 'translate-x-0' : 'translate-x-6'}`}></div>
                     </button>
@@ -173,9 +173,9 @@ export const PricingPage: React.FC = () => {
                         : 0;
 
                     return (
-                        <div key={plan.id} className={`relative bg-white rounded-[2.5rem] p-8 border ${plan.isPopular ? 'border-orange-200 shadow-xl shadow-orange-100/50 scale-105 z-10' : 'border-slate-100 shadow-lg'} hover:-translate-y-2 transition-all duration-300 flex flex-col ${plan.purchaseEnabled === false ? 'opacity-80 grayscale-[0.2]' : ''}`}>
+                        <div key={plan.id} className={`relative bg-white rounded-[2.5rem] p-8 border ${plan.isPopular ? 'border-black shadow-xl shadow-slate-100/50 scale-105 z-10' : 'border-slate-100 shadow-lg'} hover:-translate-y-2 transition-all duration-300 flex flex-col ${plan.purchaseEnabled === false ? 'opacity-80 grayscale-[0.2]' : ''}`}>
                             {plan.isPopular && (
-                                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-orange-600 to-red-600 text-white px-4 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-wide shadow-lg shadow-orange-200">
+                                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-black to-slate-800 text-white px-4 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-wide shadow-lg shadow-slate-200">
                                     Most Popular
                                 </div>
                             )}
@@ -184,11 +184,11 @@ export const PricingPage: React.FC = () => {
                             <div className="mb-8">
                                 <div className="flex flex-col gap-1.5">
                                     {!isFree && plan.purchaseEnabled === false && (
-                                        <span className="bg-orange-600 text-white px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest w-fit mb-2 shadow-sm shadow-orange-100">
+                                        <span className="bg-black text-white px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest w-fit mb-2 shadow-sm shadow-slate-100">
                                             Reached Capacity
                                         </span>
                                     )}
-                                    <h3 className={`text-2xl font-bold ${plan.isPopular ? 'text-orange-600' : 'text-slate-900'}`}>{plan.name}</h3>
+                                    <h3 className={`text-2xl font-bold ${plan.isPopular ? 'text-black' : 'text-slate-900'}`}>{plan.name}</h3>
                                     {isYearlySelected && actualDiscount > 0 && (
                                         <span className="bg-green-100 text-green-700 text-[10px] font-black px-2 py-0.5 rounded-lg w-fit">
                                             SAVE {actualDiscount}%
@@ -231,14 +231,14 @@ export const PricingPage: React.FC = () => {
                             <ul className="space-y-4 mb-8 flex-1">
                                 {/* Dynamic Primary Features */}
                                 <li className="flex items-center gap-3 text-slate-700 font-bold text-sm">
-                                    <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${plan.isPopular ? 'bg-orange-100 text-orange-600' : 'bg-slate-100 text-slate-600'}`}>
+                                    <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${plan.isPopular ? 'bg-slate-200 text-black' : 'bg-slate-100 text-slate-600'}`}>
                                         <Zap size={12} strokeWidth={4} />
                                     </div>
                                     {credits.toLocaleString()} Credits {isYearlySelected ? 'Upfront' : '/ Month'}
                                 </li>
 
                                 <li className="flex items-center gap-3 text-slate-700 font-bold text-sm">
-                                    <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${plan.isPopular ? 'bg-orange-100 text-orange-600' : 'bg-slate-100 text-slate-600'}`}>
+                                    <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${plan.isPopular ? 'bg-slate-200 text-black' : 'bg-slate-100 text-slate-600'}`}>
                                         <Zap size={12} strokeWidth={4} />
                                     </div>
                                     {dailyLimit || 0} Daily Actions
@@ -246,7 +246,7 @@ export const PricingPage: React.FC = () => {
 
                                 {/* Feature Toggles (Visual) */}
                                 <li className="flex items-center gap-3 text-slate-700 font-medium text-sm">
-                                    <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${plan.maxAccounts > 1 ? (plan.isPopular ? 'bg-orange-100 text-orange-600' : 'bg-slate-100 text-slate-600') : 'bg-slate-50 text-slate-300'}`}>
+                                    <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${plan.maxAccounts > 1 ? (plan.isPopular ? 'bg-slate-200 text-black' : 'bg-slate-100 text-slate-600') : 'bg-slate-50 text-slate-300'}`}>
                                         {plan.maxAccounts > 1 ? <Check size={12} strokeWidth={4} /> : <X size={12} strokeWidth={4} />}
                                     </div>
                                     <span className={plan.maxAccounts > 1 ? '' : 'text-slate-400'}>
@@ -255,7 +255,7 @@ export const PricingPage: React.FC = () => {
                                 </li>
 
                                 <li className="flex items-center gap-3 text-slate-700 font-medium text-sm">
-                                    <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${plan.allowImages ? (plan.isPopular ? 'bg-orange-100 text-orange-600' : 'bg-slate-100 text-slate-600') : 'bg-slate-50 text-slate-300'}`}>
+                                    <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${plan.allowImages ? (plan.isPopular ? 'bg-slate-200 text-black' : 'bg-slate-100 text-slate-600') : 'bg-slate-50 text-slate-300'}`}>
                                         {plan.allowImages ? <Check size={12} strokeWidth={4} /> : <X size={12} strokeWidth={4} />}
                                     </div>
                                     <span className={plan.allowImages ? '' : 'text-slate-400'}>
@@ -264,7 +264,7 @@ export const PricingPage: React.FC = () => {
                                 </li>
 
                                 <li className="flex items-center gap-3 text-slate-700 font-medium text-sm">
-                                    <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${plan.allowTracking ? (plan.isPopular ? 'bg-orange-100 text-orange-600' : 'bg-slate-100 text-slate-600') : 'bg-slate-50 text-slate-300'}`}>
+                                    <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${plan.allowTracking ? (plan.isPopular ? 'bg-slate-200 text-black' : 'bg-slate-100 text-slate-600') : 'bg-slate-50 text-slate-300'}`}>
                                         {plan.allowTracking ? <Check size={12} strokeWidth={4} /> : <X size={12} strokeWidth={4} />}
                                     </div>
                                     <span className={plan.allowTracking ? '' : 'text-slate-400'}>
@@ -275,7 +275,7 @@ export const PricingPage: React.FC = () => {
                                 {/* Custom Decorative Features */}
                                 {plan.features.map((feature, i) => (
                                     <li key={i} className="flex items-center gap-3 text-slate-700 font-medium text-sm">
-                                        <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${plan.isPopular ? 'bg-orange-100 text-orange-600' : 'bg-slate-100 text-slate-600'}`}>
+                                        <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${plan.isPopular ? 'bg-slate-200 text-black' : 'bg-slate-100 text-slate-600'}`}>
                                             <Check size={12} strokeWidth={4} />
                                         </div>
                                         {feature}
@@ -291,7 +291,7 @@ export const PricingPage: React.FC = () => {
                                     : plan.purchaseEnabled === false
                                         ? 'bg-slate-50 text-slate-400 cursor-not-allowed border border-slate-200 shadow-none'
                                         : plan.isPopular
-                                            ? 'bg-slate-900 text-white hover:bg-slate-800 shadow-orange-200'
+                                            ? 'bg-slate-900 text-white hover:bg-slate-800 shadow-slate-200'
                                             : 'bg-white text-slate-900 border-2 border-slate-100 hover:border-slate-200 hover:bg-slate-50'
                                     }`}
                             >
@@ -329,7 +329,7 @@ export const PricingPage: React.FC = () => {
                                 </button>
                             </div>
                             <div className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-slate-200">
-                                <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center text-orange-600">
+                                <div className="w-12 h-12 bg-slate-200 rounded-xl flex items-center justify-center text-black">
                                     <Zap size={24} />
                                 </div>
                                 <div>

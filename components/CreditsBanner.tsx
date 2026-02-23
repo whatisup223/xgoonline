@@ -18,14 +18,14 @@ const CreditsBanner: React.FC<CreditsBannerProps> = ({ plan, credits }) => {
 
             {/* Icon & Label */}
             <div className="relative z-10 flex items-center gap-5">
-                <div className="w-14 h-14 bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl flex items-center justify-center text-orange-400 border border-slate-700 shadow-inner group-hover:rotate-6 transition-transform">
+                <div className="w-14 h-14 bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl flex items-center justify-center text-white border border-slate-700 shadow-inner group-hover:rotate-6 transition-transform">
                     <Zap size={28} fill="currentColor" />
                 </div>
                 <div>
                     <div className="flex items-center gap-2 mb-1">
                         <h3 className="font-extrabold text-xl tracking-tight">{plan} Plan Active</h3>
                         {plan === 'Starter' && (
-                            <span className="px-2 py-0.5 bg-orange-500/10 text-orange-500 text-[10px] font-black rounded-lg border border-orange-500/20 uppercase tracking-widest">Limited</span>
+                            <span className="px-2 py-0.5 bg-black/10 text-black text-[10px] font-black rounded-lg border border-black/20 uppercase tracking-widest">Limited</span>
                         )}
                     </div>
                     <p className="text-slate-400 text-sm font-medium">
@@ -39,9 +39,9 @@ const CreditsBanner: React.FC<CreditsBannerProps> = ({ plan, credits }) => {
                 {isLowCredits ? (
                     <Link
                         to="/pricing"
-                        className="w-full md:w-auto bg-white text-slate-900 px-8 py-4 rounded-2xl font-black text-sm hover:bg-orange-50 transition-all flex items-center justify-center gap-2 shadow-lg hover:-translate-y-0.5 active:scale-95"
+                        className="w-full md:w-auto bg-white text-slate-900 px-8 py-4 rounded-2xl font-black text-sm hover:bg-slate-100 transition-all flex items-center justify-center gap-2 shadow-lg hover:-translate-y-0.5 active:scale-95"
                     >
-                        <Crown size={18} className="text-orange-600 fill-orange-600" />
+                        <Crown size={18} className="text-black fill-black" />
                         GET MORE CREDITS
                     </Link>
                 ) : plan === 'Starter' ? (

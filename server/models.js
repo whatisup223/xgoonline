@@ -70,8 +70,8 @@ const TrackingLinkSchema = new mongoose.Schema({
     trackingUrl: String,
     postId: String,
     commentId: String,
-    subreddit: String,
-    redditUsername: String,
+    topic: String,
+    xHandle: String,
     clicks: { type: Number, default: 0 },
     createdAt: Date,
     clickDetails: [mongoose.Schema.Types.Mixed]
@@ -126,37 +126,36 @@ const TicketSchema = new mongoose.Schema({
     updatedAt: String
 }, { strict: false });
 
-const RedditReplySchema = new mongoose.Schema({
+const XReplySchema = new mongoose.Schema({
     id: String,
     userId: String,
-    postId: String,
-    redditCommentId: String,
-    postTitle: String,
-    postUrl: String,
-    postContent: String,
-    subreddit: String,
-    comment: String,
+    tweetId: String,
+    xTweetId: String,
+    tweetText: String,
+    tweetUrl: String,
+    topic: String,
+    reply: String,
     productMention: String,
-    redditUsername: String,
+    xHandle: String,
     deployedAt: Date,
     status: String,
-    ups: { type: Number, default: 0 },
+    likes: { type: Number, default: 0 },
     replies: { type: Number, default: 0 },
     sentiment: String
 }, { strict: false });
 
-const RedditPostSchema = new mongoose.Schema({
+const XPostSchema = new mongoose.Schema({
     id: String,
     userId: String,
-    subreddit: String,
-    postTitle: String,
-    postContent: String,
-    postUrl: String,
-    redditUsername: String,
-    redditCommentId: String,
+    topic: String,
+    tweetText: String,
+    tweetUrl: String,
+    xHandle: String,
+    xTweetId: String,
     deployedAt: Date,
     status: String,
-    ups: { type: Number, default: 0 },
+    likes: { type: Number, default: 0 },
+    retweets: { type: Number, default: 0 },
     replies: { type: Number, default: 0 },
     sentiment: String
 }, { strict: false });
@@ -190,8 +189,8 @@ export const BrandProfile = mongoose.model('BrandProfile', BrandProfileSchema);
 export const Plan = mongoose.model('Plan', PlanSchema);
 export const Ticket = mongoose.model('Ticket', TicketSchema);
 export const Setting = mongoose.model('Setting', SettingsSchema);
-export const RedditReply = mongoose.model('RedditReply', RedditReplySchema);
-export const RedditPost = mongoose.model('RedditPost', RedditPostSchema);
+export const XReply = mongoose.model('XReply', XReplySchema);
+export const XPost = mongoose.model('XPost', XPostSchema);
 export const SystemLog = mongoose.model('SystemLog', SystemLogSchema);
 export const Announcement = mongoose.model('Announcement', AnnouncementSchema);
 export const CancellationFeedback = mongoose.model('CancellationFeedback', CancellationFeedbackSchema);

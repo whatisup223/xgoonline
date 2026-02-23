@@ -59,9 +59,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const logout = useCallback(() => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        localStorage.removeItem('redditgo_post_draft');
-        localStorage.removeItem('redditgo_comment_draft');
-        localStorage.removeItem('redigo_comment_draft');
+        localStorage.removeItem('xgo_post_draft');
+        localStorage.removeItem('xgo_comment_draft');
         setToken(null);
         setUser(null);
     }, []);

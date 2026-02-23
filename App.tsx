@@ -16,7 +16,7 @@ import { SignupPage } from './pages/SignupPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
 import { VerifyEmailPage } from './pages/VerifyEmailPage';
-import { RedditCallback } from './pages/RedditCallback';
+import { XCallback } from './pages/XCallback';
 import { ContentArchitect } from './pages/ContentArchitect';
 import { Comments } from './pages/Comments';
 import { Support } from './pages/Support';
@@ -37,7 +37,7 @@ const App: React.FC = () => {
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/verify-email" element={<VerifyEmailPage />} />
-          <Route path="/auth/reddit/callback" element={<RedditCallback />} />
+          <Route path="/auth/x/callback" element={<XCallback />} />
 
           {/* User Dashboard Routes - Wrapped in AppLayout */}
           <Route path="/dashboard" element={<ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
