@@ -2180,13 +2180,19 @@ const saveTokens = async (userId, username, tokenData) => {
         ...(mongoose.Types.ObjectId.isValid(userId) ? [{ _id: userId }] : [])
       ]
     });
-    if (user && user.connectedAccounts) {
-      const acc = user.connectedAccounts.find(a => a.username === username);
+    if (user) {
+      const accList = user.connectedAccounts || user.accounts || [];
+      const acc = accList.find(a => a.username === username);
       if (acc) {
         acc.accessToken = tokenData.accessToken;
         acc.refreshToken = tokenData.refreshToken;
         acc.expiresAt = tokenData.expiresAt;
+        acc.tokenExpiry = tokenData.expiresAt;
+
+        user.connectedAccounts = accList;
+        user.accounts = accList;
         user.markModified('connectedAccounts');
+        user.markModified('accounts');
         await user.save();
       }
     }
@@ -3545,24 +3551,29 @@ app.post('/api/auth/x/callback', async (req, res) => {
     if (alreadyConnected) {
       alreadyConnected.icon = XIcon;
       alreadyConnected.lastSeen = new Date().toISOString();
-      // Update tokens inside the existing account object too
       alreadyConnected.accessToken = data.access_token;
       alreadyConnected.refreshToken = data.refresh_token;
       alreadyConnected.expiresAt = Date.now() + (data.expires_in * 1000);
+      alreadyConnected.tokenExpiry = alreadyConnected.expiresAt;
     } else {
-      if (!user.connectedAccounts) user.connectedAccounts = [];
-      user.connectedAccounts.push({
+      const newAcc = {
         username: XUsername,
         icon: XIcon,
         connectedAt: new Date().toISOString(),
         lastSeen: new Date().toISOString(),
         accessToken: data.access_token,
         refreshToken: data.refresh_token,
-        expiresAt: Date.now() + (data.expires_in * 1000)
-      });
+        expiresAt: Date.now() + (data.expires_in * 1000),
+        tokenExpiry: Date.now() + (data.expires_in * 1000)
+      };
+      if (!user.connectedAccounts) user.connectedAccounts = [];
+      user.connectedAccounts.push(newAcc);
     }
 
+    // Mirror to 'accounts' field for schema compatibility
+    user.accounts = user.connectedAccounts;
     user.markModified('connectedAccounts');
+    user.markModified('accounts');
     await user.save();
 
     await saveTokens(userId, XUsername, {
@@ -3588,10 +3599,12 @@ const getValidToken = async (userId, username) => {
     ]
   });
 
-  if (user && user.connectedAccounts && user.connectedAccounts.length > 0) {
+  const accounts = (user && (user.connectedAccounts || user.accounts)) || [];
+
+  if (accounts.length > 0) {
     targetAccount = username
-      ? user.connectedAccounts.find(a => a.username === username)
-      : user.connectedAccounts[0];
+      ? accounts.find(a => a.username === username)
+      : accounts[0];
   }
 
   // Fallback to memory if not found in DB or DB missing tokens
