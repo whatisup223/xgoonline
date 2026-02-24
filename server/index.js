@@ -3497,7 +3497,7 @@ app.post('/api/auth/x/callback', async (req, res) => {
   if (!code) return res.status(400).json({ error: 'Code is required' });
 
   const host = req.get('host');
-  const protocol = host.includes('localhost') ? 'http' : 'https';
+  const protocol = host.includes('localhost') || host.includes('127.0.0.1') ? 'http' : 'https';
   let redirectUri = `${protocol}://${host}/auth/x/callback`;
 
   if (XSettings.redirectUri && XSettings.redirectUri.trim() !== '') {
@@ -3578,8 +3578,8 @@ app.post('/api/auth/x/callback', async (req, res) => {
         lastSeen: new Date().toISOString(),
         accessToken: data.access_token,
         refreshToken: data.refresh_token,
-        expiresAt: Date.now() + (data.expires_in * 1000),
-        tokenExpiry: Date.now() + (data.expires_in * 1000)
+        expiresAt: Date.now() + ((data.expires_in || 7200) * 1000),
+        tokenExpiry: Date.now() + ((data.expires_in || 7200) * 1000)
       };
       if (!user.connectedAccounts) user.connectedAccounts = [];
       user.connectedAccounts.push(newAcc);
@@ -3594,7 +3594,7 @@ app.post('/api/auth/x/callback', async (req, res) => {
     await saveTokens(userId, XUsername, {
       accessToken: data.access_token,
       refreshToken: data.refresh_token,
-      expiresAt: Date.now() + (data.expires_in * 1000)
+      expiresAt: Date.now() + ((data.expires_in || 7200) * 1000)
     });
 
     console.log(`[X OAuth] Successfully linked account @${XUsername} to user ID ${userId}`);
@@ -4139,9 +4139,9 @@ app.post('/api/x/reply', async (req, res) => {
     res.json({ success: true, entry });
   } catch (error) {
     console.error('X Reply Posting Error:', error);
-    addSystemLog('ERROR', `X Reply Failed: ${error.message}`, { stack: error.stack });
+    addSystemLog('ERROR', `X Reply Failed: ${error.message}`, { userId, postId, stack: error.stack });
     res.status(500).json({
-      error: 'Failed to post reply: ' + error.message,
+      error: error.message || 'Failed to post reply to X API',
       details: error.stack
     });
   }
@@ -4306,9 +4306,9 @@ app.post('/api/x/post', async (req, res) => {
     res.json({ success: true, XResponse });
   } catch (error) {
     console.error('[X POST ERROR]', error);
-    addSystemLog('ERROR', `X Post Failed: ${error.message}`, { stack: error.stack });
+    addSystemLog('ERROR', `X Post Failed: ${error.message}`, { userId, title, stack: error.stack });
     res.status(500).json({
-      error: 'Failed to create post: ' + error.message,
+      error: error.message || 'Failed to submit post to X API',
       details: error.stack
     });
   }
@@ -4463,10 +4463,12 @@ app.get('/api/x/posts', async (req, res) => {
       return res.json(xSearchCache[cacheKey].data);
     }
 
-    // CREDIT DEDUCTION FOR FETCH
     const user = await User.findOne({ id: userId?.toString() });
+    let deductionRequired = false;
+    let cost = 0;
+
     if (user && user.role !== 'admin') {
-      const cost = aiSettings.creditCosts?.fetch || 1;
+      cost = aiSettings.creditCosts?.fetch || 1;
       if ((user.credits || 0) < cost) {
         return res.status(402).json({ error: `Insufficient credits. Fetching trends requires ${cost} credits.` });
       }
@@ -4484,15 +4486,9 @@ app.get('/api/x/posts', async (req, res) => {
       const dailyLimit = (Number(user.customDailyLimit) > 0) ? Number(user.customDailyLimit) : (Number(planLimit) || 0);
 
       if (dailyLimit > 0 && ((user.dailyUsagePoints || 0) + cost) > dailyLimit) {
-        return res.status(429).json({ error: 'Daily limit reached.' });
+        return res.status(429).json({ error: `Daily search limit reached (${dailyLimit}). Upgrade your plan for more.` });
       }
-
-      // Deduct
-      user.credits -= cost;
-      user.dailyUsagePoints = (user.dailyUsagePoints || 0) + cost;
-      user.dailyUsage = (user.dailyUsage || 0) + 1;
-      await user.save();
-      console.log(`[X] Deducted ${cost} credits from user ${user.email} for trend fetch.`);
+      deductionRequired = true;
     } else if (user && user.role === 'admin') {
       console.log(`[ADMIN] Bypassing fetch credits check for admin: ${user.email}`);
     }
@@ -4528,14 +4524,22 @@ app.get('/api/x/posts', async (req, res) => {
     }
 
     const response = await fetch(url, { headers });
+    const data = await response.json();
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`[X Error] Status: ${response.status} - ${errorText.substring(0, 100)}`);
-      throw new Error(`X API Blocked (Status ${response.status}). Please link your X account in Dashboard.`);
+      console.error(`[X Error] Status: ${response.status} -`, data);
+      const msg = data.detail || data.error || data.message || `X API Blocked (Status ${response.status})`;
+      throw new Error(msg);
     }
 
-    const data = await response.json();
+    // Success! Deduct credits now
+    if (deductionRequired && user) {
+      user.credits -= cost;
+      user.dailyUsagePoints = (user.dailyUsagePoints || 0) + cost;
+      user.dailyUsage = (user.dailyUsage || 0) + 1;
+      await user.save();
+      console.log(`[X] Successfully fetched. Deducted ${cost} credits from user ${user.email}`);
+    }
     const keywordList = keywords.toLowerCase().split(',').map(k => k.trim()).filter(k => k);
 
     const users = data.includes?.users || [];
