@@ -4149,7 +4149,15 @@ app.post('/api/x/post', async (req, res) => {
     });
 
     const XResponse = await response.json();
-    if (!response.ok) throw new Error(XResponse.detail || 'Failed to submit to X API');
+    if (!response.ok) {
+      console.error('[X Post Error]', XResponse);
+      throw new Error(XResponse.detail || XResponse.error || 'Failed to submit to X API');
+    }
+
+    let XTweetId = null;
+    if (XResponse.data && XResponse.data.id) {
+      XTweetId = XResponse.data.id;
+    }
 
     const entry = new XPost({
       id: Math.random().toString(36).substring(2, 11),
@@ -4157,9 +4165,9 @@ app.post('/api/x/post', async (req, res) => {
       topic,
       postTitle: title,
       postContent: text,
-      postUrl: `https://x.com/any/status/${XResponse.data.id}`,
+      postUrl: XTweetId ? `https://x.com/any/status/${XTweetId}` : '#',
       XUsername: XUsername || 'unknown',
-      XCommentId: XResponse.data.id,
+      XCommentId: XTweetId,
       deployedAt: new Date().toISOString(),
       status: 'Sent',
       ups: 0,
@@ -4362,26 +4370,20 @@ app.get('/api/x/posts', async (req, res) => {
 
     if (token) {
       // Enhanced Search Query with filters
-      let query = keywords ? `${keywords} ${topic}` : topic;
-      if (lang) query += ` lang:${lang}`;
-
-      // Handle Location (point_radius:[long lat radius])
+      // Ensure we don't break Basic API limits. Basic API does not support point_radius:
+      // So we will append location as a keyword if it's provided, or map it.
+      let locWord = '';
       if (location && location.includes(',')) {
-        const parts = location.split(',');
-        if (parts.length === 3) {
-          const [lat, long, rad] = parts;
-          // Official v2 syntax: longitude first!
-          query += ` point_radius:[${long.trim()} ${lat.trim()} ${rad.trim()}]`;
-        }
+        if (location.includes('30.0444')) locWord = 'Egypt OR Cairo';
+        else if (location.includes('25.2048')) locWord = 'Dubai OR UAE';
+        else if (location.includes('24.7136')) locWord = 'Riyadh OR Saudi';
       }
 
-      url = `https://api.twitter.com/2/tweets/search/recent?query=${encodeURIComponent(query)}&max_results=20&tweet.fields=public_metrics,created_at&expansions=author_id&user.fields=username,profile_image_url`;
+      let query = keywords ? `${keywords} ${topic}` : topic;
+      if (lang) query += ` lang:${lang}`;
+      if (locWord) query += ` (${locWord})`;
 
-      // If location is provided (e.g. Dubai geocode)
-      // Note: geocode requires "lat,long,radius" e.g. "25.2048,55.2708,50km"
-      // However, official v2 search uses 'point_radius:[long lat radius]' 
-      // but only for specific developer levels. 
-      // We will handle it by appending if the user provided it.
+      url = `https://api.twitter.com/2/tweets/search/recent?query=${encodeURIComponent(query)}&max_results=20&tweet.fields=public_metrics,created_at,text,note_tweet&expansions=author_id&user.fields=username,profile_image_url`;
 
       headers = {
         'Authorization': `Bearer ${token}`,
@@ -4436,13 +4438,13 @@ app.get('/api/x/posts', async (req, res) => {
 
       return {
         id: post.id,
-        title: post.text.slice(0, 50) + (post.text.length > 50 ? '...' : ''),
+        title: post.text.slice(0, 70) + (post.text.length > 70 ? '...' : ''),
         author: author.username || 'unknown',
         icon: author.profile_image_url || '',
         subX: topic, // Keeping field name for frontend but mapping to topic
         ups: metrics.like_count || 0,
         num_comments: metrics.reply_count || 0,
-        selftext: post.text,
+        selftext: post.note_tweet?.text || post.text,
         url: `https://x.com/${author.username || 'any'}/status/${post.id}`,
         created_utc: new Date(post.created_at).getTime() / 1000,
         opportunityScore,

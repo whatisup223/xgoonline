@@ -91,6 +91,7 @@ interface AISettings {
         comment: number;
         post: number;
         image: number;
+        fetch?: number;
     };
 }
 
@@ -204,7 +205,8 @@ export const Admin: React.FC = () => {
         creditCosts: {
             comment: 1,
             post: 2,
-            image: 5
+            image: 5,
+            fetch: 1
         }
     });
     const [stripeSettings, setStripeSettings] = useState<StripeSettings>({
@@ -2325,7 +2327,9 @@ export const Admin: React.FC = () => {
                                                                         setAiSettings({
                                                                             ...aiSettings,
                                                                             creditCosts: {
-                                                                                comment: 1, post: 2, image: 5,
+                                                                                comment: aiSettings.creditCosts?.comment || 1,
+                                                                                post: aiSettings.creditCosts?.post || 2,
+                                                                                image: aiSettings.creditCosts?.image || 5,
                                                                                 ...aiSettings.creditCosts,
                                                                                 fetch: val
                                                                             }

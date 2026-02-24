@@ -32,7 +32,8 @@ import {
   Trash2,
   Link as LinkIcon,
   MessageSquare,
-  MapPin
+  MapPin,
+  Rocket
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { XTweet, GeneratedReply } from '../types';
@@ -897,151 +898,195 @@ export const Comments: React.FC = () => {
           </div>
 
           {/* Assistant Panel */}
-          <div className="xl:col-span-4">
-            <div className="sticky top-10 bg-white rounded-[2.5rem] border border-slate-200 shadow-xl overflow-hidden flex flex-col max-h-[calc(100vh-100px)]">
-              <div className="p-6 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+          <div className="xl:col-span-4 h-full">
+            <div className="sticky top-10 bg-white rounded-[2.5rem] border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+              {/* Header - Fixed */}
+              <div className="p-6 bg-slate-900 text-white flex items-center justify-between z-10 shadow-lg">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-slate-900 text-white rounded-2xl flex items-center justify-center">
-                    <Sparkles size={20} />
+                  <div className="w-10 h-10 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/10">
+                    <Sparkles size={20} className="text-blue-400" />
                   </div>
-                  <h2 className="font-black text-slate-900">Reply Assistant</h2>
+                  <div>
+                    <h2 className="font-black text-sm uppercase tracking-tight">Reply Assistant</h2>
+                    <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Powered by Gemini Pro</p>
+                  </div>
                 </div>
-                <span className="text-[10px] font-black text-black uppercase tracking-widest px-2 py-0.5 bg-slate-50 border border-black-100 rounded-lg">AI-Active</span>
+                <div className="flex items-center gap-1.5 bg-green-500/10 text-green-400 px-2.5 py-1 rounded-full border border-green-500/20">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                  <span className="text-[9px] font-black uppercase tracking-widest">Active</span>
+                </div>
               </div>
 
-              <div className="p-8 flex-1 flex flex-col">
+              {/* Body - Scrollable */}
+              <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-8 bg-slate-50/30">
                 {!selectedPost ? (
-                  <div className="flex-1 flex flex-col items-center justify-center text-center space-y-4 opacity-50">
-                    <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center text-slate-300">
-                      <MessageSquarePlus size={40} />
+                  <div className="h-full flex flex-col items-center justify-center text-center p-8 space-y-6 animate-in fade-in duration-700">
+                    <div className="w-24 h-24 bg-white rounded-[2.5rem] flex items-center justify-center text-slate-100 shadow-inner border border-slate-50">
+                      <MessageSquarePlus size={54} />
                     </div>
-                    <p className="text-slate-900 font-bold">Select a post to start</p>
+                    <div className="space-y-2">
+                      <p className="text-slate-900 font-black text-xl tracking-tight">Lead Radar Empty</p>
+                      <p className="text-slate-400 text-sm font-medium leading-relaxed">Select a high-opportunity post from the <br />left to begin your outreach sequence.</p>
+                    </div>
                   </div>
                 ) : (
-                  <div className="flex-1 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="space-y-2">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest underline decoration-black-200">Writing For:</p>
-                      <p className="text-sm font-bold text-slate-900 leading-tight line-clamp-2">{selectedPost.title}</p>
+                  <div className="space-y-8 animate-in slide-in-from-right-4 duration-500">
+                    {/* Active Post Context */}
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                        <Target size={12} className="text-black" /> Target Context
+                      </label>
+                      <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm group">
+                        <p className="text-sm font-extrabold text-slate-900 leading-tight line-clamp-3 group-hover:line-clamp-none transition-all cursor-default">{selectedPost.title}</p>
+                      </div>
                     </div>
 
                     {!generatedReply && !isGenerating ? (
-                      <div className="flex-1 border-2 border-dashed border-slate-100 rounded-[2rem] bg-slate-50/50 flex flex-col items-center justify-center p-8 text-center space-y-6">
-                        <Wand2 size={48} className="text-black" />
+                      <div className="bg-white rounded-[2.5rem] p-8 border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-center space-y-6">
+                        <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center">
+                          <Wand2 size={40} className="text-slate-300" />
+                        </div>
                         <div className="space-y-2">
-                          <p className="text-lg font-black text-slate-900">Reply Wizard</p>
-                          <p className="text-xs text-slate-500 font-medium">Configure tone and goals for the best response quality.</p>
+                          <p className="text-lg font-black text-slate-900 font-['Outfit']">Configure AI Strategy</p>
+                          <p className="text-xs text-slate-500 font-medium px-4">Set your tone and brand integration strategy to generate the perfect reply.</p>
                         </div>
                         <button
                           onClick={() => setIsWizardOpen(true)}
-                          className="bg-slate-900 text-white w-full py-4 rounded-2xl font-black hover:bg-black transition-all shadow-lg text-xs tracking-widest uppercase flex items-center justify-center gap-2 group"
+                          className="bg-black text-white w-full py-5 rounded-2xl font-black hover:bg-slate-800 transition-all shadow-xl shadow-black/10 text-xs tracking-widest uppercase flex items-center justify-center gap-2 group"
                         >
-                          Launch Settings
+                          Open Wizard Settings
                           <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
                         </button>
                       </div>
                     ) : (
-                      <div ref={replyCardRef} className="space-y-6">
-                        {/* Preview */}
-                        <div className="bg-slate-50 rounded-[2rem] p-6 border border-slate-100 space-y-4">
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center text-white text-[10px] font-black">YU</div>
-                            <span className="text-[10px] font-black text-slate-900">u/{selectedAccount || 'Profile'}</span>
-                            <span className="text-[10px] text-slate-400">• typing...</span>
-                          </div>
-                          <div className="text-sm text-slate-700 leading-relaxed italic border-l-4 border-black-200 pl-4">{editedComment}</div>
-                        </div>
-
-                        {/* Editor */}
+                      <div ref={replyCardRef} className="space-y-8">
+                        {/* Live Preview */}
                         <div className="space-y-3">
                           <div className="flex items-center justify-between px-1">
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">X Preview</label>
+                            <div className="text-[8px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-black uppercase tracking-widest">Real-time draft</div>
+                          </div>
+                          <div className="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-xl shadow-slate-200/20 space-y-4">
                             <div className="flex items-center gap-3">
-                              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Final Polish</label>
+                              <div className="w-10 h-10 rounded-2xl bg-black flex items-center justify-center text-white text-xs font-black shadow-lg shadow-black/20">
+                                {selectedAccount?.substring(0, 1).toUpperCase() || 'U'}
+                              </div>
+                              <div>
+                                <p className="text-xs font-black text-slate-900">@{selectedAccount || 'Profile'}</p>
+                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Active Discussion</p>
+                              </div>
+                            </div>
+                            <div className="text-sm text-slate-700 leading-relaxed font-medium pl-1 bg-slate-50/50 p-4 rounded-2xl italic border-l-2 border-black/10">
+                              {editedComment || 'The AI is brewing your viral response...'}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Editor Area */}
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between px-1">
+                            <div className="flex flex-col">
+                              <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Final Polish</label>
+                              <span className="text-[9px] text-slate-300 font-medium italic">Make any final tweaks before liftoff</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <button onClick={() => { navigator.clipboard.writeText(editedComment); showToast('Copied!', 'success'); }} className="p-2.5 text-slate-400 hover:text-black bg-white hover:bg-slate-50 rounded-xl transition-all shadow-sm border border-slate-100"><Copy size={14} /></button>
                               <button
                                 onClick={() => { setGeneratedReply(null); setIsWizardOpen(true); }}
-                                className="text-[10px] font-black text-black hover:text-black-700 uppercase tracking-widest flex items-center gap-1 transition-colors"
+                                className="text-[9px] font-black bg-slate-900 text-white px-4 py-2.5 rounded-xl uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-black/10"
                               >
-                                <ChevronRight size={10} className="rotate-180" /> Back to Wizard
+                                Settings
                               </button>
                             </div>
-                            <button onClick={() => { navigator.clipboard.writeText(editedComment); showToast('Copied!', 'success'); }} className="text-[10px] font-black text-slate-400 hover:text-slate-900 flex items-center gap-1 transition-colors"><Copy size={12} /> Copy</button>
                           </div>
                           <textarea
                             value={editedComment}
                             onChange={(e) => setEditedComment(e.target.value)}
-                            className="w-full min-h-[160px] p-5 bg-white border border-slate-200 rounded-[1.75rem] text-sm text-slate-700 font-medium focus:ring-2 focus:ring-black-500/20 focus:border-black outline-none transition-all resize-none shadow-sm"
+                            className="w-full min-h-[220px] p-6 bg-white border border-slate-200 rounded-[2.5rem] text-sm text-slate-700 font-medium focus:ring-4 focus:ring-black/5 focus:border-black outline-none transition-all resize-none shadow-sm"
+                            placeholder="Write your creative reply..."
                           />
                         </div>
 
-                        {/* Quick Refine */}
-                        <div className="flex gap-2">
+                        {/* Refining Tools */}
+                        <div className="grid grid-cols-2 gap-3">
                           <button
                             onClick={() => { setRegenType('full'); setShowRegenConfirm(true); }}
-                            className="flex-1 py-3 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase text-slate-500 hover:border-black-200 hover:text-black transition-all"
+                            className="py-4 bg-white border border-slate-200 rounded-2xl text-[10px] font-black uppercase text-slate-500 hover:border-black hover:text-black transition-all flex items-center justify-center gap-2 shadow-sm group"
                           >
-                            Regenerate
+                            <RefreshCw size={14} className="group-hover:rotate-180 transition-transform duration-500" /> Full Regen
                           </button>
                           <button
                             onClick={() => { setRegenType('refine'); setRefinePrompt('Make it shorter and more punchy'); setShowRegenConfirm(true); }}
-                            className="flex-1 py-3 bg-white border border-slate-200 rounded-xl text-[10px] font-black uppercase text-slate-500 hover:border-black-200 hover:text-black transition-all font-['Outfit']"
+                            className="py-4 bg-white border border-slate-200 rounded-2xl text-[10px] font-black uppercase text-slate-500 hover:border-black hover:text-black transition-all flex items-center justify-center gap-2 shadow-sm group"
                           >
-                            Make Shorter
+                            <Zap size={14} className="text-yellow-500 group-hover:scale-125 transition-transform" /> Make Punchy
                           </button>
                         </div>
-
                       </div>
                     )}
-                    {/* Account Selector & Deploy Button (only if reply generated) */}
-                    {(generatedReply || editedComment) && (
-                      <div className="space-y-6 animate-in fade-in slide-in-from-top-2 duration-500">
-                        {/* Account Selector */}
-                        <div className="pt-4 border-t border-slate-100 space-y-3">
-                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1 flex items-center gap-2">
-                            <ShieldCheck size={12} className="text-black" /> Deploying as
-                          </label>
-                          <div className="flex items-center gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-100">
-                            <div className="w-9 h-9 rounded-xl overflow-hidden border border-slate-200 bg-white shadow-sm">
-                              {XStatus.accounts.find(a => a.username === selectedAccount)?.icon ? (
-                                <img src={XStatus.accounts.find(a => a.username === selectedAccount)?.icon} className="w-full h-full object-cover" />
-                              ) : (
-                                <div className="w-full h-full bg-black flex items-center justify-center text-white font-black text-xs">R</div>
-                              )}
-                            </div>
-                            <div className="flex-1">
-                              <select
-                                value={selectedAccount}
-                                onChange={(e) => setSelectedAccount(e.target.value)}
-                                className="w-full bg-transparent border-none text-sm font-bold text-slate-900 focus:outline-none cursor-pointer"
-                              >
-                                {XStatus.accounts.length > 0 ? (
-                                  XStatus.accounts.map(acc => (
-                                    <option key={acc.username} value={acc.username}>u/{acc.username}</option>
-                                  ))
-                                ) : (
-                                  <option value="">No accounts linked</option>
-                                )}
-                              </select>
-                              {XStatus.accounts.length === 0 && <p className="text-[9px] text-red-500 font-bold">Link an account in settings</p>}
-                            </div>
+                  </div>
+                )}
+
+                {/* Footer Area - Scrollable */}
+                {(selectedPost && (generatedReply || editedComment || isGenerating)) && (
+                  <div className="mt-8 bg-white border border-slate-200 rounded-[2rem] p-6 space-y-5 shadow-sm">
+                    {/* Account Switcher */}
+                    <div className="flex items-center gap-4 bg-slate-50 p-3 rounded-[2rem] border border-slate-100 group transition-all hover:bg-white hover:shadow-inner">
+                      <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-white bg-slate-900 shadow-md flex-shrink-0 group-hover:scale-110 transition-transform">
+                        {XStatus.accounts.find(a => a.username === selectedAccount)?.icon ? (
+                          <img src={XStatus.accounts.find(a => a.username === selectedAccount)?.icon} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-white font-black text-xs">A</div>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1 block">Deploying From</label>
+                        <select
+                          value={selectedAccount}
+                          onChange={(e) => setSelectedAccount(e.target.value)}
+                          className="w-full bg-transparent border-none text-sm font-black text-slate-900 focus:outline-none cursor-pointer appearance-none"
+                        >
+                          {XStatus.accounts.length > 0 ? (
+                            XStatus.accounts.map(acc => (
+                              <option key={acc.username} value={acc.username}>u/{acc.username}</option>
+                            ))
+                          ) : (
+                            <option value="">No linked accounts</option>
+                          )}
+                        </select>
+                      </div>
+                      <div className="w-10 h-10 flex items-center justify-center text-slate-300">
+                        <ChevronDown size={18} />
+                      </div>
+                    </div>
+
+                    {/* FINAL DEPLOY BUTTON */}
+                    <button
+                      onClick={handlePost}
+                      disabled={isPosting || !selectedAccount || !editedComment}
+                      className={`w-full py-5 rounded-2xl font-black text-base uppercase tracking-widest transition-all flex flex-col items-center justify-center relative overflow-hidden group 
+                        ${isPosting || !selectedAccount || !editedComment
+                          ? 'bg-slate-100 text-slate-300 cursor-not-allowed'
+                          : 'bg-blue-600 text-white hover:bg-blue-700 hover:scale-[1.02] shadow-[0_10px_30px_-10px_rgba(37,99,235,0.5)] animate-in zoom-in-95'}`}
+                    >
+                      {isPosting ? (
+                        <div className="flex items-center gap-3">
+                          <RefreshCw className="animate-spin" size={22} />
+                          <span className="font-black">Deploying to X...</span>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="flex items-center gap-3">
+                            <Rocket size={24} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform text-white/90" />
+                            <span className="font-black">Publish To X</span>
                           </div>
-                        </div>
-
-                        {/* Deploy Button */}
-                        <div className="pt-2">
-                          <button
-                            onClick={handlePost}
-                            disabled={isPosting || !selectedAccount}
-                            className="w-full bg-slate-900 text-white py-4 rounded-[1.5rem] font-black text-sm uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-slate-100 flex items-center justify-center gap-3 disabled:opacity-50 group"
-                          >
-                            {isPosting ? <RefreshCw className="animate-spin" size={18} /> : (
-                              <>
-                                <Send size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                                Deploy To X
-                              </>
-                            )}
-                          </button>
-                        </div>
-                      </div>
-                    )}
+                          <div className="flex items-center gap-2 mt-1.5 opacity-90 transition-opacity">
+                            <ShieldCheck size={12} className="text-white" />
+                            <p className="text-[10px] font-bold uppercase tracking-tighter text-white/90">Verified & Anti-Spam Ready</p>
+                          </div>
+                        </>
+                      )}
+                    </button>
                   </div>
                 )}
               </div>
