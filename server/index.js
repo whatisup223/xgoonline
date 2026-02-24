@@ -3652,7 +3652,7 @@ app.get('/api/user/x/status', async (req, res) => {
     const user = await User.findOne({ id: userId.toString() });
     if (!user) return res.status(404).json({ error: 'User not found' });
 
-    const accounts = user.connectedAccounts || [];
+    const accounts = user.connectedAccounts || user.accounts || [];
 
     res.json({
       connected: accounts.length > 0,
