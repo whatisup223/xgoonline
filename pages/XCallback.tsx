@@ -6,11 +6,16 @@ import { useAuth } from '../context/AuthContext';
 export const XCallback: React.FC = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user, syncUser } = useAuth();
     const code = searchParams.get('code');
 
     useEffect(() => {
         const handleCallback = async () => {
+            // Wait for user to be loaded if code is present
+            if (code && !user) {
+                return;
+            }
+
             if (!code || !user) {
                 navigate('/dashboard?error=x_auth_failed');
                 return;
@@ -24,6 +29,7 @@ export const XCallback: React.FC = () => {
                 });
 
                 if (response.ok) {
+                    await syncUser();
                     navigate('/dashboard?success=x_connected');
                 } else {
                     navigate('/dashboard?error=x_auth_failed');

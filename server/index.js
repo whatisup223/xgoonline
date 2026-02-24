@@ -3523,34 +3523,47 @@ app.post('/api/auth/x/callback', async (req, res) => {
         ...(mongoose.Types.ObjectId.isValid(userId) ? [{ _id: userId }] : [])
       ]
     });
-    if (user) {
-      let limit = 1;
-      if (user.plan) {
-        const userPlan = await Plan.findOne({ name: { $regex: new RegExp('^' + user.plan + '$', 'i') } });
-        if (userPlan) limit = userPlan.maxAccounts || 1;
-      }
 
-      const currentAccounts = user.connectedAccounts || [];
-      const alreadyConnected = currentAccounts.find(a => a.username === XUsername);
-
-      if (!alreadyConnected && currentAccounts.length >= limit) {
-        return res.status(403).json({ error: `Account limit reached for ${user.plan} plan (${limit} accounts max).` });
-      }
-
-      if (alreadyConnected) {
-        alreadyConnected.icon = XIcon;
-        alreadyConnected.lastSeen = new Date().toISOString();
-      } else {
-        if (!user.connectedAccounts) user.connectedAccounts = [];
-        user.connectedAccounts.push({
-          username: XUsername,
-          icon: XIcon,
-          connectedAt: new Date().toISOString(),
-          lastSeen: new Date().toISOString()
-        });
-      }
-      await user.save();
+    if (!user) {
+      console.error(`[X OAuth] User not found during callback! ID: ${userId}`);
+      return res.status(404).json({ error: 'User not found. Please log in again.' });
     }
+
+    let limit = 1;
+    if (user.plan) {
+      const userPlan = await Plan.findOne({ name: { $regex: new RegExp('^' + user.plan + '$', 'i') } });
+      if (userPlan) limit = userPlan.maxAccounts || 1;
+    }
+
+    const currentAccounts = user.connectedAccounts || [];
+    const alreadyConnected = currentAccounts.find(a => a.username === XUsername);
+
+    if (!alreadyConnected && currentAccounts.length >= limit) {
+      return res.status(403).json({ error: `Account limit reached for ${user.plan} plan (${limit} accounts max).` });
+    }
+
+    if (alreadyConnected) {
+      alreadyConnected.icon = XIcon;
+      alreadyConnected.lastSeen = new Date().toISOString();
+      // Update tokens inside the existing account object too
+      alreadyConnected.accessToken = data.access_token;
+      alreadyConnected.refreshToken = data.refresh_token;
+      alreadyConnected.expiresAt = Date.now() + (data.expires_in * 1000);
+    } else {
+      if (!user.connectedAccounts) user.connectedAccounts = [];
+      user.connectedAccounts.push({
+        username: XUsername,
+        icon: XIcon,
+        connectedAt: new Date().toISOString(),
+        lastSeen: new Date().toISOString(),
+        accessToken: data.access_token,
+        refreshToken: data.refresh_token,
+        expiresAt: Date.now() + (data.expires_in * 1000)
+      });
+    }
+
+    user.markModified('connectedAccounts');
+    await user.save();
 
     await saveTokens(userId, XUsername, {
       accessToken: data.access_token,
@@ -3558,6 +3571,7 @@ app.post('/api/auth/x/callback', async (req, res) => {
       expiresAt: Date.now() + (data.expires_in * 1000)
     });
 
+    console.log(`[X OAuth] Successfully linked account @${XUsername} to user ID ${userId}`);
     res.json({ success: true, username: XUsername });
   } catch (error) {
     console.error('[X OAuth Error]', error);
