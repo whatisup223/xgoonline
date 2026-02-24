@@ -3246,7 +3246,8 @@ app.post('/api/admin/ai-settings', adminAuth, (req, res) => {
     newSettings.creditCosts = {
       comment: Number(newSettings.creditCosts.comment) || (aiSettings.creditCosts?.comment || 1),
       post: Number(newSettings.creditCosts.post) || (aiSettings.creditCosts?.post || 2),
-      image: Number(newSettings.creditCosts.image) || (aiSettings.creditCosts?.image || 5)
+      image: Number(newSettings.creditCosts.image) || (aiSettings.creditCosts?.image || 5),
+      fetch: Number(newSettings.creditCosts.fetch) || (aiSettings.creditCosts?.fetch || 1)
     };
   }
 
