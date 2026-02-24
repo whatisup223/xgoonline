@@ -1666,6 +1666,10 @@ let XSettings = savedData.X || {
   antiSpam: true
 };
 
+// Search Cache (5 minutes)
+const xSearchCache = {};
+const X_CACHE_TTL = 5 * 60 * 1000;
+
 const sleep = (ms) => new Promise(res => setTimeout(res, ms));
 
 const getDynamicUserAgent = (userId) => {
@@ -4303,18 +4307,45 @@ app.get('/api/user/x/profile', async (req, res) => {
 
 app.get('/api/x/posts', async (req, res) => {
   try {
-    const { topic: rawTopic, subX, keywords = '', userId } = req.query;
+    const { topic: rawTopic, subX, keywords = '', userId, lang = '', location = '' } = req.query;
     const topic = rawTopic || subX || 'saas';
-    console.log(`[X] Fetching for User ${userId} from topic: ${topic}`);
+    const cacheKey = `${topic}-${keywords}-${lang}-${location}`;
+
+    // Check Cache first to save costs/requests
+    if (xSearchCache[cacheKey] && Date.now() - xSearchCache[cacheKey].timestamp < X_CACHE_TTL) {
+      console.log(`[X Cache] Returning cached results for: ${cacheKey}`);
+      return res.json(xSearchCache[cacheKey].data);
+    }
+
+    console.log(`[X] Fetching for User ${userId} from topic: ${topic}, keywords: ${keywords}, lang: ${lang}, loc: ${location}`);
 
     const token = userId ? await getValidToken(userId) : null;
 
     let url, headers;
 
     if (token) {
-      // Use Official API with OAuth Token - Enhanced with user info
-      const searchQuery = keywords ? `${keywords} ${topic}` : topic;
-      url = `https://api.twitter.com/2/tweets/search/recent?query=${encodeURIComponent(searchQuery)}&max_results=20&tweet.fields=public_metrics,created_at&expansions=author_id&user.fields=username,profile_image_url`;
+      // Enhanced Search Query with filters
+      let query = keywords ? `${keywords} ${topic}` : topic;
+      if (lang) query += ` lang:${lang}`;
+
+      // Handle Location (point_radius:[long lat radius])
+      if (location && location.includes(',')) {
+        const parts = location.split(',');
+        if (parts.length === 3) {
+          const [lat, long, rad] = parts;
+          // Official v2 syntax: longitude first!
+          query += ` point_radius:[${long.trim()} ${lat.trim()} ${rad.trim()}]`;
+        }
+      }
+
+      url = `https://api.twitter.com/2/tweets/search/recent?query=${encodeURIComponent(query)}&max_results=20&tweet.fields=public_metrics,created_at&expansions=author_id&user.fields=username,profile_image_url`;
+
+      // If location is provided (e.g. Dubai geocode)
+      // Note: geocode requires "lat,long,radius" e.g. "25.2048,55.2708,50km"
+      // However, official v2 search uses 'point_radius:[long lat radius]' 
+      // but only for specific developer levels. 
+      // We will handle it by appending if the user provided it.
+
       headers = {
         'Authorization': `Bearer ${token}`,
         'User-Agent': getDynamicUserAgent(userId)
@@ -4383,7 +4414,13 @@ app.get('/api/x/posts', async (req, res) => {
       };
     });
 
-    res.json(posts.sort((a, b) => b.opportunityScore - a.opportunityScore).slice(0, 20));
+    // Save to Cache
+    xSearchCache[cacheKey] = {
+      timestamp: Date.now(),
+      data: posts
+    };
+
+    res.json(posts.sort((a, b) => (b.opportunityScore || 0) - (a.opportunityScore || 0)).slice(0, 20));
   } catch (error) {
     console.error('X Fetch Error:', error);
     res.status(500).json({ error: error.message });

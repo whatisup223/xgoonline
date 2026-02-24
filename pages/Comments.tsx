@@ -80,6 +80,8 @@ export const Comments: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const [targetSubX, setTargetSubX] = useState('saas');
+  const [targetLang, setTargetLang] = useState('en');
+  const [targetLoc, setTargetLoc] = useState('');
   const [searchKeywords, setSearchKeywords] = useState('');
   const [generatedReply, setGeneratedReply] = useState<GeneratedReply | null>(null);
   const [editedComment, setEditedComment] = useState('');
@@ -448,7 +450,7 @@ export const Comments: React.FC = () => {
     if (!user?.id) return;
     setIsFetching(true);
     try {
-      const response = await fetch(`/api/x/posts?subX=${targetSubX}&keywords=${searchKeywords}&userId=${user.id}`);
+      const response = await fetch(`/api/x/posts?subX=${targetSubX}&keywords=${searchKeywords}&userId=${user.id}&lang=${targetLang}&location=${targetLoc}`);
       if (!response.ok) throw new Error('Fetch failed');
       const data = await response.json();
 
@@ -674,33 +676,65 @@ export const Comments: React.FC = () => {
             <p className="text-slate-400 font-medium text-sm pl-4">Find & join relevant X discussions automatically.</p>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-            <div className="flex items-center bg-white border border-slate-200 rounded-2xl shadow-sm px-3 flex-1 sm:flex-none">
-              <Target size={14} className="text-slate-400" />
-              <input
-                type="text"
-                value={targetSubX}
-                onChange={(e) => setTargetSubX(e.target.value)}
-                placeholder="Topic (e.g. SaaS)"
-                className="p-2.5 bg-transparent focus:outline-none font-bold text-xs w-28"
-              />
-              <div className="w-[1px] h-4 bg-slate-200 mx-2" />
-              <Hash size={14} className="text-slate-400" />
-              <input
-                type="text"
-                value={searchKeywords}
-                onChange={(e) => setSearchKeywords(e.target.value)}
-                placeholder="Keywords"
-                className="p-2.5 bg-transparent focus:outline-none font-bold text-xs w-32"
-              />
+          <div className="flex flex-col xl:flex-row items-stretch xl:items-center gap-3">
+            <div className="flex flex-wrap items-center bg-white border border-slate-200 rounded-3xl shadow-sm px-4 gap-2 py-1">
+              <div className="flex items-center gap-2">
+                <Target size={14} className="text-slate-400" />
+                <input
+                  type="text"
+                  value={targetSubX}
+                  onChange={(e) => setTargetSubX(e.target.value)}
+                  placeholder="Topic"
+                  className="p-2.5 bg-transparent focus:outline-none font-black text-xs w-28"
+                />
+              </div>
+              <div className="w-[1px] h-4 bg-slate-200" />
+              <div className="flex items-center gap-2">
+                <Hash size={14} className="text-slate-400" />
+                <input
+                  type="text"
+                  value={searchKeywords}
+                  onChange={(e) => setSearchKeywords(e.target.value)}
+                  placeholder="Keywords"
+                  className="p-2.5 bg-transparent focus:outline-none font-black text-xs w-32"
+                />
+              </div>
+              <div className="w-[1px] h-4 bg-slate-200" />
+              <div className="flex items-center gap-2">
+                <Globe size={14} className="text-slate-400" />
+                <select
+                  value={targetLang}
+                  onChange={(e) => setTargetLang(e.target.value)}
+                  className="p-2.5 bg-transparent focus:outline-none font-black text-xs cursor-pointer"
+                >
+                  <option value="en">English</option>
+                  <option value="ar">Arabic</option>
+                  <option value="fr">French</option>
+                  <option value="es">Spanish</option>
+                </select>
+              </div>
+              <div className="w-[1px] h-4 bg-slate-200" />
+              <div className="flex items-center gap-2">
+                <MapPin size={14} className="text-slate-400" />
+                <select
+                  value={targetLoc}
+                  onChange={(e) => setTargetLoc(e.target.value)}
+                  className="p-2.5 bg-transparent focus:outline-none font-black text-xs cursor-pointer"
+                >
+                  <option value="">Global</option>
+                  <option value="30.0444,31.2357,100km">Egypt (Cairo)</option>
+                  <option value="25.2048,55.2708,100km">UAE (Dubai)</option>
+                  <option value="24.7136,46.6753,100km">Saudi (Riyadh)</option>
+                </select>
+              </div>
             </div>
             <button
               onClick={fetchPosts}
               disabled={isFetching}
-              className="bg-slate-900 text-white px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-black transition-all flex items-center justify-center gap-2"
+              className="bg-slate-900 text-white px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-black transition-all flex items-center justify-center gap-2 shadow-lg shadow-slate-200 active:scale-95"
             >
               <RefreshCw size={14} className={isFetching ? 'animate-spin' : ''} />
-              Reload Feed
+              {isFetching ? 'Scanning...' : 'Fetch Trends'}
             </button>
           </div>
         </div>
@@ -782,8 +816,8 @@ export const Comments: React.FC = () => {
                         <div className="flex items-center gap-2">
                           <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Potential Score</div>
                           <div className={`px-2 py-0.5 rounded-lg text-[9px] font-black border ${(post.opportunityScore || 0) > 70 ? 'bg-green-50 text-green-700 border-green-100' :
-                              (post.opportunityScore || 0) > 40 ? 'bg-blue-50 text-blue-700 border-blue-100' :
-                                'bg-slate-50 text-slate-400 border-slate-100'
+                            (post.opportunityScore || 0) > 40 ? 'bg-blue-50 text-blue-700 border-blue-100' :
+                              'bg-slate-50 text-slate-400 border-slate-100'
                             }`}>
                             {post.opportunityScore || 0}%
                           </div>
