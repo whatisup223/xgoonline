@@ -3715,10 +3715,23 @@ app.post('/api/user/x/disconnect', async (req, res) => {
     const { userId, username } = req.body;
     if (!userId || !username) return res.status(400).json({ error: 'Missing userId or username' });
 
-    const user = await User.findOne({ id: userId.toString() });
-    if (user && user.connectedAccounts) {
-      user.connectedAccounts = user.connectedAccounts.filter(a => a.username !== username);
+    const user = await User.findOne({
+      $or: [
+        { id: userId.toString() },
+        ...(mongoose.Types.ObjectId.isValid(userId) ? [{ _id: userId }] : [])
+      ]
+    });
+
+    if (user) {
+      const accList = user.connectedAccounts || user.accounts || [];
+      const filtered = accList.filter(a => a.username !== username);
+
+      user.connectedAccounts = filtered;
+      user.accounts = filtered;
+      user.markModified('connectedAccounts');
+      user.markModified('accounts');
       await user.save();
+      console.log(`[X Disconnect] Removed @${username} from User ${user.email}. Remaining: ${filtered.length}`);
     }
 
     if (userXTokens[userId]) {
