@@ -1666,9 +1666,9 @@ let XSettings = savedData.X || {
   antiSpam: true
 };
 
-// Search Cache (5 minutes)
+// Search Cache (15 minutes to save costs)
 const xSearchCache = {};
-const X_CACHE_TTL = 5 * 60 * 1000;
+const X_CACHE_TTL = 15 * 60 * 1000;
 
 const sleep = (ms) => new Promise(res => setTimeout(res, ms));
 

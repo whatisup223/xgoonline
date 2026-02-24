@@ -481,7 +481,9 @@ export const Comments: React.FC = () => {
 
   useEffect(() => {
     if (!user?.id) return;
-    fetchPosts();
+    // Removed auto-fetch on mount to save API costs. 
+    // fetchPosts(); 
+
     fetchBrandProfile(user.id).then(p => { if (p?.brandName) setBrandProfile(p); });
     fetch(`/api/user/x/status?userId=${user.id}`)
       .then(res => res.json())
@@ -489,7 +491,7 @@ export const Comments: React.FC = () => {
         setXStatus(status);
         if (status.accounts?.length > 0) setSelectedAccount(status.accounts[0].username);
       });
-  }, [user]);
+  }, [user?.id]); // Only run when user ID actually changes, not on every user object update
 
   return (
     <>
@@ -778,74 +780,109 @@ export const Comments: React.FC = () => {
         <CreditsBanner plan={user?.plan || 'Starter'} credits={user?.credits || 0} />
 
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-10">
-          {/* Posts List */}
-          <div className="xl:col-span-8 space-y-6">
-            {posts.map(post => (
-              <div
-                key={post.id}
-                onClick={() => setSelectedPost(post)}
-                className={`p-7 rounded-[2.5rem] transition-all duration-500 border-2 relative group overflow-hidden cursor-pointer ${selectedPost?.id === post.id ? 'border-black bg-slate-50/10 shadow-xl' : 'border-slate-100 bg-white hover:border-slate-200'}`}
-              >
-                <div className="flex flex-col md:flex-row items-start justify-between gap-6">
-                  <div className="flex-1 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        {post.icon && <img src={post.icon} className="w-5 h-5 rounded-full border border-slate-200" alt="" />}
-                        <span className="px-3 py-1 bg-slate-900/5 text-black rounded-full text-[9px] font-black uppercase tracking-widest border border-slate-900/10">#{post.subX || 'Topic'}</span>
-                        <span className="text-[10px] font-bold text-slate-400">@{post.author}</span>
-                      </div>
-                      {post.isHot && (
-                        <div className="flex items-center gap-1.5 px-3 py-1 bg-rose-50 text-rose-600 rounded-full text-[9px] font-black uppercase tracking-widest border border-rose-100 animate-pulse">
-                          <Flame size={10} /> Hot Lead
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <h3 className="text-xl font-bold text-slate-900 leading-snug group-hover:text-black transition-colors">{post.title}</h3>
-                      <p className="text-slate-500 text-sm line-clamp-2 leading-relaxed font-medium">{post.selftext}</p>
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-5 pt-2">
-                      <div className="flex items-center gap-1.5 text-slate-400 text-xs font-bold"><ThumbsUp size={14} /> {post.ups}</div>
-                      <div className="flex items-center gap-1.5 text-slate-400 text-xs font-bold"><MessageSquarePlus size={14} /> {post.num_comments}</div>
-                      <div className="h-4 w-[1px] bg-slate-100" />
-
-                      {/* Analysis Segment */}
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2">
-                          <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Potential Score</div>
-                          <div className={`px-2 py-0.5 rounded-lg text-[9px] font-black border ${(post.opportunityScore || 0) > 70 ? 'bg-green-50 text-green-700 border-green-100' :
-                            (post.opportunityScore || 0) > 40 ? 'bg-blue-50 text-blue-700 border-blue-100' :
-                              'bg-slate-50 text-slate-400 border-slate-100'
-                            }`}>
-                            {post.opportunityScore || 0}%
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Intent</div>
-                          <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-lg">
-                            <Target size={10} className="text-black" />
-                            {post.intent || 'General Inquiry'}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setSelectedPost(post); setIsWizardOpen(true); }}
-                    className="w-full md:w-auto bg-slate-900 text-white px-8 py-4 rounded-2xl text-sm font-black hover:bg-black transition-all flex flex-col items-center justify-center shadow-lg active:scale-95 group"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Wand2 size={18} />
-                      <span>Wizard Reply</span>
-                    </div>
-                    <span className="text-[9px] text-slate-400 font-black uppercase tracking-[0.2em] mt-0.5 group-hover:text-white transition-colors">{costs.comment} PTS REQUIRED</span>
-                  </button>
+          <div className="xl:col-span-8 space-y-8">
+            {posts.length === 0 && !isFetching ? (
+              <div className="bg-white rounded-[3rem] border-2 border-dashed border-slate-100 p-20 text-center space-y-8 animate-in fade-in zoom-in-95 duration-700">
+                <div className="w-24 h-24 bg-slate-50 rounded-[2.5rem] flex items-center justify-center mx-auto text-slate-300">
+                  <Search size={48} />
                 </div>
+                <div className="max-w-md mx-auto space-y-3">
+                  <h3 className="text-2xl font-black text-slate-900">Ready to find leads?</h3>
+                  <p className="text-slate-500 font-medium">
+                    We've disabled automatic scanning to <span className="text-black font-bold">save your API costs</span>. Use the filters above to find specific trending discussions.
+                  </p>
+                </div>
+                <button
+                  onClick={fetchPosts}
+                  className="bg-slate-900 text-white px-10 py-5 rounded-[2rem] font-black uppercase tracking-widest hover:bg-black transition-all shadow-2xl shadow-slate-200 active:scale-95 flex items-center gap-3 mx-auto"
+                >
+                  <RefreshCw size={20} />
+                  Start First Scan
+                </button>
               </div>
-            ))}
+            ) : isFetching ? (
+              <div className="space-y-6">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="bg-white rounded-[2.5rem] border border-slate-100 p-8 animate-pulse space-y-4">
+                    <div className="flex gap-4">
+                      <div className="w-12 h-12 bg-slate-100 rounded-2xl" />
+                      <div className="flex-1 space-y-2">
+                        <div className="w-1/4 h-3 bg-slate-100 rounded-full" />
+                        <div className="w-3/4 h-4 bg-slate-100 rounded-full" />
+                      </div>
+                    </div>
+                    <div className="w-full h-20 bg-slate-50 rounded-2xl" />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              posts.map(post => (
+                <div
+                  key={post.id}
+                  onClick={() => setSelectedPost(post)}
+                  className={`p-7 rounded-[2.5rem] transition-all duration-500 border-2 relative group overflow-hidden cursor-pointer ${selectedPost?.id === post.id ? 'border-black bg-slate-50/10 shadow-xl' : 'border-slate-100 bg-white hover:border-slate-200'}`}
+                >
+                  <div className="flex flex-col md:flex-row items-start justify-between gap-6">
+                    <div className="flex-1 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          {post.icon && <img src={post.icon} className="w-5 h-5 rounded-full border border-slate-200" alt="" />}
+                          <span className="px-3 py-1 bg-slate-900/5 text-black rounded-full text-[9px] font-black uppercase tracking-widest border border-slate-900/10">#{post.subX || 'Topic'}</span>
+                          <span className="text-[10px] font-bold text-slate-400">@{post.author}</span>
+                        </div>
+                        {post.isHot && (
+                          <div className="flex items-center gap-1.5 px-3 py-1 bg-rose-50 text-rose-600 rounded-full text-[9px] font-black uppercase tracking-widest border border-rose-100 animate-pulse">
+                            <Flame size={10} /> Hot Lead
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <h3 className="text-xl font-bold text-slate-900 leading-snug group-hover:text-black transition-colors">{post.title}</h3>
+                        <p className="text-slate-500 text-sm line-clamp-2 leading-relaxed font-medium">{post.selftext}</p>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-5 pt-2">
+                        <div className="flex items-center gap-1.5 text-slate-400 text-xs font-bold"><ThumbsUp size={14} /> {post.ups}</div>
+                        <div className="flex items-center gap-1.5 text-slate-400 text-xs font-bold"><MessageSquarePlus size={14} /> {post.num_comments}</div>
+                        <div className="h-4 w-[1px] bg-slate-100" />
+
+                        {/* Analysis Segment */}
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-2">
+                            <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Potential Score</div>
+                            <div className={`px-2 py-0.5 rounded-lg text-[9px] font-black border ${(post.opportunityScore || 0) > 70 ? 'bg-green-50 text-green-700 border-green-100' :
+                              (post.opportunityScore || 0) > 40 ? 'bg-blue-50 text-blue-700 border-blue-100' :
+                                'bg-slate-50 text-slate-400 border-slate-100'
+                              }`}>
+                              {post.opportunityScore || 0}%
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Intent</div>
+                            <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-lg">
+                              <Target size={10} className="text-black" />
+                              {post.intent || 'General Inquiry'}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setSelectedPost(post); setIsWizardOpen(true); }}
+                      className="w-full md:w-auto bg-slate-900 text-white px-8 py-4 rounded-2xl text-sm font-black hover:bg-black transition-all flex flex-col items-center justify-center shadow-lg active:scale-95 group"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Wand2 size={18} />
+                        <span>Wizard Reply</span>
+                      </div>
+                      <span className="text-[9px] text-slate-400 font-black uppercase tracking-[0.2em] mt-0.5 group-hover:text-white transition-colors">{costs.comment} PTS REQUIRED</span>
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
 
           {/* Assistant Panel */}
