@@ -1454,7 +1454,7 @@ export const ContentArchitect: React.FC = () => {
                     {/* Right: Live Preview */}
                     <div className="lg:col-span-5">
                         <div className="sticky top-10 space-y-6">
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">X Live Preview</p>
+                            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">X Live Preview</p>
 
                             <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden hover:shadow-xl transition-shadow">
                                 <div className="p-8 space-y-5">

@@ -106,7 +106,7 @@ const StatCard = ({
         )}
       </div>
       <div className="relative z-10">
-        <p className="text-[11px] font-extrabold text-slate-400 uppercase tracking-[0.2em] mb-1">{label}</p>
+        <p className="text-[11px] font-extrabold text-slate-500 uppercase tracking-[0.2em] mb-1">{label}</p>
         {isLoading ? (
           <div className="h-9 w-20 bg-slate-100 rounded-xl animate-pulse mt-1" />
         ) : (

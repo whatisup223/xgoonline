@@ -238,8 +238,8 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
               <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full blur-2xl -mr-6 -mt-6 group-hover:scale-150 transition-transform duration-500" />
               <div className="relative z-10">
                 <div className="flex items-center gap-2 mb-1">
-                  <Shield size={16} className="text-black fill-black animate-pulse" />
-                  <span className="font-bold text-sm tracking-wide">Back to Admin</span>
+                  <Shield size={16} className="text-white fill-white animate-pulse" />
+                  <span className="font-bold text-sm tracking-wide text-white">Back to Admin</span>
                 </div>
                 <p className="text-slate-400 text-[10px] leading-relaxed font-medium">Access system controls and management.</p>
               </div>

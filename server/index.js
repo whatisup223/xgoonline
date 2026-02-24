@@ -3483,7 +3483,7 @@ app.get('/api/auth/x/url', (req, res) => {
     : `${protocol}://${host}/auth/X/callback`;
 
   const state = Math.random().toString(36).substring(7);
-  const scope = encodeURIComponent('tweet.read tweet.write users.read offline.access');
+  const scope = encodeURIComponent('tweet.read tweet.write users.read offline.access media.write');
   // Use OAuth 2.0 PKCE (plain for simplified migration)
   const url = `https://twitter.com/i/oauth2/authorize?response_type=code&client_id=${XSettings.clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&state=${state}&code_challenge=challenge&code_challenge_method=plain`;
 
@@ -4115,10 +4115,14 @@ app.get('/api/user/replies', async (req, res) => {
 app.post('/api/x/post', async (req, res) => {
   try {
     const { userId, topic: rawTopic, subX, title, text, imageUrl, kind, xHandle: rawXHandle, XUsername: rawXUsername } = req.body;
+    console.log(`[X POST] Received request. User: ${userId}, Title: ${title}, Image: ${imageUrl ? 'Present (' + imageUrl + ')' : 'None'}`);
     const topic = rawTopic || subX;
     const XUsername = rawXHandle || rawXUsername || 'unknown';
 
     if (!userId || !topic || !title) return res.status(400).json({ error: 'Missing required fields (userId, topic/subX, title)' });
+
+    const user = await User.findOne({ id: userId.toString() });
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
     const token = await getValidToken(userId, XUsername);
     if (!token) return res.status(401).json({ error: 'X account not linked' });
@@ -4223,6 +4227,32 @@ app.post('/api/x/post', async (req, res) => {
 
     await entry.save();
     addSystemLog('SUCCESS', `X Post submitted: ${title}`, { topic: topic });
+
+    // Deduct credits if not admin
+    if (user.role !== 'admin') {
+      const cost = Number(aiSettings.creditCosts?.post) || 2;
+      const updatedUser = await User.findOneAndUpdate(
+        { id: userId.toString(), credits: { $gte: cost } },
+        {
+          $inc: {
+            credits: -cost,
+            dailyUsage: 1,
+            dailyUsagePoints: cost,
+            "usageStats.posts": 1,
+            "usageStats.postsCredits": cost,
+            "usageStats.totalSpent": cost
+          },
+          $set: { lastUsageDate: new Date().toISOString().split('T')[0] },
+          $push: { "usageStats.history": { date: new Date().toISOString(), type: 'post', cost } }
+        },
+        { new: true }
+      );
+      if (!updatedUser) {
+        return res.status(402).json({ error: 'Insufficient credits or update conflict. Please try again.' });
+      }
+      // Fire and forget check for low credits
+      checkLowCredits(updatedUser).catch(e => console.error('Low credits check error:', e));
+    }
 
     res.json({ success: true, XResponse });
   } catch (error) {

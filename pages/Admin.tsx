@@ -1107,7 +1107,7 @@ export const Admin: React.FC = () => {
                                         </div>
                                         <div className="bg-white p-6 rounded-[2rem] border border-slate-200/60 shadow-sm flex items-center justify-between group hover:shadow-lg transition-all">
                                             <div className="min-w-0">
-                                                <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1 truncate">Archived/Closed</p>
+                                                <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1 truncate">Archived/Closed</p>
                                                 <p className="text-3xl font-extrabold text-slate-500 truncate">{stats.ticketStats?.closed || 0}</p>
                                             </div>
                                             <div className="p-4 bg-slate-50 text-slate-500 rounded-2xl group-hover:rotate-12 transition-transform shrink-0 ml-4">
@@ -1128,7 +1128,7 @@ export const Admin: React.FC = () => {
                                                 </div>
                                                 <h3 className="font-black text-slate-800 tracking-tight">System Consumption</h3>
                                             </div>
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-slate-50 px-2 py-1 rounded-lg">Last 30 Days</span>
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 bg-slate-50 px-2 py-1 rounded-lg">Last 30 Days</span>
                                         </div>
 
                                         <div className="h-48 w-full">
