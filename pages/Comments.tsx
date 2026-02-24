@@ -470,13 +470,15 @@ export const Comments: React.FC = () => {
       const hasDraft = localStorage.getItem('Xgo_comment_draft');
       if (data.length > 0 && !selectedPost && !hasDraft) {
         setSelectedPost(data[0]);
+      } else if (data.length === 0) {
+        showToast('No recent trends found for those filters.', 'error');
+        setPosts([]);
+        setSelectedPost(null);
       }
     } catch (err: any) {
-      setPosts(MOCK_POSTS);
-      const hasDraft = localStorage.getItem('Xgo_comment_draft');
-      if (MOCK_POSTS.length > 0 && !selectedPost && !hasDraft) {
-        setSelectedPost(MOCK_POSTS[0]);
-      }
+      showToast('No trends found or rate limited. Check your limits.', 'error');
+      setPosts([]);
+      setSelectedPost(null);
     } finally {
       setIsFetching(false);
       syncUser();
@@ -713,10 +715,18 @@ export const Comments: React.FC = () => {
                   onChange={(e) => setTargetLang(e.target.value)}
                   className="p-2.5 bg-transparent focus:outline-none font-black text-xs cursor-pointer"
                 >
-                  <option value="en">English</option>
-                  <option value="ar">Arabic</option>
-                  <option value="fr">French</option>
-                  <option value="es">Spanish</option>
+                  <option value="en">English (🇺🇸)</option>
+                  <option value="ar">Arabic (🇸🇦)</option>
+                  <option value="fr">French (🇫🇷)</option>
+                  <option value="es">Spanish (🇪🇸)</option>
+                  <option value="de">German (🇩🇪)</option>
+                  <option value="pt">Portuguese (🇧🇷)</option>
+                  <option value="it">Italian (🇮🇹)</option>
+                  <option value="nl">Dutch (🇳🇱)</option>
+                  <option value="tr">Turkish (🇹🇷)</option>
+                  <option value="ja">Japanese (🇯🇵)</option>
+                  <option value="ko">Korean (🇰🇷)</option>
+                  <option value="zh">Chinese (🇨🇳)</option>
                 </select>
               </div>
               <div className="w-[1px] h-4 bg-slate-200" />
@@ -725,12 +735,24 @@ export const Comments: React.FC = () => {
                 <select
                   value={targetLoc}
                   onChange={(e) => setTargetLoc(e.target.value)}
-                  className="p-2.5 bg-transparent focus:outline-none font-black text-xs cursor-pointer"
+                  className="p-2.5 bg-transparent focus:outline-none font-black text-xs cursor-pointer max-w-40"
                 >
                   <option value="">Global</option>
-                  <option value="30.0444,31.2357,100km">Egypt (Cairo)</option>
-                  <option value="25.2048,55.2708,100km">UAE (Dubai)</option>
-                  <option value="24.7136,46.6753,100km">Saudi (Riyadh)</option>
+                  <option value="USA OR New York OR America">🇺🇸 USA</option>
+                  <option value="UK OR London OR Britain">🇬🇧 UK</option>
+                  <option value="France OR Paris">🇫🇷 France</option>
+                  <option value="Spain OR Madrid">🇪🇸 Spain</option>
+                  <option value="Germany OR Berlin">🇩🇪 Germany</option>
+                  <option value="Brazil OR São Paulo">🇧🇷 Brazil</option>
+                  <option value="Italy OR Rome">🇮🇹 Italy</option>
+                  <option value="Netherlands OR Amsterdam">🇳🇱 Netherlands</option>
+                  <option value="Turkey OR Istanbul">🇹🇷 Turkey</option>
+                  <option value="Japan OR Tokyo">🇯🇵 Japan</option>
+                  <option value="South Korea OR Seoul">🇰🇷 South Korea</option>
+                  <option value="China OR Beijing">🇨🇳 China</option>
+                  <option value="Egypt OR Cairo">🇪🇬 Egypt</option>
+                  <option value="UAE OR Dubai">🇦🇪 UAE</option>
+                  <option value="Saudi OR Riyadh">🇸🇦 Saudi Arabia</option>
                 </select>
               </div>
             </div>

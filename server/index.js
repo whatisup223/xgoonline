@@ -4374,10 +4374,9 @@ app.get('/api/x/posts', async (req, res) => {
       // Ensure we don't break Basic API limits. Basic API does not support point_radius:
       // So we will append location as a keyword if it's provided, or map it.
       let locWord = '';
-      if (location && location.includes(',')) {
-        if (location.includes('30.0444')) locWord = 'Egypt OR Cairo';
-        else if (location.includes('25.2048')) locWord = 'Dubai OR UAE';
-        else if (location.includes('24.7136')) locWord = 'Riyadh OR Saudi';
+      if (location && location.trim() !== '') {
+        // Frontend now sends directly the search terms "Egypt OR Cairo", "USA OR New York" etc
+        locWord = location;
       }
 
       let query = keywords ? `${keywords} ${topic}` : topic;
