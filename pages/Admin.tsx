@@ -2327,9 +2327,6 @@ export const Admin: React.FC = () => {
                                                                         setAiSettings({
                                                                             ...aiSettings,
                                                                             creditCosts: {
-                                                                                comment: aiSettings.creditCosts?.comment || 1,
-                                                                                post: aiSettings.creditCosts?.post || 2,
-                                                                                image: aiSettings.creditCosts?.image || 5,
                                                                                 ...aiSettings.creditCosts,
                                                                                 fetch: val
                                                                             }
