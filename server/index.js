@@ -66,9 +66,9 @@ const seedPlans = async () => {
           name: 'Starter',
           monthlyPrice: 0,
           yearlyPrice: 0,
-          credits: 100,
-          dailyLimitMonthly: 5,
-          dailyLimitYearly: 5,
+          credits: 500,
+          dailyLimitMonthly: 50,
+          dailyLimitYearly: 50,
           features: ['AI Comment Wizard', '1 X Account', 'Basic Analytics', 'Standard Support'],
           isPopular: false,
           isVisible: true,
@@ -3478,9 +3478,11 @@ app.get('/api/auth/x/url', (req, res) => {
 
   const host = req.get('host');
   const protocol = host.includes('localhost') ? 'http' : 'https';
-  const redirectUri = XSettings.redirectUri && XSettings.redirectUri.trim() !== ''
-    ? XSettings.redirectUri
-    : `${protocol}://${host}/auth/X/callback`;
+  let redirectUri = `${protocol}://${host}/auth/x/callback`;
+
+  if (XSettings.redirectUri && XSettings.redirectUri.trim() !== '') {
+    redirectUri = XSettings.redirectUri.trim();
+  }
 
   const state = Math.random().toString(36).substring(7);
   const scope = encodeURIComponent('tweet.read tweet.write users.read offline.access media.write');
@@ -3496,9 +3498,11 @@ app.post('/api/auth/x/callback', async (req, res) => {
 
   const host = req.get('host');
   const protocol = host.includes('localhost') ? 'http' : 'https';
-  const redirectUri = XSettings.redirectUri && XSettings.redirectUri.trim() !== ''
-    ? XSettings.redirectUri
-    : `${protocol}://${host}/auth/X/callback`;
+  let redirectUri = `${protocol}://${host}/auth/x/callback`;
+
+  if (XSettings.redirectUri && XSettings.redirectUri.trim() !== '') {
+    redirectUri = XSettings.redirectUri.trim();
+  }
 
   try {
     const auth = Buffer.from(`${XSettings.clientId}:${XSettings.clientSecret}`).toString('base64');
@@ -3596,8 +3600,12 @@ app.post('/api/auth/x/callback', async (req, res) => {
     console.log(`[X OAuth] Successfully linked account @${XUsername} to user ID ${userId}`);
     res.json({ success: true, username: XUsername });
   } catch (error) {
-    console.error('[X OAuth Error]', error);
-    res.status(500).json({ error: error.message });
+    console.error('[X OAuth Callback Error]', error);
+    addSystemLog('ERROR', `X OAuth Callback Failed: ${error.message}`, { stack: error.stack });
+    res.status(500).json({
+      error: 'Authentication failed: ' + error.message,
+      details: error.stack
+    });
   }
 });
 
@@ -3804,6 +3812,8 @@ app.post('/api/generate', async (req, res) => {
       if ((user.credits || 0) < cost) {
         return res.status(402).json({ error: `Insufficient credits. This action requires ${cost} credits.` });
       }
+    } else {
+      console.log(`[ADMIN] Bypassing credit checks for admin: ${user.email}`);
     }
 
     let text = '';
@@ -4128,9 +4138,12 @@ app.post('/api/x/reply', async (req, res) => {
 
     res.json({ success: true, entry });
   } catch (error) {
-    addSystemLog('ERROR', `X Reply Failed: ${error.message}`);
     console.error('X Reply Posting Error:', error);
-    res.status(500).json({ error: error.message });
+    addSystemLog('ERROR', `X Reply Failed: ${error.message}`, { stack: error.stack });
+    res.status(500).json({
+      error: 'Failed to post reply: ' + error.message,
+      details: error.stack
+    });
   }
 });
 
@@ -4292,8 +4305,12 @@ app.post('/api/x/post', async (req, res) => {
 
     res.json({ success: true, XResponse });
   } catch (error) {
-    addSystemLog('ERROR', `X Post Failed: ${error.message}`);
-    res.status(500).json({ error: error.message });
+    console.error('[X POST ERROR]', error);
+    addSystemLog('ERROR', `X Post Failed: ${error.message}`, { stack: error.stack });
+    res.status(500).json({
+      error: 'Failed to create post: ' + error.message,
+      details: error.stack
+    });
   }
 });
 
@@ -4426,7 +4443,11 @@ app.get('/api/user/x/profile', async (req, res) => {
     });
   } catch (error) {
     console.error('Profile Fetch Error:', error);
-    res.status(500).json({ error: error.message });
+    addSystemLog('ERROR', `X Profile Fetch Failed: ${error.message}`, { stack: error.stack });
+    res.status(500).json({
+      error: 'Failed to fetch profile: ' + error.message,
+      details: error.stack
+    });
   }
 });
 
@@ -4472,6 +4493,8 @@ app.get('/api/x/posts', async (req, res) => {
       user.dailyUsage = (user.dailyUsage || 0) + 1;
       await user.save();
       console.log(`[X] Deducted ${cost} credits from user ${user.email} for trend fetch.`);
+    } else if (user && user.role === 'admin') {
+      console.log(`[ADMIN] Bypassing fetch credits check for admin: ${user.email}`);
     }
 
     console.log(`[X] Fetching for User ${userId} from topic: ${topic}, keywords: ${keywords}, lang: ${lang}, loc: ${location}`);

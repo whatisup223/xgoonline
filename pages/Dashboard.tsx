@@ -589,7 +589,7 @@ export const Dashboard: React.FC = () => {
             </div>
           ) : (
             <div className="h-[260px]">
-              <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={100}>
                 <AreaChart data={chartData}>
                   <defs>
                     <linearGradient id="gUp" x1="0" y1="0" x2="0" y2="1">
@@ -632,7 +632,7 @@ export const Dashboard: React.FC = () => {
             </div>
           ) : (
             <div className="h-[260px]">
-              <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={100}>
                 <BarChart data={chartData} barSize={14}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                   <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 800, fill: '#94a3b8' }} />
