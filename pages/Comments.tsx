@@ -594,7 +594,7 @@ export const Comments: React.FC = () => {
                     handleRefine(refinePrompt);
                   }
                 }}
-                className="flex-1 py-4 bg-black text-white rounded-2xl font-black shadow-lg shadow-slate-100 hover:bg-black-700 transition-all uppercase text-[10px] tracking-widest flex items-center justify-center gap-2"
+                className="flex-1 py-4 bg-black text-white rounded-2xl font-black shadow-lg shadow-slate-100 hover:bg-slate-700 transition-all uppercase text-[10px] tracking-widest flex items-center justify-center gap-2"
               >
                 <Check size={14} /> Confirm & Pay
               </button>
@@ -607,9 +607,9 @@ export const Comments: React.FC = () => {
       {showNoCreditsModal && (
         <div className="fixed inset-0 z-[99999] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 font-['Outfit']">
           <div className="bg-white rounded-[2.5rem] p-8 md:p-10 max-w-sm w-full shadow-2xl text-center space-y-6 animate-in zoom-in-95 duration-300 relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-black-50 to-white -z-10" />
+            <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-slate-50 to-white -z-10" />
 
-            <div className="w-20 h-20 bg-slate-200 text-black rounded-[1.5rem] flex items-center justify-center mx-auto shadow-inner border border-black-200">
+            <div className="w-20 h-20 bg-slate-200 text-black rounded-[1.5rem] flex items-center justify-center mx-auto shadow-inner border border-slate-200">
               <Zap size={40} className="fill-current" />
             </div>
 
@@ -634,7 +634,7 @@ export const Comments: React.FC = () => {
             <div className="space-y-3 pt-2">
               <Link
                 to="/pricing"
-                className="w-full py-4 bg-black text-white rounded-2xl font-black shadow-xl shadow-slate-200 hover:bg-black-700 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 uppercase tracking-wide text-xs"
+                className="w-full py-4 bg-black text-white rounded-2xl font-black shadow-xl shadow-slate-200 hover:bg-slate-700 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 uppercase tracking-wide text-xs"
               >
                 Top Up Credits <ArrowRight size={16} />
               </Link>
@@ -799,7 +799,7 @@ export const Comments: React.FC = () => {
               </button>
               <button
                 onClick={handleResumeDraft}
-                className="px-8 py-3 bg-gradient-to-r from-black-600 to-black-500 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-black-900/40 hover:shadow-black-600/20 hover:-translate-y-0.5 transition-all flex items-center gap-2"
+                className="px-8 py-3 bg-gradient-to-r from-slate-600 to-slate-500 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-slate-900/40 hover:shadow-slate-600/20 hover:-translate-y-0.5 transition-all flex items-center gap-2"
               >
                 Resume Work <ArrowRight size={14} />
               </button>
@@ -1285,7 +1285,7 @@ export const Comments: React.FC = () => {
                           )}
                         </div>
                       ) : (
-                        <div className="rounded-2xl border-2 border-black-100 overflow-hidden">
+                        <div className="rounded-2xl border-2 border-slate-100 overflow-hidden">
                           <div className="flex items-center justify-between px-4 py-3 bg-slate-50">
                             <div className="flex items-center gap-2.5">
                               <div className="w-7 h-7 bg-slate-500 rounded-xl flex items-center justify-center">
@@ -1305,7 +1305,7 @@ export const Comments: React.FC = () => {
                             </button>
                           </div>
                           {showBrandOverride && (
-                            <div className="p-4 bg-white border-t border-black-100 space-y-3">
+                            <div className="p-4 bg-white border-t border-slate-100 space-y-3">
                               <div className="grid grid-cols-2 gap-3">
                                 <input
                                   type="text"
@@ -1416,13 +1416,13 @@ export const Comments: React.FC = () => {
                       <button onClick={() => setWizardStep(1)} className="px-8 py-5 bg-slate-50 text-slate-400 rounded-[2rem] font-black text-xs uppercase tracking-widest hover:bg-slate-100 transition-all">Back</button>
                       <button
                         onClick={() => handleGenerate(selectedPost!)}
-                        className="flex-1 py-5 bg-black text-white rounded-[2rem] font-black text-xs uppercase tracking-widest shadow-xl shadow-slate-100 hover:bg-black-700 transition-all flex flex-col items-center justify-center animate-pulse-slow"
+                        className="flex-1 py-5 bg-black text-white rounded-[2rem] font-black text-xs uppercase tracking-widest shadow-xl shadow-slate-100 hover:bg-slate-700 transition-all flex flex-col items-center justify-center animate-pulse-slow"
                       >
                         <div className="flex items-center gap-2">
                           <span>Generate Reply</span>
                           <Sparkles size={16} />
                         </div>
-                        <span className="text-[9px] text-black-200 font-black uppercase tracking-[0.2em] mt-0.5">Will cost {costs.comment} PTS</span>
+                        <span className="text-[9px] text-slate-200 font-black uppercase tracking-[0.2em] mt-0.5">Will cost {costs.comment} PTS</span>
                       </button>
                     </div>
                   </div>
@@ -1465,7 +1465,7 @@ export const Comments: React.FC = () => {
                 </Link>
                 <Link
                   to="/pricing"
-                  className="w-full py-4 bg-black text-white rounded-2xl font-black shadow-xl shadow-slate-100 hover:bg-black-700 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 uppercase tracking-wide text-xs"
+                  className="w-full py-4 bg-black text-white rounded-2xl font-black shadow-xl shadow-slate-100 hover:bg-slate-700 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 uppercase tracking-wide text-xs"
                 >
                   Upgrade Plan <Crown size={18} />
                 </Link>

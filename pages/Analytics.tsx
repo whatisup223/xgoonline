@@ -505,7 +505,7 @@ export const Analytics: React.FC = () => {
                         <div className="space-y-2">
                           <div className="flex items-center flex-wrap gap-2">
                             <span className="font-black text-slate-900 text-sm whitespace-nowrap">{new Date(click.timestamp).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
-                            {idx === 0 && <span className="bg-black-100 text-black px-2 py-0.5 rounded-md text-[10px] font-black uppercase">Latest</span>}
+                            {idx === 0 && <span className="bg-slate-100 text-black px-2 py-0.5 rounded-md text-[10px] font-black uppercase">Latest</span>}
                             {click.isBot && <span className="bg-red-100 text-red-600 px-2 py-0.5 rounded-md text-[10px] font-black uppercase">Bot</span>}
                             {click.isSpam && <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md text-[10px] font-black uppercase">Spam</span>}
                           </div>

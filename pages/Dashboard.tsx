@@ -142,7 +142,7 @@ const QuickAction = ({
       <p className="font-bold text-slate-900 text-sm">{title}</p>
       <p className="text-slate-400 text-xs font-medium mt-0.5">{desc}</p>
     </div>
-    <ArrowRight size={18} className="text-slate-300 group-hover:text-black-500 group-hover:translate-x-1 transition-all" />
+    <ArrowRight size={18} className="text-slate-300 group-hover:text-slate-500 group-hover:translate-x-1 transition-all" />
   </Link>
 );
 
@@ -390,7 +390,7 @@ export const Dashboard: React.FC = () => {
                   <span className="w-1.5 h-6 bg-black rounded-full"></span>
                   <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-widest">Our AI Reply</h3>
                 </div>
-                <div className="bg-black-50/30 rounded-3xl p-8 border border-black-100 relative">
+                <div className="bg-slate-50/30 rounded-3xl p-8 border border-slate-100 relative">
                   <div className="absolute top-0 right-10 -translate-y-1/2 bg-black text-white px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest shadow-lg shadow-slate-200">
                     {selectedEntry.productMention || 'Xgo'} Mentioned
                   </div>
@@ -410,7 +410,7 @@ export const Dashboard: React.FC = () => {
                 href={selectedEntry.postUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="px-8 py-4 bg-black text-white rounded-[1.5rem] shadow-lg shadow-black-100 hover:shadow-xl hover:-translate-y-0.5 transition-all active:scale-95 flex items-center gap-2"
+                className="px-8 py-4 bg-black text-white rounded-[1.5rem] shadow-lg shadow-slate-100 hover:shadow-xl hover:-translate-y-0.5 transition-all active:scale-95 flex items-center gap-2"
               >
                 Verify on Live X <ExternalLink size={18} />
               </a>
@@ -437,7 +437,7 @@ export const Dashboard: React.FC = () => {
           <button
             onClick={() => fetchData(true)}
             disabled={isLoading}
-            className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-2xl text-xs font-bold text-slate-500 hover:text-black hover:border-black-200 transition-all disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-2xl text-xs font-bold text-slate-500 hover:text-black hover:border-slate-200 transition-all disabled:opacity-50"
           >
             <RefreshCw size={13} className={isLoading ? 'animate-spin' : ''} />
             {lastRefreshed
@@ -454,7 +454,7 @@ export const Dashboard: React.FC = () => {
           {user?.plan === 'Starter' && (
             <Link
               to="/pricing"
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-black-500 to-red-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-slate-200 hover:scale-105 transition-transform"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-slate-500 to-red-500 text-white rounded-2xl text-xs font-bold shadow-lg shadow-slate-200 hover:scale-105 transition-transform"
             >
               <Crown size={14} className="fill-yellow-300 text-yellow-300" />
               Upgrade
@@ -585,7 +585,7 @@ export const Dashboard: React.FC = () => {
 
           {isLoading ? (
             <div className="h-[260px] flex items-center justify-center">
-              <RefreshCw className="animate-spin text-black-400" size={28} />
+              <RefreshCw className="animate-spin text-slate-400" size={28} />
             </div>
           ) : (
             <div className="h-[260px]">
@@ -628,7 +628,7 @@ export const Dashboard: React.FC = () => {
 
           {isLoading ? (
             <div className="h-[260px] flex items-center justify-center">
-              <RefreshCw className="animate-spin text-black-400" size={28} />
+              <RefreshCw className="animate-spin text-slate-400" size={28} />
             </div>
           ) : (
             <div className="h-[260px]">
@@ -670,7 +670,7 @@ export const Dashboard: React.FC = () => {
                   )}
                 </div>
               </div>
-              <Link to="/analytics" className="text-xs font-bold text-black hover:text-black-700 flex items-center gap-1">
+              <Link to="/analytics" className="text-xs font-bold text-black hover:text-slate-700 flex items-center gap-1">
                 View All <ArrowRight size={14} />
               </Link>
             </div>
@@ -695,7 +695,7 @@ export const Dashboard: React.FC = () => {
               <div className="divide-y divide-slate-50">
                 {recent.map((row) => (
                   <div key={row.id} className="flex items-center gap-4 px-7 py-5 hover:bg-slate-50/60 transition-colors group">
-                    <div className="w-10 h-10 rounded-2xl bg-black-50 flex items-center justify-center text-black shrink-0">
+                    <div className="w-10 h-10 rounded-2xl bg-slate-50 flex items-center justify-center text-black shrink-0">
                       <MessageSquare size={18} />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -703,7 +703,7 @@ export const Dashboard: React.FC = () => {
                         {row.postTitle}
                       </p>
                       <div className="flex items-center gap-3 mt-0.5">
-                        <span className="text-[10px] font-bold text-black bg-black-50 px-2 py-0.5 rounded-lg">
+                        <span className="text-[10px] font-bold text-black bg-slate-50 px-2 py-0.5 rounded-lg">
                           #{row.topic}
                         </span>
                         <span className="text-[10px] text-slate-400 font-medium flex items-center gap-1">
@@ -717,7 +717,7 @@ export const Dashboard: React.FC = () => {
                     <div className="flex items-center gap-3 text-slate-500 shrink-0">
                       <button
                         onClick={() => setSelectedEntry(row)}
-                        className="p-2.5 bg-slate-50 text-slate-400 hover:text-black hover:bg-black-50 rounded-xl transition-all active:scale-95"
+                        className="p-2.5 bg-slate-50 text-slate-400 hover:text-black hover:bg-slate-50 rounded-xl transition-all active:scale-95"
                         title="View Details"
                       >
                         <LayoutList size={16} />
@@ -747,7 +747,7 @@ export const Dashboard: React.FC = () => {
                   <h2 className="text-lg font-extrabold text-slate-900">Recent Billing</h2>
                 </div>
               </div>
-              <Link to="/settings?tab=billing" className="text-xs font-bold text-black hover:text-black-700 flex items-center gap-1">
+              <Link to="/settings?tab=billing" className="text-xs font-bold text-black hover:text-slate-700 flex items-center gap-1">
                 View All <ArrowRight size={14} />
               </Link>
             </div>
@@ -843,7 +843,7 @@ export const Dashboard: React.FC = () => {
                 </div>
               </div>
               {profile.totalFollowers != null && (
-                <div className="mt-3 bg-black/20 rounded-xl p-3 text-center border border-black-600/30">
+                <div className="mt-3 bg-black/20 rounded-xl p-3 text-center border border-slate-600/30">
                   <p className="text-xl font-black">{(profile.totalFollowers ?? 0).toLocaleString()}</p>
                   <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Total Followers</p>
                 </div>

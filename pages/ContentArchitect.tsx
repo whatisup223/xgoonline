@@ -73,7 +73,7 @@ const toneColorMap: Record<string, string> = {
     blue: 'bg-blue-50 text-blue-600 border-blue-200 group-hover:border-blue-400',
     purple: 'bg-purple-50 text-purple-600 border-purple-200 group-hover:border-purple-400',
     green: 'bg-green-50 text-green-600 border-green-200 group-hover:border-green-400',
-    black: 'bg-slate-50 text-black border-black-200 group-hover:border-black-400',
+    black: 'bg-slate-50 text-black border-slate-200 group-hover:border-slate-400',
 };
 
 const toneActiveMap: Record<string, string> = {
@@ -626,7 +626,7 @@ export const ContentArchitect: React.FC = () => {
                                     setShowRegenConfirm(false);
                                     handleGenerateContent(regenMode);
                                 }}
-                                className="flex-1 py-4 bg-black text-white rounded-2xl font-black shadow-lg shadow-slate-100 hover:bg-black-700 transition-all uppercase text-[10px] tracking-widest flex items-center justify-center gap-2"
+                                className="flex-1 py-4 bg-black text-white rounded-2xl font-black shadow-lg shadow-slate-100 hover:bg-slate-700 transition-all uppercase text-[10px] tracking-widest flex items-center justify-center gap-2"
                             >
                                 <Check size={14} /> Confirm & Pay
                             </button>
@@ -670,9 +670,9 @@ export const ContentArchitect: React.FC = () => {
             {showNoCreditsModal && (
                 <div className="fixed inset-0 z-[99999] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 font-['Outfit']">
                     <div className="bg-white rounded-[2.5rem] p-8 md:p-10 max-w-sm w-full shadow-2xl text-center space-y-6 animate-in zoom-in-95 duration-300 relative overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-black-50 to-white -z-10" />
+                        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-slate-50 to-white -z-10" />
 
-                        <div className="w-20 h-20 bg-slate-200 text-black rounded-[1.5rem] flex items-center justify-center mx-auto shadow-inner border border-black-200">
+                        <div className="w-20 h-20 bg-slate-200 text-black rounded-[1.5rem] flex items-center justify-center mx-auto shadow-inner border border-slate-200">
                             <Zap size={40} className="fill-current" />
                         </div>
 
@@ -697,7 +697,7 @@ export const ContentArchitect: React.FC = () => {
                         <div className="space-y-3 pt-2">
                             <Link
                                 to="/pricing"
-                                className="w-full py-4 bg-black text-white rounded-2xl font-black shadow-xl shadow-slate-200 hover:bg-black-700 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 uppercase tracking-wide text-xs"
+                                className="w-full py-4 bg-black text-white rounded-2xl font-black shadow-xl shadow-slate-200 hover:bg-slate-700 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 uppercase tracking-wide text-xs"
                             >
                                 Top Up Credits <ArrowRight size={16} />
                             </Link>
@@ -773,7 +773,7 @@ export const ContentArchitect: React.FC = () => {
                             </button>
                             <button
                                 onClick={handleResumeDraft}
-                                className="px-8 py-3 bg-gradient-to-r from-black-600 to-black-500 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-black-900/40 hover:shadow-black-600/20 hover:-translate-y-0.5 transition-all flex items-center gap-2"
+                                className="px-8 py-3 bg-gradient-to-r from-slate-600 to-slate-500 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-slate-900/40 hover:shadow-slate-600/20 hover:-translate-y-0.5 transition-all flex items-center gap-2"
                             >
                                 Resume Draft <ArrowRight size={14} />
                             </button>
@@ -948,7 +948,7 @@ export const ContentArchitect: React.FC = () => {
                                         </div>
                                     ) : (
                                         /* No Brand Profile — Quick Override with full fields */
-                                        <div className="rounded-3xl border-2 border-black-100 overflow-hidden">
+                                        <div className="rounded-3xl border-2 border-slate-100 overflow-hidden">
                                             <div className="flex items-center justify-between px-5 py-4 bg-slate-50">
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-8 h-8 bg-slate-500 rounded-xl flex items-center justify-center">
@@ -971,7 +971,7 @@ export const ContentArchitect: React.FC = () => {
                                                 </div>
                                             </div>
                                             {showBrandOverride && (
-                                                <div className="p-5 bg-white border-t border-black-100 space-y-4">
+                                                <div className="p-5 bg-white border-t border-slate-100 space-y-4">
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                         <div className="space-y-1.5">
                                                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Brand / Product Name</label>
@@ -1125,7 +1125,7 @@ export const ContentArchitect: React.FC = () => {
 
                                     {/* Action Buttons */}
                                     <div className="flex flex-col gap-4 mt-8">
-                                        <div className="flex items-center justify-between p-4 bg-slate-50/50 rounded-2xl border border-black-100">
+                                        <div className="flex items-center justify-between p-4 bg-slate-50/50 rounded-2xl border border-slate-100">
                                             <div className="flex items-center gap-3">
                                                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-sm ${!canGenerateImages ? 'bg-slate-100 text-slate-400' : 'bg-white text-black'}`}>
                                                     {!canGenerateImages ? <Crown size={18} /> : <ImageIcon size={20} />}
@@ -1323,7 +1323,7 @@ export const ContentArchitect: React.FC = () => {
                                                 {(isGeneratingImage || !imageLoaded) && postData.imageUrl === '' && (
                                                     <div className="absolute inset-0 bg-gradient-to-r from-slate-100 via-slate-50 to-slate-100 animate-pulse flex items-center justify-center">
                                                         <div className="flex flex-col items-center gap-3">
-                                                            <Sparkles size={28} className="text-black-300 animate-pulse" />
+                                                            <Sparkles size={28} className="text-slate-300 animate-pulse" />
                                                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                                                                 {isGeneratingImage ? 'Crafting your brand visual...' : 'Visual will appear here'}
                                                             </p>
@@ -1474,8 +1474,8 @@ export const ContentArchitect: React.FC = () => {
 
                                     {/* Image in preview with skeleton */}
                                     {isGeneratingImage && (
-                                        <div className="w-full h-36 bg-gradient-to-br from-black-50 via-slate-50 to-black-50 rounded-2xl animate-pulse flex items-center justify-center">
-                                            <Sparkles size={20} className="text-black-300 animate-pulse" />
+                                        <div className="w-full h-36 bg-gradient-to-br from-slate-50 via-slate-50 to-slate-50 rounded-2xl animate-pulse flex items-center justify-center">
+                                            <Sparkles size={20} className="text-slate-300 animate-pulse" />
                                         </div>
                                     )}
 
@@ -1562,7 +1562,7 @@ export const ContentArchitect: React.FC = () => {
                             </Link>
                             <Link
                                 to="/pricing"
-                                className="w-full py-4 bg-black text-white rounded-2xl font-black shadow-xl shadow-slate-100 hover:bg-black-700 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 uppercase tracking-wide text-xs"
+                                className="w-full py-4 bg-black text-white rounded-2xl font-black shadow-xl shadow-slate-100 hover:bg-slate-700 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 uppercase tracking-wide text-xs"
                             >
                                 Upgrade Plan <Crown size={18} />
                             </Link>

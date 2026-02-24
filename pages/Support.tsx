@@ -220,7 +220,7 @@ export const Support: React.FC = () => {
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'open': return 'bg-blue-100 text-blue-600 border-blue-200';
-            case 'in_progress': return 'bg-black-100 text-black-600 border-black-200';
+            case 'in_progress': return 'bg-slate-100 text-slate-600 border-slate-200';
             case 'resolved': return 'bg-green-100 text-green-600 border-green-200';
             case 'closed': return 'bg-slate-100 text-slate-600 border-slate-200';
             default: return 'bg-slate-100 text-slate-600 border-slate-200';
@@ -230,7 +230,7 @@ export const Support: React.FC = () => {
     const getPriorityColor = (priority: string) => {
         switch (priority) {
             case 'low': return 'bg-slate-100 text-slate-500';
-            case 'medium': return 'bg-black-100 text-black-600';
+            case 'medium': return 'bg-slate-100 text-slate-600';
             case 'high': return 'bg-red-100 text-red-600';
             default: return 'bg-slate-100 text-slate-500';
         }
@@ -266,7 +266,7 @@ export const Support: React.FC = () => {
                         <button
                             onClick={fetchData}
                             disabled={isLoading}
-                            className={`p-3.5 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-black-600 transition-all ${isLoading ? 'animate-spin' : ''}`}
+                            className={`p-3.5 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-slate-600 transition-all ${isLoading ? 'animate-spin' : ''}`}
                             title="Refresh Tickets"
                         >
                             <RefreshCw size={20} />
@@ -294,7 +294,7 @@ export const Support: React.FC = () => {
 
             {isLoading && tickets.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-32 opacity-50">
-                    <RefreshCw size={48} className="text-black-600 animate-spin mb-4" />
+                    <RefreshCw size={48} className="text-slate-600 animate-spin mb-4" />
                     <p className="font-bold text-slate-900">Loading your tickets...</p>
                 </div>
             ) : (
@@ -305,7 +305,7 @@ export const Support: React.FC = () => {
                         {[
                             { label: 'Total Tickets', value: stats.total, icon: LifeBuoy, color: 'text-slate-600', bg: 'bg-white' },
                             { label: 'Awaiting', value: stats.open, icon: Clock, color: 'text-blue-600', bg: 'bg-blue-50/50' },
-                            { label: 'In Progress', value: stats.inProgress, icon: AlertCircle, color: 'text-black-600', bg: 'bg-black-50/50' },
+                            { label: 'In Progress', value: stats.inProgress, icon: AlertCircle, color: 'text-slate-600', bg: 'bg-slate-50/50' },
                             { label: 'Resolved', value: stats.resolved, icon: CheckCircle2, color: 'text-green-600', bg: 'bg-green-50/50' },
                             { label: 'Closed', value: stats.closed, icon: Archive, color: 'text-slate-500', bg: 'bg-slate-50/50' },
                         ].map((stat, i) => (
@@ -331,7 +331,7 @@ export const Support: React.FC = () => {
                                     <input
                                         type="text"
                                         placeholder="Search tickets..."
-                                        className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-black-500/20 transition-all"
+                                        className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-slate-500/20 transition-all"
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                     />
@@ -358,12 +358,12 @@ export const Support: React.FC = () => {
                                         key={ticket.id}
                                         onClick={() => setActiveTicket(ticket)}
                                         className={`w-full text-left p-5 rounded-3xl border transition-all group ${activeTicket?.id === ticket.id
-                                            ? 'bg-black border-black-600 shadow-xl shadow-slate-100'
-                                            : 'bg-white border-slate-200/60 hover:border-black-200'
+                                            ? 'bg-black border-slate-600 shadow-xl shadow-slate-100'
+                                            : 'bg-white border-slate-200/60 hover:border-slate-200'
                                             }`}
                                     >
                                         <div className="flex justify-between items-start mb-2">
-                                            <span className={`text-[10px] font-black uppercase tracking-widest ${activeTicket?.id === ticket.id ? 'text-black-100' : 'text-slate-400'}`}>
+                                            <span className={`text-[10px] font-black uppercase tracking-widest ${activeTicket?.id === ticket.id ? 'text-slate-100' : 'text-slate-400'}`}>
                                                 {ticket.id}
                                             </span>
                                             <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-tighter border ${activeTicket?.id === ticket.id ? 'bg-white/20 border-white/20 text-white' : getStatusColor(ticket.status)
@@ -371,18 +371,18 @@ export const Support: React.FC = () => {
                                                 {ticket.status.replace('_', ' ')}
                                             </span>
                                         </div>
-                                        <h3 className={`font-bold text-sm truncate mb-1 ${activeTicket?.id === ticket.id ? 'text-white' : 'text-slate-900 group-hover:text-black-600'}`}>
+                                        <h3 className={`font-bold text-sm truncate mb-1 ${activeTicket?.id === ticket.id ? 'text-white' : 'text-slate-900 group-hover:text-slate-600'}`}>
                                             {ticket.subject}
                                         </h3>
                                         {isAdmin && (
-                                            <p className={`text-[11px] mb-3 truncate ${activeTicket?.id === ticket.id ? 'text-black-100' : 'text-slate-400'}`}>
+                                            <p className={`text-[11px] mb-3 truncate ${activeTicket?.id === ticket.id ? 'text-slate-100' : 'text-slate-400'}`}>
                                                 From: {ticket.userName}
                                             </p>
                                         )}
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-2">
-                                                <Clock size={12} className={activeTicket?.id === ticket.id ? 'text-black-100' : 'text-slate-300'} />
-                                                <span className={`text-[11px] font-medium ${activeTicket?.id === ticket.id ? 'text-black-100' : 'text-slate-400'}`}>
+                                                <Clock size={12} className={activeTicket?.id === ticket.id ? 'text-slate-100' : 'text-slate-300'} />
+                                                <span className={`text-[11px] font-medium ${activeTicket?.id === ticket.id ? 'text-slate-100' : 'text-slate-400'}`}>
                                                     {ticket.updatedAt}
                                                 </span>
                                             </div>
@@ -478,7 +478,7 @@ export const Support: React.FC = () => {
                                                             </span>
                                                         </div>
                                                         <p className="text-[13px] leading-relaxed font-medium">{msg.text}</p>
-                                                        <p className={`text-[9px] mt-2 font-black ${msg.sender === (isAdmin ? 'admin' : 'user') ? 'text-black-100' : 'text-slate-400'}`}>
+                                                        <p className={`text-[9px] mt-2 font-black ${msg.sender === (isAdmin ? 'admin' : 'user') ? 'text-slate-100' : 'text-slate-400'}`}>
                                                             {msg.timestamp}
                                                         </p>
                                                     </div>
@@ -503,7 +503,7 @@ export const Support: React.FC = () => {
                                                     placeholder={isAdmin && (activeTicket.status === 'resolved' || activeTicket.status === 'closed')
                                                         ? "Ticket is closed, but you can still reply as Admin..."
                                                         : "Type your reply here..."}
-                                                    className="w-full bg-white border border-slate-200/60 rounded-[1.8rem] px-6 py-4 pr-32 min-h-[100px] text-sm focus:outline-none focus:border-black-500/50 shadow-sm transition-all"
+                                                    className="w-full bg-white border border-slate-200/60 rounded-[1.8rem] px-6 py-4 pr-32 min-h-[100px] text-sm focus:outline-none focus:border-slate-500/50 shadow-sm transition-all"
                                                     value={newMessage}
                                                     onChange={(e) => setNewMessage(e.target.value)}
                                                     onKeyDown={(e) => {
@@ -559,7 +559,7 @@ export const Support: React.FC = () => {
                                         <input
                                             type="text"
                                             placeholder="Summarize your issue..."
-                                            className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:ring-4 focus:ring-black-500/10 transition-all"
+                                            className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:ring-4 focus:ring-slate-500/10 transition-all"
                                             value={newSubject}
                                             onChange={(e) => setNewSubject(e.target.value)}
                                         />
@@ -598,7 +598,7 @@ export const Support: React.FC = () => {
                                         <textarea
                                             placeholder="Provide details about your issue..."
                                             rows={4}
-                                            className="w-full bg-slate-50 border border-slate-100 rounded-3xl px-6 py-4 text-sm focus:outline-none focus:ring-4 focus:ring-black-500/10 transition-all"
+                                            className="w-full bg-slate-50 border border-slate-100 rounded-3xl px-6 py-4 text-sm focus:outline-none focus:ring-4 focus:ring-slate-500/10 transition-all"
                                             value={newDescription}
                                             onChange={(e) => setNewDescription(e.target.value)}
                                         />

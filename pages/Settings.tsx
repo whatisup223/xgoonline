@@ -675,7 +675,7 @@ export const Settings: React.FC = () => {
                                     <span className="text-sm font-bold text-slate-700">Profile Picture</span>
                                     <div className="flex gap-2">
                                         <label className="flex-1 cursor-pointer group">
-                                            <div className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-500 group-hover:bg-slate-100 group-hover:border-black-200 group-hover:text-black transition-all flex items-center justify-center gap-2">
+                                            <div className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-500 group-hover:bg-slate-100 group-hover:border-slate-200 group-hover:text-black transition-all flex items-center justify-center gap-2">
                                                 <Upload size={18} />
                                                 <span className="text-sm">Choose Image...</span>
                                             </div>
@@ -866,7 +866,7 @@ export const Settings: React.FC = () => {
                                     {(XStatus.accounts || []).length > 0 ? (
                                         <div className="space-y-3">
                                             {(XStatus.accounts || []).map((acc: any) => (
-                                                <div key={acc.username} className="flex items-center justify-between p-5 bg-white border border-slate-100 rounded-[1.5rem] hover:border-black-200 transition-all group">
+                                                <div key={acc.username} className="flex items-center justify-between p-5 bg-white border border-slate-100 rounded-[1.5rem] hover:border-slate-200 transition-all group">
                                                     <div className="flex items-center gap-4">
                                                         {acc.icon
                                                             ? <img src={acc.icon} alt={acc.username} className="w-10 h-10 rounded-xl border-2 border-white shadow-sm" />
@@ -952,13 +952,13 @@ export const Settings: React.FC = () => {
                 <div className="space-y-6">
 
                     {/* AI Memory Banner */}
-                    <div className="p-5 bg-gradient-to-r from-black-500 to-amber-500 rounded-3xl flex items-center gap-4 text-white shadow-xl shadow-slate-200">
+                    <div className="p-5 bg-gradient-to-r from-slate-500 to-amber-500 rounded-3xl flex items-center gap-4 text-white shadow-xl shadow-slate-200">
                         <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center flex-shrink-0">
                             <Zap size={22} className="text-white" />
                         </div>
                         <div>
                             <p className="font-extrabold text-base">AI Brand Memory — Fill Once, Used Everywhere</p>
-                            <p className="text-black-100 text-sm font-medium mt-0.5">
+                            <p className="text-slate-100 text-sm font-medium mt-0.5">
                                 Every AI post & comment will automatically use this context. No need to re-enter anything.
                             </p>
                         </div>
@@ -1199,7 +1199,7 @@ export const Settings: React.FC = () => {
                                     <textarea
                                         rows={3}
                                         placeholder="e.g. We communicate like a knowledgeable friend — never corporate, always direct, occasionally humorous, and always backed by data. We challenge assumptions and celebrate contrarian thinking."
-                                        className="w-full p-4 bg-white border border-black-200 rounded-2xl focus:outline-none focus:border-black font-medium text-slate-700 resize-none transition-all"
+                                        className="w-full p-4 bg-white border border-slate-200 rounded-2xl focus:outline-none focus:border-black font-medium text-slate-700 resize-none transition-all"
                                         value={brandProfile.customTone}
                                         onChange={e => setBrandProfile(p => ({ ...p, customTone: e.target.value }))}
                                     />
@@ -1270,7 +1270,7 @@ export const Settings: React.FC = () => {
                                 </div>
                                 <div className="text-right">
                                     {user.plan === 'Starter' ? (
-                                        <Link to="/pricing" className="px-8 py-3 bg-black text-white rounded-xl font-black hover:bg-slate-500 hover:shadow-lg hover:shadow-black-600/30 transition-all inline-block">
+                                        <Link to="/pricing" className="px-8 py-3 bg-black text-white rounded-xl font-black hover:bg-slate-500 hover:shadow-lg hover:shadow-slate-600/30 transition-all inline-block">
                                             UPGRADE NOW
                                         </Link>
                                     ) : (
@@ -1306,7 +1306,7 @@ export const Settings: React.FC = () => {
                         {/* Usage & Credits */}
                         <div className="flex flex-col gap-8">
                             {/* Credit Balance Banner */}
-                            <div className="bg-gradient-to-br from-black-600 to-amber-600 p-8 rounded-[2.5rem] shadow-xl text-white relative overflow-hidden flex flex-col justify-between h-full min-h-[200px] group">
+                            <div className="bg-gradient-to-br from-slate-600 to-amber-600 p-8 rounded-[2.5rem] shadow-xl text-white relative overflow-hidden flex flex-col justify-between h-full min-h-[200px] group">
                                 <div className="relative z-10 flex items-start justify-between">
                                     <div className="flex items-center gap-3">
                                         <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm">
@@ -1314,7 +1314,7 @@ export const Settings: React.FC = () => {
                                         </div>
                                         <div>
                                             <h2 className="text-lg font-bold text-white/90">Credit Balance</h2>
-                                            <p className="text-black-100 text-xs font-medium">Available AI generations</p>
+                                            <p className="text-slate-100 text-xs font-medium">Available AI generations</p>
                                         </div>
                                     </div>
                                     <Link to="/pricing" className="px-4 py-2 bg-white text-black text-xs font-black rounded-xl hover:bg-slate-50 transition-all shadow-lg shadow-black/10">
@@ -1325,7 +1325,7 @@ export const Settings: React.FC = () => {
                                 <div className="relative z-10 space-y-4 mt-6">
                                     <div>
                                         <span className="text-5xl font-black text-white tracking-tight">{user.credits || 0}</span>
-                                        <span className="text-sm font-bold text-black-200 uppercase tracking-widest ml-2">Credits</span>
+                                        <span className="text-sm font-bold text-slate-200 uppercase tracking-widest ml-2">Credits</span>
                                     </div>
 
                                     <div className="w-full bg-black/20 rounded-full h-3 overflow-hidden backdrop-blur-sm">
@@ -1338,7 +1338,7 @@ export const Settings: React.FC = () => {
 
                                 {/* Decorative Elements */}
                                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-[60px] -translate-y-1/2 translate-x-1/2 group-hover:bg-white/20 transition-all duration-700 pointer-events-none" />
-                                <div className="absolute bottom-0 left-0 w-48 h-48 bg-black-900/20 rounded-full blur-[40px] translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+                                <div className="absolute bottom-0 left-0 w-48 h-48 bg-slate-900/20 rounded-full blur-[40px] translate-y-1/2 -translate-x-1/2 pointer-events-none" />
                             </div>
 
                             {/* Billing History Card - Now Below */}
@@ -1357,7 +1357,7 @@ export const Settings: React.FC = () => {
                                 <div className="max-h-[400px] overflow-y-auto pr-2 custom-scrollbar space-y-3">
                                     {(user.transactions && Array.isArray(user.transactions) && user.transactions.length > 0) ? (
                                         [...user.transactions].reverse().map((tx, i) => (
-                                            <div key={tx.id || i} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 group hover:border-black-200 transition-all">
+                                            <div key={tx.id || i} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 group hover:border-slate-200 transition-all">
                                                 <div className="flex items-center gap-4">
                                                     <div className={`p-2.5 rounded-xl border border-slate-100 transition-colors ${tx.type === 'stripe_payment' ? 'bg-indigo-100 text-indigo-600' :
                                                         tx.type === 'paypal_payment' ? 'bg-blue-100 text-blue-600' :
@@ -1373,7 +1373,7 @@ export const Settings: React.FC = () => {
                                                         <div className="flex items-center gap-2">
                                                             <p className="text-sm font-bold text-slate-900">{tx.description || 'Transaction'}</p>
                                                             {tx.isAdjustment && (
-                                                                <span className="text-[8px] font-black bg-slate-200 text-black-700 px-1.5 py-0.5 rounded uppercase tracking-tighter">Adjusted by Admin</span>
+                                                                <span className="text-[8px] font-black bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded uppercase tracking-tighter">Adjusted by Admin</span>
                                                             )}
                                                         </div>
                                                         <p className="text-[10px] text-slate-400 font-medium">{new Date(tx.date).toLocaleDateString()} • {new Date(tx.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
@@ -1550,7 +1550,7 @@ export const Settings: React.FC = () => {
                                         }
 
                                         return (
-                                            <div key={i} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-black-200 transition-all">
+                                            <div key={i} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-slate-200 transition-all">
                                                 <div className="flex items-center gap-4">
                                                     <div className={`p-2.5 rounded-xl border border-slate-100 ${colorClass}`}>
                                                         {icon}
@@ -1643,7 +1643,7 @@ export const Settings: React.FC = () => {
                                 <button
                                     key={opt.id}
                                     onClick={() => setCancelReason(opt.label)}
-                                    className={`w-full p-4 rounded-2xl border-2 text-left font-bold transition-all flex items-center justify-between ${cancelReason === opt.label ? 'border-black-600 bg-slate-50 text-black' : 'border-slate-100 hover:border-slate-200 text-slate-600'}`}
+                                    className={`w-full p-4 rounded-2xl border-2 text-left font-bold transition-all flex items-center justify-between ${cancelReason === opt.label ? 'border-slate-600 bg-slate-50 text-black' : 'border-slate-100 hover:border-slate-200 text-slate-600'}`}
                                 >
                                     {opt.label}
                                     {cancelReason === opt.label && <Check size={18} />}
