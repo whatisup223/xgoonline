@@ -4306,9 +4306,9 @@ app.get('/api/x/posts', async (req, res) => {
     let url, headers;
 
     if (token) {
-      // Use Official API with OAuth Token
-      const searchQuery = keywords ? `${keywords} topic:${topic}` : `topic:${topic}`;
-      url = `https://api.twitter.com/2/tweets/search/recent?query=${encodeURIComponent(searchQuery)}&max_results=25`;
+      // Use Official API with OAuth Token - Enhanced with user info
+      const searchQuery = keywords ? `${keywords} ${topic}` : topic;
+      url = `https://api.twitter.com/2/tweets/search/recent?query=${encodeURIComponent(searchQuery)}&max_results=20&tweet.fields=public_metrics,created_at&expansions=author_id&user.fields=username,profile_image_url`;
       headers = {
         'Authorization': `Bearer ${token}`,
         'User-Agent': getDynamicUserAgent(userId)
@@ -4328,9 +4328,12 @@ app.get('/api/x/posts', async (req, res) => {
     const data = await response.json();
     const keywordList = keywords.toLowerCase().split(',').map(k => k.trim()).filter(k => k);
 
-    if (!data.data) return res.json([]);
+    const users = data.includes?.users || [];
 
     const posts = data.data.map(post => {
+      const author = users.find(u => u.id === post.author_id) || {};
+      const metrics = post.public_metrics || {};
+
       // Relevance & Opportunity Scoring
       let score = 0;
       const content = post.text.toLowerCase();
@@ -4357,24 +4360,20 @@ app.get('/api/x/posts', async (req, res) => {
       // Final normalized score (0-100)
       const opportunityScore = Math.min(Math.round(score), 100);
 
-      // Competitor Detection (Mock list for demo, could be dynamic)
-      const competitors = ['hubspot', 'salesforce', 'buffer', 'hootsuite'];
-      const mentionedCompetitors = competitors.filter(c => content.includes(c));
-
       return {
         id: post.id,
         title: post.text.slice(0, 50) + (post.text.length > 50 ? '...' : ''),
-        author: 'User', // Author ID could be mapped if user.fields used
-        subtopic: topic,
-        ups: 0, // Placeholder
-        num_comments: 0, // Placeholder
+        author: author.username || 'unknown',
+        icon: author.profile_image_url || '',
+        subX: topic, // Keeping field name for frontend but mapping to topic
+        ups: metrics.like_count || 0,
+        num_comments: metrics.reply_count || 0,
         selftext: post.text,
-        url: `https://x.com/any/status/${post.id}`,
-        created_utc: Date.now(),
+        url: `https://x.com/${author.username || 'any'}/status/${post.id}`,
+        created_utc: new Date(post.created_at).getTime() / 1000,
         opportunityScore,
         intent,
-        isHot: false,
-        competitors: mentionedCompetitors
+        isHot: (metrics.like_count + metrics.reply_count) > 10,
       };
     });
 

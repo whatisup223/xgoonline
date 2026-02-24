@@ -50,24 +50,24 @@ const PROGRESS_STEPS = [
 const MOCK_POSTS: XTweet[] = [
   {
     id: '1',
-    title: 'Looking for a tool to automate my X outreach',
-    author: 'startup_founder_99',
-    subX: 'saas',
-    ups: 154,
-    num_comments: 42,
-    selftext: 'I spend 4 hours a day on X trying to find leads. Is there any AI tool that can help me find relevant posts and draft replies?',
-    url: 'https://X.com/#saas/1',
+    title: 'Automating outreach on X is a game changer',
+    author: 'SaaSMaster',
+    subX: 'SaaS',
+    ups: 1240,
+    num_comments: 85,
+    selftext: 'I started using AI to draft my replies and my engagement grew by 300%. Authenticity is still key though! #SaaS #Growth',
+    url: 'https://x.com/SaaSMaster/status/1',
     created_utc: Date.now() / 1000 - 3600
   },
   {
     id: '2',
-    title: 'How do you handle growth marketing on a budget?',
-    author: 'indie_maker_x',
-    subX: 'marketing',
-    ups: 89,
-    num_comments: 15,
-    selftext: 'I have $0 for ads. Currently trying to use community engagement but it is slow.',
-    url: 'https://X.com/#marketing/2',
+    title: 'What is the best way to find leads on X?',
+    author: 'IndieBuilder',
+    subX: 'Marketing',
+    ups: 450,
+    num_comments: 32,
+    selftext: 'Looking for non-spammy ways to connect with potential users. Any advice? #Startup #Leads',
+    url: 'https://x.com/IndieBuilder/status/2',
     created_utc: Date.now() / 1000 - 7200
   }
 ];
@@ -681,8 +681,8 @@ export const Comments: React.FC = () => {
                 type="text"
                 value={targetSubX}
                 onChange={(e) => setTargetSubX(e.target.value)}
-                placeholder="subX"
-                className="p-2.5 bg-transparent focus:outline-none font-bold text-xs w-24"
+                placeholder="Topic (e.g. SaaS)"
+                className="p-2.5 bg-transparent focus:outline-none font-bold text-xs w-28"
               />
               <div className="w-[1px] h-4 bg-slate-200 mx-2" />
               <Hash size={14} className="text-slate-400" />
@@ -690,7 +690,7 @@ export const Comments: React.FC = () => {
                 type="text"
                 value={searchKeywords}
                 onChange={(e) => setSearchKeywords(e.target.value)}
-                placeholder="keywords"
+                placeholder="Keywords"
                 className="p-2.5 bg-transparent focus:outline-none font-bold text-xs w-32"
               />
             </div>
