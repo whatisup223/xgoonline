@@ -480,6 +480,7 @@ export const ContentArchitect: React.FC = () => {
                     subX: postData.subX,
                     title: postData.title,
                     text: postData.content,
+                    imageUrl: postData.imageUrl,
                     kind: 'self',
                     XUsername: selectedAccount
                 })

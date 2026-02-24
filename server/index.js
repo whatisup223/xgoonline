@@ -4110,7 +4110,7 @@ app.get('/api/user/replies', async (req, res) => {
 // Create New X Post
 app.post('/api/x/post', async (req, res) => {
   try {
-    const { userId, topic: rawTopic, subX, title, text, kind, xHandle: rawXHandle, XUsername: rawXUsername } = req.body;
+    const { userId, topic: rawTopic, subX, title, text, imageUrl, kind, xHandle: rawXHandle, XUsername: rawXUsername } = req.body;
     const topic = rawTopic || subX;
     const XUsername = rawXHandle || rawXUsername || 'unknown';
 
@@ -4118,6 +4118,42 @@ app.post('/api/x/post', async (req, res) => {
 
     const token = await getValidToken(userId, XUsername);
     if (!token) return res.status(401).json({ error: 'X account not linked' });
+
+    let mediaIds = [];
+    if (imageUrl) {
+      try {
+        console.log(`[X POST] Downloading image to upload...`);
+        const imgRes = await fetch(imageUrl);
+        const imgBuffer = await imgRes.arrayBuffer();
+        const base64Image = Buffer.from(imgBuffer).toString('base64');
+
+        const params = new URLSearchParams();
+        params.append('media_data', base64Image);
+
+        const uploadRes = await fetch('https://upload.twitter.com/1.1/media/upload.json', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: params
+        });
+
+        if (uploadRes.ok) {
+          const uploadData = await uploadRes.json();
+          if (uploadData.media_id_string) {
+            mediaIds.push(uploadData.media_id_string);
+          }
+        } else {
+          const errText = await uploadRes.text();
+          console.error('[X Media Upload Error]', errText);
+          throw new Error('Failed to upload image to X. Check token permissions.' + errText);
+        }
+      } catch (mediaErr) {
+        console.error('[X Media Exception]', mediaErr);
+        throw new Error('Image upload failed: ' + mediaErr.message);
+      }
+    }
 
     // SAFETY: Anti-Spam / Double-Post Check
     if (XSettings.antiSpam) {
@@ -4137,6 +4173,13 @@ app.post('/api/x/post', async (req, res) => {
     console.log(`[X] Humanizing... waiting ${waitTime / 1000}s before submitting post.`);
     await sleep(waitTime);
 
+    const requestBody = {
+      text: `${title}\n\n${text}`
+    };
+    if (mediaIds.length > 0) {
+      requestBody.media = { media_ids: mediaIds };
+    }
+
     const response = await fetch('https://api.twitter.com/2/tweets', {
       method: 'POST',
       headers: {
@@ -4144,9 +4187,7 @@ app.post('/api/x/post', async (req, res) => {
         'Content-Type': 'application/json',
         'User-Agent': getDynamicUserAgent(userId)
       },
-      body: JSON.stringify({
-        text: `${title}\n\n${text}`
-      })
+      body: JSON.stringify(requestBody)
     });
 
     const XResponse = await response.json();
