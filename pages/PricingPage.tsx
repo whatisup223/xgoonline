@@ -158,7 +158,7 @@ export const PricingPage: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
                 {plans.filter(p => p.isVisible !== false).map((plan) => {
-                    const isCurrentPlan = user?.plan === plan.name;
+                    const isCurrentPlan = user?.plan === plan.name && user?.billingCycle === billingCycle && user?.autoRenew !== false;
                     const isFree = plan.monthlyPrice === 0;
 
                     // Only show yearly if selected, not free, and a yearly price exists

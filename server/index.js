@@ -1763,13 +1763,17 @@ const applyPlanToUser = async ({ email, planName, billingCycle, transactionId, g
 
     const currentCredits = dbUser.credits || 0;
 
-    // LOGIC FIX: Handle Subscription Extension
-    // If user already has a future expiration date, add the new period to it
-    // instead of resetting to Now + Period.
+    // LOGIC FIX: Handle Subscription Upgrades vs Extensions
     let startDate = new Date();
-    if (dbUser.subscriptionEnd && new Date(dbUser.subscriptionEnd) > startDate) {
+    const isSamePlanAndCycle = dbUser.plan === planName && dbUser.billingCycle === billingCycle;
+
+    if (isSamePlanAndCycle && dbUser.subscriptionEnd && new Date(dbUser.subscriptionEnd) > startDate) {
+      // Extending current plan
       startDate = new Date(dbUser.subscriptionEnd);
       addSystemLog('INFO', `[Activation] Existing active period found for ${email}. Extending expiration date.`);
+    } else {
+      // Upgrading/Downgrading or completely expired: reset cycle to start NOW
+      addSystemLog('INFO', `[Activation] New plan/cycle detected for ${email}. Resetting expiration date from today.`);
     }
 
     const expirationDate = new Date(startDate);
@@ -1783,7 +1787,7 @@ const applyPlanToUser = async ({ email, planName, billingCycle, transactionId, g
     dbUser.lowCreditsNotified = false;
     dbUser.subscriptionStart = new Date().toISOString(); // Tracks when the *transaction* happened
     dbUser.subscriptionEnd = expirationDate.toISOString();
-    dbUser.autoRenew = true;
+    dbUser.autoRenew = true; // Make sure auto-renew is active since a payment succeeded
 
     if (!dbUser.transactions) dbUser.transactions = [];
     const newBalance = dbUser.credits;
