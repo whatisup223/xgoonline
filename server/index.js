@@ -3704,7 +3704,8 @@ app.post('/api/user/x/disconnect', async (req, res) => {
 
 app.post('/api/generate', async (req, res) => {
   try {
-    const { prompt, context, userId, type } = req.body; // type can be 'comment' or 'post'
+    let { prompt, context, userId, type } = req.body; // type can be 'comment' or 'post' or 'reply'
+    if (type === 'reply') type = 'comment'; // Map reply to comment for cost consistency
     const keyToUse = aiSettings.apiKey || process.env.GEMINI_API_KEY;
 
     if (!keyToUse) {
@@ -4002,7 +4003,10 @@ app.get('/api/user/latest-image', async (req, res) => {
 // Post Reply to X
 app.post('/api/x/reply', async (req, res) => {
   try {
-    const { userId, postId, comment, postTitle, topic: topic, productMention, xHandle: XUsername } = req.body;
+    const { userId, postId, comment, postTitle, subX, topic: rawTopic, productMention, XUsername: rawXUsername, xHandle } = req.body;
+    const topic = rawTopic || subX || 'unknown';
+    const XUsername = rawXUsername || xHandle || 'unknown';
+
     if (!userId || !comment) return res.status(400).json({ error: 'Missing required fields' });
 
     console.log(`[X] Posting reply for user ${userId} (account: ${XUsername || 'default'}) on post ${postId}`);
@@ -4068,7 +4072,8 @@ app.post('/api/x/reply', async (req, res) => {
       status: 'Sent',
       ups: 0,
       replies: 0,
-      sentiment: 'Neutral'
+      sentiment: comment.match(/great|awesome|helpful|love|thanks/i) ? 'Positive' :
+        comment.match(/how|why|question|is it/i) ? 'Inquisitive' : 'Neutral'
     });
 
     await entry.save();
@@ -4298,7 +4303,8 @@ app.get('/api/user/x/profile', async (req, res) => {
 
 app.get('/api/x/posts', async (req, res) => {
   try {
-    const { topic: topic = 'saas', keywords = '', userId } = req.query;
+    const { topic: rawTopic, subX, keywords = '', userId } = req.query;
+    const topic = rawTopic || subX || 'saas';
     console.log(`[X] Fetching for User ${userId} from topic: ${topic}`);
 
     const token = userId ? await getValidToken(userId) : null;

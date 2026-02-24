@@ -17,6 +17,8 @@ export interface XTweet {
   created_utc?: number;
   opportunityScore?: number;
   intent?: string;
+  icon?: string;
+  isHot?: boolean;
 }
 
 export interface GeneratedReply {

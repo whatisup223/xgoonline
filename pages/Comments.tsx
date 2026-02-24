@@ -754,15 +754,49 @@ export const Comments: React.FC = () => {
               >
                 <div className="flex flex-col md:flex-row items-start justify-between gap-6">
                   <div className="flex-1 space-y-4">
-                    <div className="flex items-center gap-2">
-                      <span className="px-3 py-1 bg-slate-200 text-black rounded-full text-[10px] font-black uppercase tracking-widest">#{post.subX}</span>
-                      <span className="text-[10px] font-bold text-slate-400">u/{post.author}</span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {post.icon && <img src={post.icon} className="w-5 h-5 rounded-full border border-slate-200" alt="" />}
+                        <span className="px-3 py-1 bg-slate-900/5 text-black rounded-full text-[9px] font-black uppercase tracking-widest border border-slate-900/10">#{post.subX || 'Topic'}</span>
+                        <span className="text-[10px] font-bold text-slate-400">@{post.author}</span>
+                      </div>
+                      {post.isHot && (
+                        <div className="flex items-center gap-1.5 px-3 py-1 bg-rose-50 text-rose-600 rounded-full text-[9px] font-black uppercase tracking-widest border border-rose-100 animate-pulse">
+                          <Flame size={10} /> Hot Lead
+                        </div>
+                      )}
                     </div>
-                    <h3 className="text-xl font-bold text-slate-900 leading-snug group-hover:text-black transition-colors">{post.title}</h3>
-                    <p className="text-slate-500 text-sm line-clamp-2 leading-relaxed font-medium">{post.selftext}</p>
-                    <div className="flex items-center gap-5">
+
+                    <div className="space-y-2">
+                      <h3 className="text-xl font-bold text-slate-900 leading-snug group-hover:text-black transition-colors">{post.title}</h3>
+                      <p className="text-slate-500 text-sm line-clamp-2 leading-relaxed font-medium">{post.selftext}</p>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-5 pt-2">
                       <div className="flex items-center gap-1.5 text-slate-400 text-xs font-bold"><ThumbsUp size={14} /> {post.ups}</div>
                       <div className="flex items-center gap-1.5 text-slate-400 text-xs font-bold"><MessageSquarePlus size={14} /> {post.num_comments}</div>
+                      <div className="h-4 w-[1px] bg-slate-100" />
+
+                      {/* Analysis Segment */}
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                          <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Potential Score</div>
+                          <div className={`px-2 py-0.5 rounded-lg text-[9px] font-black border ${(post.opportunityScore || 0) > 70 ? 'bg-green-50 text-green-700 border-green-100' :
+                              (post.opportunityScore || 0) > 40 ? 'bg-blue-50 text-blue-700 border-blue-100' :
+                                'bg-slate-50 text-slate-400 border-slate-100'
+                            }`}>
+                            {post.opportunityScore || 0}%
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Intent</div>
+                          <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-lg">
+                            <Target size={10} className="text-black" />
+                            {post.intent || 'General Inquiry'}
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <button

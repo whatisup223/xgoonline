@@ -763,7 +763,7 @@ export const Analytics: React.FC = () => {
                 <tr>
                   <th className="px-4 md:px-10 py-5 text-left">{activeTab === 'links' ? 'Target topic' : 'Origin'}</th>
                   <th className="px-4 md:px-10 py-5 text-left">{activeTab === 'links' ? 'Original URL' : 'Content Preview'}</th>
-                  <th className="px-4 md:px-10 py-5 text-left">{activeTab === 'links' ? 'Clicks' : 'Performance'}</th>
+                  <th className="px-4 md:px-10 py-5 text-left">{activeTab === 'links' ? 'Clicks' : 'Performance & Sentiment'}</th>
                   <th className="hidden md:table-cell px-10 py-5 text-left">Date Deployed</th>
                   <th className="px-4 md:px-10 py-5 text-right">Actions</th>
                 </tr>
@@ -783,10 +783,21 @@ export const Analytics: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-4 md:px-10 py-6">
-                      <div className="flex items-center gap-2">
-                        <MousePointer2 size={14} className="text-blue-500" />
-                        <span className="font-extrabold text-slate-700">{activeTab === 'links' ? row.clicks : row.ups}</span>
-                        {activeTab !== 'links' && <><MessageSquare size={14} className="text-slate-300 ml-2" /><span className="text-slate-500 font-bold">{row.replies}</span></>}
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1.5 min-w-[60px]">
+                          <MousePointer2 size={14} className="text-blue-500" />
+                          <span className="font-extrabold text-slate-700">{activeTab === 'links' ? row.clicks : row.ups}</span>
+                        </div>
+                        {activeTab !== 'links' && (
+                          <div className="flex items-center gap-2 border-l border-slate-100 pl-3">
+                            <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-tight border ${row.sentiment === 'Positive' ? 'bg-green-50 text-green-700 border-green-100' :
+                                row.sentiment === 'Inquisitive' ? 'bg-blue-50 text-blue-700 border-blue-100' :
+                                  'bg-slate-50 text-slate-500 border-slate-100'
+                              }`}>
+                              {row.sentiment || 'Neutral'}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </td>
                     <td className="hidden md:table-cell px-10 py-6 text-xs text-slate-400 font-bold">
