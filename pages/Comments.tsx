@@ -31,7 +31,8 @@ import {
   Building2,
   Trash2,
   Link as LinkIcon,
-  MessageSquare
+  MessageSquare,
+  MapPin
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { XTweet, GeneratedReply } from '../types';
@@ -95,7 +96,7 @@ export const Comments: React.FC = () => {
   // Wizard & Modal State
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [wizardStep, setWizardStep] = useState(1);
-  const [costs, setCosts] = useState({ comment: 1, post: 2, image: 5 });
+  const [costs, setCosts] = useState({ comment: 1, post: 2, image: 5, fetch: 1 });
   const [showRegenConfirm, setShowRegenConfirm] = useState(false);
   const [regenType, setRegenType] = useState<'full' | 'refine'>('full');
   const [refinePrompt, setRefinePrompt] = useState('');
@@ -313,7 +314,7 @@ export const Comments: React.FC = () => {
       const reply = await generateXReply(post, post.subX, tone, context, user?.id, overrideProfile, language, includeBrandName, includeLink, useTracking);
 
       setGeneratedReply(reply);
-      setEditedComment(reply.comment);
+      setEditedComment(reply.reply || reply.comment || '');
       showToast('AI Reply Generated!', 'success');
 
       if (reply.credits !== undefined) {
@@ -370,7 +371,7 @@ export const Comments: React.FC = () => {
     try {
       const reply = await generateXReply(selectedPost, selectedPost.subX, instruction, `Refine this reply: "${editedComment}". Instruction: ${instruction}`, user?.id);
       setGeneratedReply(reply);
-      setEditedComment(reply.comment);
+      setEditedComment(reply.reply || reply.comment || '');
       if (reply.credits !== undefined) {
         updateUser({
           credits: reply.credits,
@@ -460,6 +461,7 @@ export const Comments: React.FC = () => {
         if (selectedPost && !data.find(p => p.id === selectedPost.id)) {
           merged.unshift(selectedPost);
         }
+        syncUser(); // Ensure UI credits update after fetch deduction
         return merged;
       });
 
@@ -476,6 +478,7 @@ export const Comments: React.FC = () => {
       }
     } finally {
       setIsFetching(false);
+      syncUser();
     }
   };
 
@@ -733,10 +736,15 @@ export const Comments: React.FC = () => {
             <button
               onClick={fetchPosts}
               disabled={isFetching}
-              className="bg-slate-900 text-white px-8 py-4 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-black transition-all flex items-center justify-center gap-2 shadow-lg shadow-slate-200 active:scale-95"
+              className="bg-slate-900 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-all flex flex-col items-center justify-center gap-0.5 shadow-lg shadow-slate-200 active:scale-95 group"
             >
-              <RefreshCw size={14} className={isFetching ? 'animate-spin' : ''} />
-              {isFetching ? 'Scanning...' : 'Fetch Trends'}
+              <div className="flex items-center gap-2">
+                <RefreshCw size={14} className={isFetching ? 'animate-spin' : ''} />
+                {isFetching ? 'Scanning...' : 'Fetch Trends'}
+              </div>
+              {!isFetching && (
+                <span className="text-[8px] text-slate-400 group-hover:text-white transition-colors">{costs.fetch || 1} PTS</span>
+              )}
             </button>
           </div>
         </div>
@@ -794,10 +802,13 @@ export const Comments: React.FC = () => {
                 </div>
                 <button
                   onClick={fetchPosts}
-                  className="bg-slate-900 text-white px-10 py-5 rounded-[2rem] font-black uppercase tracking-widest hover:bg-black transition-all shadow-2xl shadow-slate-200 active:scale-95 flex items-center gap-3 mx-auto"
+                  className="bg-slate-900 text-white px-10 py-5 rounded-[2rem] font-black uppercase tracking-widest hover:bg-black transition-all shadow-2xl shadow-slate-200 active:scale-95 flex flex-col items-center justify-center gap-1 mx-auto group"
                 >
-                  <RefreshCw size={20} />
-                  Start First Scan
+                  <div className="flex items-center gap-3">
+                    <RefreshCw size={20} />
+                    <span>Start First Scan</span>
+                  </div>
+                  <span className="text-[10px] text-slate-400 font-bold group-hover:text-white transition-colors">{costs.fetch || 1} PTS PER SCAN</span>
                 </button>
               </div>
             ) : isFetching ? (
@@ -887,7 +898,7 @@ export const Comments: React.FC = () => {
 
           {/* Assistant Panel */}
           <div className="xl:col-span-4">
-            <div className="sticky top-10 bg-white rounded-[2.5rem] border border-slate-200 shadow-xl overflow-hidden flex flex-col min-h-[600px]">
+            <div className="sticky top-10 bg-white rounded-[2.5rem] border border-slate-200 shadow-xl overflow-hidden flex flex-col max-h-[calc(100vh-100px)]">
               <div className="p-6 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-slate-900 text-white rounded-2xl flex items-center justify-center">

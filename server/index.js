@@ -1625,7 +1625,8 @@ STRUCTURE:
   creditCosts: {
     comment: 1,
     post: 2,
-    image: 5
+    image: 5,
+    fetch: 1
   }
 };
 
@@ -1634,6 +1635,7 @@ aiSettings.creditCosts = {
   comment: Number(aiSettings.creditCosts?.comment) || 1,
   post: Number(aiSettings.creditCosts?.post) || 2,
   image: Number(aiSettings.creditCosts?.image) || 5,
+  fetch: Number(aiSettings.creditCosts?.fetch) || 1,
   ...aiSettings.creditCosts
 };
 
@@ -4107,8 +4109,11 @@ app.get('/api/user/replies', async (req, res) => {
 // Create New X Post
 app.post('/api/x/post', async (req, res) => {
   try {
-    const { userId, topic: topic, title, text, kind, xHandle: XUsername } = req.body;
-    if (!userId || !topic || !title) return res.status(400).json({ error: 'Missing required fields' });
+    const { userId, topic: rawTopic, subX, title, text, kind, xHandle: rawXHandle, XUsername: rawXUsername } = req.body;
+    const topic = rawTopic || subX;
+    const XUsername = rawXHandle || rawXUsername || 'unknown';
+
+    if (!userId || !topic || !title) return res.status(400).json({ error: 'Missing required fields (userId, topic/subX, title)' });
 
     const token = await getValidToken(userId, XUsername);
     if (!token) return res.status(401).json({ error: 'X account not linked' });
@@ -4315,6 +4320,38 @@ app.get('/api/x/posts', async (req, res) => {
     if (xSearchCache[cacheKey] && Date.now() - xSearchCache[cacheKey].timestamp < X_CACHE_TTL) {
       console.log(`[X Cache] Returning cached results for: ${cacheKey}`);
       return res.json(xSearchCache[cacheKey].data);
+    }
+
+    // CREDIT DEDUCTION FOR FETCH
+    const user = await User.findOne({ id: userId?.toString() });
+    if (user && user.role !== 'admin') {
+      const cost = aiSettings.creditCosts?.fetch || 1;
+      if ((user.credits || 0) < cost) {
+        return res.status(402).json({ error: `Insufficient credits. Fetching trends requires ${cost} credits.` });
+      }
+
+      // Check Daily Limit
+      const today = new Date().toISOString().split('T')[0];
+      if (user.lastUsageDate !== today) {
+        user.dailyUsage = 0;
+        user.dailyUsagePoints = 0;
+        user.lastUsageDate = today;
+      }
+
+      const plan = await Plan.findOne({ $or: [{ id: user.plan }, { name: user.plan }] });
+      const planLimit = user.billingCycle === 'yearly' ? plan?.dailyLimitYearly : plan?.dailyLimitMonthly;
+      const dailyLimit = (Number(user.customDailyLimit) > 0) ? Number(user.customDailyLimit) : (Number(planLimit) || 0);
+
+      if (dailyLimit > 0 && ((user.dailyUsagePoints || 0) + cost) > dailyLimit) {
+        return res.status(429).json({ error: 'Daily limit reached.' });
+      }
+
+      // Deduct
+      user.credits -= cost;
+      user.dailyUsagePoints = (user.dailyUsagePoints || 0) + cost;
+      user.dailyUsage = (user.dailyUsage || 0) + 1;
+      await user.save();
+      console.log(`[X] Deducted ${cost} credits from user ${user.email} for trend fetch.`);
     }
 
     console.log(`[X] Fetching for User ${userId} from topic: ${topic}, keywords: ${keywords}, lang: ${lang}, loc: ${location}`);

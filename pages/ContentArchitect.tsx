@@ -815,6 +815,7 @@ export const ContentArchitect: React.FC = () => {
                                                     onChange={(e) => setPostData({ ...postData, subX: e.target.value })}
                                                 />
                                             </div>
+                                            <p className="text-[10px] text-slate-400 font-medium pl-1 italic">Trend Radar: The AI uses this to find what's hot in this community right now.</p>
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Content Goal</label>

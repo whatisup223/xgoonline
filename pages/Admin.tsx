@@ -2314,6 +2314,25 @@ export const Admin: React.FC = () => {
                                                                     }}
                                                                 />
                                                             </label>
+                                                            <label className="block">
+                                                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2 block">Fetch Trends</span>
+                                                                <input
+                                                                    type="number"
+                                                                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-indigo-500 font-bold text-sm"
+                                                                    value={aiSettings.creditCosts?.fetch ?? 1}
+                                                                    onChange={(e) => {
+                                                                        const val = parseInt(e.target.value) || 0;
+                                                                        setAiSettings({
+                                                                            ...aiSettings,
+                                                                            creditCosts: {
+                                                                                comment: 1, post: 2, image: 5,
+                                                                                ...aiSettings.creditCosts,
+                                                                                fetch: val
+                                                                            }
+                                                                        });
+                                                                    }}
+                                                                />
+                                                            </label>
                                                         </div>
                                                     </div>
                                                 </div>
