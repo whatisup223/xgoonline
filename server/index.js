@@ -3473,36 +3473,49 @@ app.delete('/api/support/tickets/:id', adminAuth, async (req, res) => {
 
 app.get('/api/auth/x/url', (req, res) => {
   if (!XSettings.clientId) {
-    return res.status(500).json({ error: 'X Client ID not configured by Admin' });
+    return res.status(500).json({ error: 'X Client ID not configured by Admin. Go to Admin > Settings > X tab to configure.' });
   }
 
-  const host = req.get('host');
-  const protocol = host.includes('localhost') ? 'http' : 'https';
-  let redirectUri = `${protocol}://${host}/auth/x/callback`;
-
+  // Use configured redirectUri first, then BASE_URL, then fall back to request host
+  let redirectUri;
   if (XSettings.redirectUri && XSettings.redirectUri.trim() !== '') {
     redirectUri = XSettings.redirectUri.trim();
+  } else if (process.env.BASE_URL) {
+    // BASE_URL is the frontend URL (e.g., http://localhost:5173 or https://yourdomain.com)
+    redirectUri = `${process.env.BASE_URL.replace(/\/$/, '')}/auth/x/callback`;
+  } else {
+    const host = req.get('host');
+    const protocol = host.includes('localhost') || host.includes('127.0.0.1') ? 'http' : 'https';
+    redirectUri = `${protocol}://${host}/auth/x/callback`;
   }
 
   const state = Math.random().toString(36).substring(7);
   const scope = encodeURIComponent('tweet.read tweet.write users.read offline.access media.write');
-  // Use OAuth 2.0 PKCE (plain for simplified migration)
+  // Use OAuth 2.0 PKCE with plain code challenge method
   const url = `https://twitter.com/i/oauth2/authorize?response_type=code&client_id=${XSettings.clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&state=${state}&code_challenge=challenge&code_challenge_method=plain`;
 
+  console.log(`[X Auth URL] Generated OAuth URL. Redirect URI: ${redirectUri}`);
   res.json({ url, redirectUri });
 });
 
 app.post('/api/auth/x/callback', async (req, res) => {
   const { code, userId } = req.body;
   if (!code) return res.status(400).json({ error: 'Code is required' });
+  if (!userId) return res.status(400).json({ error: 'userId is required' });
 
-  const host = req.get('host');
-  const protocol = host.includes('localhost') || host.includes('127.0.0.1') ? 'http' : 'https';
-  let redirectUri = `${protocol}://${host}/auth/x/callback`;
-
+  // Must reconstruct the EXACT same redirectUri used during the authorization step
+  let redirectUri;
   if (XSettings.redirectUri && XSettings.redirectUri.trim() !== '') {
     redirectUri = XSettings.redirectUri.trim();
+  } else if (process.env.BASE_URL) {
+    redirectUri = `${process.env.BASE_URL.replace(/\/$/, '')}/auth/x/callback`;
+  } else {
+    const host = req.get('host');
+    const protocol = host.includes('localhost') || host.includes('127.0.0.1') ? 'http' : 'https';
+    redirectUri = `${protocol}://${host}/auth/x/callback`;
   }
+
+  console.log(`[X OAuth Callback] Code exchange. userId: ${userId}, redirectUri: ${redirectUri}`);
 
   try {
     const auth = Buffer.from(`${XSettings.clientId}:${XSettings.clientSecret}`).toString('base64');
@@ -4103,8 +4116,11 @@ app.post('/api/x/reply', async (req, res) => {
 
       const XResponse = await response.json();
       if (!response.ok) {
-        console.error('[X Reply Error]', XResponse);
-        throw new Error(XResponse.detail || 'Failed to post to X API');
+        console.error(`[X Reply Error] Status: ${response.status}`, JSON.stringify(XResponse));
+        const errDetail = XResponse.detail || XResponse.title || '';
+        const errErrors = XResponse.errors?.map(e => e.message || e.detail || '').join('; ') || '';
+        const errType = XResponse.type ? ` [${XResponse.type}]` : '';
+        throw new Error(`X API Error (${response.status})${errType}: ${errDetail || errErrors || 'Failed to post to X API'}`);
       }
 
       if (XResponse.data && XResponse.data.id) {
@@ -4179,7 +4195,7 @@ app.post('/api/x/post', async (req, res) => {
     let mediaIds = [];
     if (imageUrl) {
       try {
-        console.log(`[X POST] Downloading image to upload...`);
+        console.log(`[X POST] Attempting image upload for post...`);
         const imgRes = await fetch(imageUrl);
         const imgBuffer = await imgRes.arrayBuffer();
         const base64Image = Buffer.from(imgBuffer).toString('base64');
@@ -4187,6 +4203,9 @@ app.post('/api/x/post', async (req, res) => {
         const params = new URLSearchParams();
         params.append('media_data', base64Image);
 
+        // NOTE: The v1.1 media upload endpoint requires OAuth 1.0a (not Bearer/OAuth 2.0).
+        // If this fails (which it will with OAuth2 Bearer tokens lacking write access),
+        // we skip the image gracefully and post text-only.
         const uploadRes = await fetch('https://upload.twitter.com/1.1/media/upload.json', {
           method: 'POST',
           headers: {
@@ -4200,15 +4219,17 @@ app.post('/api/x/post', async (req, res) => {
           const uploadData = await uploadRes.json();
           if (uploadData.media_id_string) {
             mediaIds.push(uploadData.media_id_string);
+            console.log(`[X POST] Image uploaded successfully. media_id: ${uploadData.media_id_string}`);
           }
         } else {
           const errText = await uploadRes.text();
-          console.error('[X Media Upload Error]', errText);
-          throw new Error('Failed to upload image to X. Check token permissions.' + errText);
+          console.warn(`[X POST] Image upload failed (status ${uploadRes.status}). Posting without image. Details: ${errText}`);
+          // Don't throw - just skip the image and continue with a text-only post
+          mediaIds = [];
         }
       } catch (mediaErr) {
-        console.error('[X Media Exception]', mediaErr);
-        throw new Error('Image upload failed: ' + mediaErr.message);
+        console.warn('[X POST] Image upload exception. Posting without image:', mediaErr.message);
+        mediaIds = [];
       }
     }
 
@@ -4249,8 +4270,12 @@ app.post('/api/x/post', async (req, res) => {
 
     const XResponse = await response.json();
     if (!response.ok) {
-      console.error('[X Post Error]', XResponse);
-      throw new Error(XResponse.detail || XResponse.error || 'Failed to submit to X API');
+      console.error(`[X Post Error] Status: ${response.status}`, JSON.stringify(XResponse));
+      // Build a helpful error message with all X API error details
+      const errDetail = XResponse.detail || XResponse.title || '';
+      const errErrors = XResponse.errors?.map(e => e.message || e.detail || '').join('; ') || '';
+      const errType = XResponse.type ? ` [${XResponse.type}]` : '';
+      throw new Error(`X API Error (${response.status})${errType}: ${errDetail || errErrors || 'Failed to submit to X API'}`);
     }
 
     let XTweetId = null;

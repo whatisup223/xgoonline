@@ -42,7 +42,18 @@ export const Settings: React.FC = () => {
             syncUser();
             setActiveTab('billing'); // Automatically switch to billing so user sees the change
             setProfileMessage({ type: 'success', text: 'Payment successful! Your account has been upgraded.' });
-            // Clean up URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        if (queryParams.get('success') === 'x_connected') {
+            syncUser();
+            setActiveTab('profile');
+            setProfileMessage({ type: 'success', text: '✅ X account connected successfully!' });
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        const xError = queryParams.get('x_error');
+        if (xError) {
+            setActiveTab('profile');
+            setProfileMessage({ type: 'error', text: `❌ X Connection Failed: ${decodeURIComponent(xError)}` });
             window.history.replaceState({}, document.title, window.location.pathname);
         }
     }, [syncUser]);
@@ -873,8 +884,8 @@ export const Settings: React.FC = () => {
                                                             : <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center text-white font-black">R</div>
                                                         }
                                                         <div>
-                                                            <p className="font-bold text-slate-900 group-hover:text-black transition-colors">u/{acc.username}</p>
-                                                            <p className="text-[10px] text-slate-400 font-medium">Linked on {new Date(acc.connectedAt).toLocaleDateString()}</p>
+                                                            <p className="font-bold text-slate-900 group-hover:text-black transition-colors">@{acc.username}</p>
+                                                            <p className="text-[10px] text-slate-400 font-medium">Linked on {acc.connectedAt ? new Date(acc.connectedAt).toLocaleDateString() : 'N/A'}</p>
                                                         </div>
                                                     </div>
                                                     <div className="flex items-center gap-3">

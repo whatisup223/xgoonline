@@ -2639,23 +2639,24 @@ export const Admin: React.FC = () => {
                                                         />
                                                     </label>
                                                     <label className="block">
-                                                        <span className="text-sm font-bold text-slate-700 mb-2 block">Redirect URI</span>
+                                                        <span className="text-sm font-bold text-slate-700 mb-2 block">Redirect URI <span className="text-xs font-normal text-slate-400">(add this to your X Developer App)</span></span>
                                                         <div className="flex gap-2">
                                                             <input
                                                                 type="text"
-                                                                className="w-full p-4 bg-slate-100 border border-slate-200 rounded-2xl font-mono text-sm text-slate-500 cursor-not-allowed"
-                                                                value={`${window.location.origin}/auth/X/callback`}
+                                                                className="w-full p-4 bg-slate-100 border border-slate-200 rounded-2xl font-mono text-sm text-slate-600 cursor-not-allowed select-all"
+                                                                value={`${window.location.origin}/auth/x/callback`}
                                                                 readOnly
                                                             />
                                                             <button
                                                                 type="button"
-                                                                onClick={() => navigator.clipboard.writeText(`${window.location.origin}/auth/X/callback`)}
+                                                                onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/auth/x/callback`); alert('Redirect URI copied!'); }}
                                                                 className="bg-white border border-slate-200 p-4 rounded-2xl hover:text-black hover:border-black transition-colors"
-                                                                title="Copy"
+                                                                title="Copy Redirect URI"
                                                             >
                                                                 <Copy size={20} />
                                                             </button>
                                                         </div>
+                                                        <p className="text-[10px] text-amber-600 font-bold mt-1.5">⚠️ This exact URI must be added to your X Developer Portal App settings under "Authentication settings".</p>
                                                     </label>
                                                     <label className="block">
                                                         <span className="text-sm font-bold text-slate-700 mb-2 block">User Agent</span>

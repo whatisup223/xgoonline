@@ -26,9 +26,23 @@ const UserSchema = new mongoose.Schema({
     usageStats: mongoose.Schema.Types.Mixed,
     accounts: [{
         username: String,
+        icon: String,
         accessToken: String,
         refreshToken: String,
-        tokenExpiry: Number
+        expiresAt: Number,
+        tokenExpiry: Number,
+        connectedAt: String,
+        lastSeen: String
+    }],
+    connectedAccounts: [{
+        username: String,
+        icon: String,
+        accessToken: String,
+        refreshToken: String,
+        expiresAt: Number,
+        tokenExpiry: Number,
+        connectedAt: String,
+        lastSeen: String
     }],
     history: [mongoose.Schema.Types.Mixed],
     postsHistory: [mongoose.Schema.Types.Mixed],
