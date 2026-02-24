@@ -192,9 +192,9 @@ LINK INTEGRATION (STRICT REQUIREMENT):
         prompt: `You are writing an X (Twitter) reply as a real, thoughtful user.
 
 POST BEING REPLIED TO:
-Author: @${tweet.author}
-Body: ${tweet.text.substring(0, 500)}
-Topic: ${tweet.topic}
+Author: @${tweet.author || 'unknown'}
+Body: ${(tweet.text || tweet.selftext || '').substring(0, 500)}
+Topic: ${tweet.topic || topic}
 
 ${toneStrategy}
 

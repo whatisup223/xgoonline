@@ -620,21 +620,21 @@ export const Analytics: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         <StatCard
           label={activeTab === 'comments' ? "Total Likes" : (activeTab === 'posts' ? "Post Score" : "Link Reach")}
-          value={activeTab === 'links' ? activeLinks.length : totalUpvotes.toLocaleString()}
+          value={activeTab === 'links' ? activeLinks.length : (totalUpvotes ?? 0).toLocaleString()}
           trend={activeTab === 'links' ? `${trackingLinks.length} Total` : "+12.5%"}
           icon={activeTab === 'links' ? BarChart3 : (activeTab === 'comments' ? MessageSquare : PenTool)}
           color={activeTab === 'links' ? "bg-blue-600 text-white" : "bg-black text-white"}
         />
         <StatCard
           label={activeTab === 'links' ? "Avg Click Rate" : "Account Authority"}
-          value={activeTab === 'links' ? (trackingLinks.length > 0 ? (totalClicks / trackingLinks.length).toFixed(1) : "0.0") : (profile ? (activeTab === 'comments' ? profile.commentScore.toLocaleString() : (profile.linkScore || profile.totalScore).toLocaleString()) : "---")}
+          value={activeTab === 'links' ? (trackingLinks.length > 0 ? (totalClicks / trackingLinks.length).toFixed(1) : "0.0") : (profile ? (activeTab === 'comments' ? (profile.commentScore ?? 0).toLocaleString() : ((profile.linkScore || profile.totalScore) ?? 0).toLocaleString()) : "---")}
           trend="Live"
           icon={activeTab === 'links' ? TrendingUp : Users}
           color={activeTab === 'links' ? "bg-emerald-600 text-white" : "bg-blue-600 text-white"}
         />
         <StatCard
           label="Total Link Clicks"
-          value={totalClicks.toLocaleString()}
+          value={(totalClicks ?? 0).toLocaleString()}
           trend="Real-time"
           icon={MousePointer2}
           color="bg-indigo-600 text-white"

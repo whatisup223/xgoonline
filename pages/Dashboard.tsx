@@ -528,7 +528,7 @@ export const Dashboard: React.FC = () => {
         />
         <StatCard
           label="Total Likes"
-          value={totalLikes.toLocaleString()}
+          value={(totalLikes ?? 0).toLocaleString()}
           sub={`${thisWeek.reduce((a, b) => a + (b.ups || 0), 0)} this week`}
           icon={Heart}
           accent="bg-blue-600"
@@ -539,7 +539,7 @@ export const Dashboard: React.FC = () => {
           label={profile?.totalFollowers != null ? 'X Followers' : 'Est. Reach'}
           value={
             profile?.totalFollowers != null
-              ? profile.totalFollowers.toLocaleString()
+              ? (profile.totalFollowers ?? 0).toLocaleString()
               : totalReach > 1000
                 ? `${(totalReach / 1000).toFixed(1)}k`
                 : totalReach
@@ -844,7 +844,7 @@ export const Dashboard: React.FC = () => {
               </div>
               {profile.totalFollowers != null && (
                 <div className="mt-3 bg-black/20 rounded-xl p-3 text-center border border-black-600/30">
-                  <p className="text-xl font-black">{profile.totalFollowers.toLocaleString()}</p>
+                  <p className="text-xl font-black">{(profile.totalFollowers ?? 0).toLocaleString()}</p>
                   <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Total Followers</p>
                 </div>
               )}

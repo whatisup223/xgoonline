@@ -55,7 +55,65 @@ const initSettings = async () => {
   }
 };
 
+const seedPlans = async () => {
+  try {
+    const count = await Plan.countDocuments();
+    if (count === 0) {
+      console.log('🌱 Seeding default plans...');
+      const defaultPlans = [
+        {
+          id: 'starter',
+          name: 'Starter',
+          monthlyPrice: 0,
+          yearlyPrice: 0,
+          credits: 100,
+          dailyLimitMonthly: 5,
+          dailyLimitYearly: 5,
+          features: ['AI Comment Wizard', '1 X Account', 'Basic Analytics', 'Standard Support'],
+          isPopular: false,
+          isVisible: true,
+          maxAccounts: 1,
+          isCustom: false
+        },
+        {
+          id: 'pro',
+          name: 'Pro',
+          monthlyPrice: 29,
+          yearlyPrice: 290,
+          credits: 1000,
+          dailyLimitMonthly: 50,
+          dailyLimitYearly: 100,
+          features: ['Advanced AI Models', '3 X Accounts', 'Priority Support', 'Full Analytics', 'Image Generation'],
+          isPopular: true,
+          isVisible: true,
+          maxAccounts: 3,
+          isCustom: false
+        },
+        {
+          id: 'business',
+          name: 'Business',
+          monthlyPrice: 99,
+          yearlyPrice: 990,
+          credits: 5000,
+          dailyLimitMonthly: 250,
+          dailyLimitYearly: 500,
+          features: ['Unlimited X Accounts', 'Dedicated Manager', 'API Access', 'White-labeling', 'Bulk Actions'],
+          isPopular: false,
+          isVisible: true,
+          maxAccounts: 99,
+          isCustom: false
+        }
+      ];
+      await Plan.insertMany(defaultPlans);
+      console.log('✅ Default plans seeded successfully!');
+    }
+  } catch (err) {
+    console.error('❌ Failed to seed plans:', err);
+  }
+};
+
 await initSettings();
+await seedPlans();
 
 // Emergency Check: Ensure primary admin is never suspended
 if (process.env.ADMIN_EMAIL) {
