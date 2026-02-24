@@ -3602,6 +3602,7 @@ app.post('/api/auth/x/callback', async (req, res) => {
 });
 
 const getValidToken = async (userId, username) => {
+  console.log(`[X Token] Request for User ${userId}, Account: ${username || 'default'}`);
   let targetAccount = null;
   const user = await User.findOne({
     $or: [
@@ -3610,7 +3611,13 @@ const getValidToken = async (userId, username) => {
     ]
   });
 
-  const accounts = (user && (user.connectedAccounts || user.accounts)) || [];
+  if (!user) {
+    console.warn(`[X Token] User ${userId} not found in database.`);
+    return null;
+  }
+
+  const accounts = (user.connectedAccounts || user.accounts) || [];
+  console.log(`[X Token] User found: ${user.email}. Connected accounts: ${accounts.length}`);
 
   if (accounts.length > 0) {
     targetAccount = username
@@ -3620,22 +3627,34 @@ const getValidToken = async (userId, username) => {
 
   // Fallback to memory if not found in DB or DB missing tokens
   if (!targetAccount || !targetAccount.accessToken) {
+    console.log(`[X Token] Account not in DB, checking memory fallback...`);
     if (userXTokens[userId]) {
       const uName = username || Object.keys(userXTokens[userId])[0];
       if (userXTokens[userId][uName]) {
         targetAccount = { ...userXTokens[userId][uName], username: uName };
+        console.log(`[X Token] Found tokens in memory for @${uName}`);
       }
     }
   }
 
-  if (!targetAccount || !targetAccount.accessToken) return null;
+  if (!targetAccount || !targetAccount.accessToken) {
+    console.warn(`[X Token] No associated X tokens found for User ${user.email}`);
+    return null;
+  }
 
+  // Check Expiry (with 1 min buffer)
   if (Date.now() < targetAccount.expiresAt - 60000) {
+    console.log(`[X Token] Token valid. Expires in ${Math.round((targetAccount.expiresAt - Date.now()) / 1000)}s`);
     return targetAccount.accessToken;
   }
 
+  console.log(`[X Token] Token expired or expiring soon. Attempting refresh...`);
   // Refresh token
   try {
+    if (!XSettings.clientId || !XSettings.clientSecret) {
+      throw new Error('X API Credentials (ClientID/Secret) are missing in Admin configuration.');
+    }
+
     const auth = Buffer.from(`${XSettings.clientId}:${XSettings.clientSecret}`).toString('base64');
     const response = await fetch('https://api.twitter.com/2/oauth2/token', {
       method: 'POST',
@@ -3652,18 +3671,22 @@ const getValidToken = async (userId, username) => {
     });
 
     const data = await response.json();
-    if (data.error) throw new Error(data.error);
+    if (data.error) {
+      console.error('[X Token Refresh Error Details]', data);
+      throw new Error(data.error_description || data.error);
+    }
 
     const newTokens = {
       accessToken: data.access_token,
-      refreshToken: targetAccount.refreshToken,
+      refreshToken: data.refresh_token || targetAccount.refreshToken,
       expiresAt: Date.now() + (data.expires_in * 1000)
     };
 
+    console.log(`[X Token] Refresh successful for @${targetAccount.username}. New expiry in ${data.expires_in}s`);
     await saveTokens(userId, targetAccount.username || username, newTokens);
     return data.access_token;
   } catch (err) {
-    console.error('[X Token Refresh Error]', err);
+    console.error('[X Token Refresh Failure]', err.message);
     return null;
   }
 };

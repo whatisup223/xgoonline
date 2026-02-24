@@ -655,7 +655,7 @@ export const Analytics: React.FC = () => {
             <PieIcon className="text-slate-300" size={20} />
           </div>
           <div className="h-[280px] relative">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
               <PieChart>
                 <Pie data={sentimentData} cx="50%" cy="50%" innerRadius={70} outerRadius={100} paddingAngle={8} dataKey="value">
                   {sentimentData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} strokeWidth={0} />)}
@@ -715,7 +715,7 @@ export const Analytics: React.FC = () => {
             </div>
           </div>
           <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
               <AreaChart data={displayData}>
                 <defs>
                   <linearGradient id="colorUp" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#f97316" stopOpacity={0.2} /><stop offset="95%" stopColor="#f97316" stopOpacity={0} /></linearGradient>
@@ -791,8 +791,8 @@ export const Analytics: React.FC = () => {
                         {activeTab !== 'links' && (
                           <div className="flex items-center gap-2 border-l border-slate-100 pl-3">
                             <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-tight border ${row.sentiment === 'Positive' ? 'bg-green-50 text-green-700 border-green-100' :
-                                row.sentiment === 'Inquisitive' ? 'bg-blue-50 text-blue-700 border-blue-100' :
-                                  'bg-slate-50 text-slate-500 border-slate-100'
+                              row.sentiment === 'Inquisitive' ? 'bg-blue-50 text-blue-700 border-blue-100' :
+                                'bg-slate-50 text-slate-500 border-slate-100'
                               }`}>
                               {row.sentiment || 'Neutral'}
                             </span>

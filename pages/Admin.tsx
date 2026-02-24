@@ -1137,7 +1137,7 @@ export const Admin: React.FC = () => {
                                                     <RefreshCw className="animate-spin text-blue-400" size={24} />
                                                 </div>
                                             ) : analytics?.chartData ? (
-                                                <ResponsiveContainer width="100%" height="100%">
+                                                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                                                     <AreaChart data={analytics.chartData}>
                                                         <defs>
                                                             <linearGradient id="colorUsage" x1="0" y1="0" x2="0" y2="1">
@@ -1350,7 +1350,7 @@ export const Admin: React.FC = () => {
                                                             </div>
                                                         </div>
                                                         <div className="h-80 w-full">
-                                                            <ResponsiveContainer width="100%" height="100%">
+                                                            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                                                                 <AreaChart data={analytics.chartData}>
                                                                     <defs>
                                                                         <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#10b981" stopOpacity={0.1} /><stop offset="95%" stopColor="#10b981" stopOpacity={0} /></linearGradient>
@@ -1371,7 +1371,7 @@ export const Admin: React.FC = () => {
                                                         <h2 className="text-xl font-black text-slate-900 tracking-tight mb-2">Plan Distribution</h2>
                                                         <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-10">User Subscription Tiers</p>
                                                         <div className="h-64 w-full relative">
-                                                            <ResponsiveContainer width="100%" height="100%">
+                                                            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                                                                 <PieChart>
                                                                     <Pie
                                                                         data={analytics.planDistribution}
